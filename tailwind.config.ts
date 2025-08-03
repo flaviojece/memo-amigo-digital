@@ -26,7 +26,9 @@ export default {
 				foreground: 'hsl(var(--foreground))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					foreground: 'hsl(var(--primary-foreground))',
+					light: 'hsl(var(--primary-light))',
+					dark: 'hsl(var(--primary-dark))'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
@@ -66,7 +68,27 @@ export default {
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)'
+				sm: 'calc(var(--radius) - 4px)',
+				'memo': '16px', /* Bordas arredondadas do Dr. Memo */
+				'senior': '12px' /* Bordas para botões de idosos */
+			},
+			backgroundImage: {
+				'gradient-warm': 'var(--gradient-warm)',
+				'gradient-cool': 'var(--gradient-cool)',
+				'gradient-soft': 'var(--gradient-soft)'
+			},
+			boxShadow: {
+				'card': 'var(--shadow-card)',
+				'button': 'var(--shadow-button)',
+				'emergency': 'var(--shadow-emergency)'
+			},
+			fontSize: {
+				'senior-xs': ['16px', '1.5'],
+				'senior-sm': ['18px', '1.6'],
+				'senior-base': ['20px', '1.6'],
+				'senior-lg': ['24px', '1.4'],
+				'senior-xl': ['28px', '1.3'],
+				'senior-2xl': ['32px', '1.2']
 			},
 			keyframes: {
 				'accordion-down': {

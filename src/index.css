@@ -2,39 +2,65 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* Dr. Memo Design System - Retrô Aconchegante para Idosos
+Paleta oficial: Vermelho queimado, Amarelo mostarda, Verde petróleo, Marrom escuro, Creme claro
+Todos os valores em HSL para consistência
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Cores base Dr. Memo */
+    --background: 46 67% 85%; /* Creme claro #F2EDC3 */
+    --foreground: 33 31% 24%; /* Marrom escuro #4D3E2A */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* Cards e superfícies */
+    --card: 0 0% 100%; /* Branco puro para cards */
+    --card-foreground: 33 31% 24%; /* Marrom escuro */
 
+    /* Popovers e modais */
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 33 31% 24%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primário - Vermelho queimado para ações principais */
+    --primary: 14 77% 47%; /* #DD4B1A */
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 14 77% 57%;
+    --primary-dark: 14 77% 37%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secundário - Verde petróleo para elementos secundários */
+    --secondary: 178 95% 25%; /* #047C78 */
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Accent - Amarelo mostarda para destaques */
+    --accent: 44 87% 53%; /* #F2A420 */
+    --accent-foreground: 33 31% 24%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Estados e feedback */
+    --muted: 46 40% 90%;
+    --muted-foreground: 33 20% 45%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Emergência - Vermelho mais forte */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Bordas e inputs */
+    --border: 33 20% 80%;
+    --input: 0 0% 100%;
+    --ring: 14 77% 47%;
+
+    /* Gradientes especiais Dr. Memo */
+    --gradient-warm: linear-gradient(135deg, hsl(14 77% 47%), hsl(44 87% 53%));
+    --gradient-cool: linear-gradient(135deg, hsl(178 95% 25%), hsl(33 31% 24%));
+    --gradient-soft: linear-gradient(180deg, hsl(46 67% 85%), hsl(46 40% 90%));
+
+    /* Sombras acolhedoras */
+    --shadow-card: 0 4px 12px hsl(33 31% 24% / 0.1);
+    --shadow-button: 0 2px 8px hsl(14 77% 47% / 0.3);
+    --shadow-emergency: 0 4px 16px hsl(0 84% 60% / 0.4);
+
+    /* Transições suaves */
+    --transition-gentle: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --radius: 0.5rem;
 
@@ -100,6 +126,54 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+    font-size: 18px; /* Base maior para idosos */
+    line-height: 1.6;
+  }
+
+  /* Fontes acessíveis para idosos */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  h1 { font-size: 2rem; }   /* 32px */
+  h2 { font-size: 1.75rem; } /* 28px */
+  h3 { font-size: 1.5rem; }  /* 24px */
+
+  /* Botões acessíveis - mínimo 60x60px para touch */
+  .btn-senior {
+    min-height: 60px;
+    min-width: 60px;
+    font-size: 1.125rem; /* 18px */
+    font-weight: 600;
+    border-radius: 12px;
+    transition: var(--transition-gentle);
+  }
+
+  /* Padrão xadrez sutil para texturas */
+  .pattern-checkered {
+    background-image: 
+      linear-gradient(45deg, hsl(33 31% 24% / 0.02) 25%, transparent 25%), 
+      linear-gradient(-45deg, hsl(33 31% 24% / 0.02) 25%, transparent 25%), 
+      linear-gradient(45deg, transparent 75%, hsl(33 31% 24% / 0.02) 75%), 
+      linear-gradient(-45deg, transparent 75%, hsl(33 31% 24% / 0.02) 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  }
+
+  /* Cards com estilo Dr. Memo */
+  .card-memo {
+    background: hsl(var(--card));
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-card);
+    border: 2px solid hsl(var(--border));
+    transition: var(--transition-gentle);
+  }
+
+  .card-memo:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px hsl(33 31% 24% / 0.15);
   }
 }
