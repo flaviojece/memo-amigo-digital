@@ -14,6 +14,212 @@ export type Database = {
   }
   public: {
     Tables: {
+      appointments: {
+        Row: {
+          created_at: string | null
+          date: string
+          doctor_name: string
+          id: string
+          location: string | null
+          notes: string | null
+          phone: string | null
+          reminder_sent: boolean | null
+          specialty: string
+          status: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          date: string
+          doctor_name: string
+          id?: string
+          location?: string | null
+          notes?: string | null
+          phone?: string | null
+          reminder_sent?: boolean | null
+          specialty: string
+          status?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          date?: string
+          doctor_name?: string
+          id?: string
+          location?: string | null
+          notes?: string | null
+          phone?: string | null
+          reminder_sent?: boolean | null
+          specialty?: string
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      emergency_activations: {
+        Row: {
+          activated_at: string | null
+          contacts_notified: Json | null
+          id: string
+          location: Json | null
+          notes: string | null
+          resolved_at: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          activated_at?: string | null
+          contacts_notified?: Json | null
+          id?: string
+          location?: Json | null
+          notes?: string | null
+          resolved_at?: string | null
+          status: string
+          user_id: string
+        }
+        Update: {
+          activated_at?: string | null
+          contacts_notified?: Json | null
+          id?: string
+          location?: Json | null
+          notes?: string | null
+          resolved_at?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      emergency_contacts: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          id: string
+          is_emergency: boolean | null
+          is_favorite: boolean | null
+          name: string
+          phone: string
+          photo_url: string | null
+          relationship: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          is_emergency?: boolean | null
+          is_favorite?: boolean | null
+          name: string
+          phone: string
+          photo_url?: string | null
+          relationship?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          is_emergency?: boolean | null
+          is_favorite?: boolean | null
+          name?: string
+          phone?: string
+          photo_url?: string | null
+          relationship?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      medication_logs: {
+        Row: {
+          created_at: string | null
+          id: string
+          medication_id: string
+          notes: string | null
+          scheduled_time: string
+          status: string
+          taken_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          medication_id: string
+          notes?: string | null
+          scheduled_time: string
+          status: string
+          taken_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          medication_id?: string
+          notes?: string | null
+          scheduled_time?: string
+          status?: string
+          taken_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medication_logs_medication_id_fkey"
+            columns: ["medication_id"]
+            isOneToOne: false
+            referencedRelation: "medications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      medications: {
+        Row: {
+          active: boolean | null
+          created_at: string | null
+          dosage: string | null
+          end_date: string | null
+          frequency: string
+          id: string
+          name: string
+          notes: string | null
+          start_date: string
+          times: Json
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string | null
+          dosage?: string | null
+          end_date?: string | null
+          frequency: string
+          id?: string
+          name: string
+          notes?: string | null
+          start_date: string
+          times: Json
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string | null
+          dosage?: string | null
+          end_date?: string | null
+          frequency?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          start_date?: string
+          times?: Json
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null
