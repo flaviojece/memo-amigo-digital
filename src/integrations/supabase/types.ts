@@ -134,6 +134,93 @@ export type Database = {
         }
         Relationships: []
       }
+      guardian_invitations: {
+        Row: {
+          access_level: string
+          created_at: string | null
+          expires_at: string | null
+          guardian_id: string | null
+          id: string
+          invitation_token: string
+          invited_email: string
+          message: string | null
+          patient_id: string
+          relationship_type: string | null
+          responded_at: string | null
+          status: string
+        }
+        Insert: {
+          access_level?: string
+          created_at?: string | null
+          expires_at?: string | null
+          guardian_id?: string | null
+          id?: string
+          invitation_token?: string
+          invited_email: string
+          message?: string | null
+          patient_id: string
+          relationship_type?: string | null
+          responded_at?: string | null
+          status?: string
+        }
+        Update: {
+          access_level?: string
+          created_at?: string | null
+          expires_at?: string | null
+          guardian_id?: string | null
+          id?: string
+          invitation_token?: string
+          invited_email?: string
+          message?: string | null
+          patient_id?: string
+          relationship_type?: string | null
+          responded_at?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
+      guardian_relationships: {
+        Row: {
+          access_level: string
+          created_at: string | null
+          guardian_id: string
+          id: string
+          notes: string | null
+          patient_id: string
+          relationship_type: string | null
+          revoked_at: string | null
+          revoked_by: string | null
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          access_level?: string
+          created_at?: string | null
+          guardian_id: string
+          id?: string
+          notes?: string | null
+          patient_id: string
+          relationship_type?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          access_level?: string
+          created_at?: string | null
+          guardian_id?: string
+          id?: string
+          notes?: string | null
+          patient_id?: string
+          relationship_type?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       medication_logs: {
         Row: {
           created_at: string | null
@@ -336,11 +423,26 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_patients_for_guardian: {
+        Args: { _guardian_id: string }
+        Returns: {
+          access_level: string
+          created_at: string
+          patient_email: string
+          patient_id: string
+          patient_name: string
+          relationship_type: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      is_guardian_of: {
+        Args: { _guardian_id: string; _patient_id: string }
         Returns: boolean
       }
     }

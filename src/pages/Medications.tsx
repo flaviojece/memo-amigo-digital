@@ -6,21 +6,25 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MedicationList } from "@/components/medications/MedicationList";
 import { MedicationForm } from "@/components/medications/MedicationForm";
+import { PatientSelector } from "@/components/guardians/PatientSelector";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export default function Medications() {
   const { user } = useAuth();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
+  
+  const effectiveUserId = selectedPatientId || user?.id;
 
   const { data: medications, isLoading, refetch } = useQuery({
-    queryKey: ["medications", user?.id],
+    queryKey: ["medications", effectiveUserId],
     queryFn: async () => {
-      if (!user) return [];
+      if (!effectiveUserId) return [];
       const { data, error } = await supabase
         .from("medications")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", effectiveUserId)
         .eq("active", true)
         .order("created_at", { ascending: false });
       
@@ -30,7 +34,7 @@ export default function Medications() {
         times: Array.isArray(med.times) ? med.times : JSON.parse(med.times as string)
       }));
     },
-    enabled: !!user
+    enabled: !!effectiveUserId
   });
 
   const handleEdit = (id: string) => {
@@ -46,19 +50,26 @@ export default function Medications() {
 
   return (
     <div className="min-h-screen bg-background pattern-bg pb-24">
-      <div className="max-w-4xl mx-auto p-4">
+      <div className="max-w-4xl mx-auto p-4 space-y-4">
+        <PatientSelector 
+          selectedPatientId={selectedPatientId}
+          onSelectPatient={setSelectedPatientId}
+        />
+        
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-senior-3xl font-bold text-foreground">
-            💊 Meus Medicamentos
+            💊 {selectedPatientId ? 'Medicamentos' : 'Meus Medicamentos'}
           </h1>
-          <Button
-            onClick={() => setIsFormOpen(true)}
-            size="lg"
-            className="text-senior-base"
-          >
-            <Plus className="w-6 h-6 mr-2" />
-            Adicionar
-          </Button>
+          {!selectedPatientId && (
+            <Button
+              onClick={() => setIsFormOpen(true)}
+              size="lg"
+              className="text-senior-base"
+            >
+              <Plus className="w-6 h-6 mr-2" />
+              Adicionar
+            </Button>
+          )}
         </div>
 
         <MedicationList
