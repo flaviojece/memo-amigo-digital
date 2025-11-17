@@ -39,7 +39,7 @@ export function QuickActionCard({
         </div>
         
         <div className="flex-1 min-w-0">
-          <h3 className="font-bold text-senior-lg mb-1 truncate">
+          <h3 className="font-bold text-senior-base mb-1 truncate">
             {title}
           </h3>
           {subtitle && (
