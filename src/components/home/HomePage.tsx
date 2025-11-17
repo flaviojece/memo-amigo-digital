@@ -79,9 +79,9 @@ export function HomePage() {
           
           <div className="grid grid-cols-2 gap-4">
             <QuickActionCard
-              title="Meus Remédios"
+              title="Remédios"
               icon={<Pill className="w-6 h-6 text-primary" />}
-              onClick={() => handleCardClick("Meus Remédios")}
+              onClick={() => handleCardClick("Remédios")}
             />
 
             <QuickActionCard
