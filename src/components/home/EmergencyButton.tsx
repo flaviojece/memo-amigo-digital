@@ -111,7 +111,7 @@ export function EmergencyButton() {
     <div className="relative">
       <button
         onClick={isActivating ? cancelEmergency : handleEmergencyClick}
-        className="w-full bg-destructive text-destructive-foreground p-8 rounded-memo shadow-emergency border-4 border-destructive hover:bg-destructive/90 transition-all duration-300 relative overflow-hidden"
+        className="w-full bg-destructive text-destructive-foreground p-10 rounded-memo shadow-emergency border-4 border-destructive hover:bg-destructive/90 transition-all duration-300 relative overflow-hidden min-h-[160px] animate-pulse-slow"
         aria-label={isActivating ? "Cancelar emergência" : "Ativar emergência - SAMU 192"}
         aria-live="polite"
         aria-atomic="true"

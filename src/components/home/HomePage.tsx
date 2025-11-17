@@ -36,7 +36,7 @@ export function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-36">
       <WelcomeHeader />
       
       <main className="p-4 space-y-6">
