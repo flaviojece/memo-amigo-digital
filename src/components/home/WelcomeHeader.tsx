@@ -60,7 +60,7 @@ export function WelcomeHeader() {
   };
 
   return (
-    <header className="bg-gradient-warm text-primary-foreground p-6 rounded-b-memo shadow-card pattern-checkered">
+    <header className="bg-gradient-warm text-primary-foreground p-6 rounded-b-memo shadow-card">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
