@@ -141,3 +141,171 @@ function addDays(date: Date, days: number): Date {
   result.setDate(result.getDate() + days);
   return result;
 }
+
+// ========================================
+// NOTIFICAÇÕES PARA GUARDIANS/CUIDADORES
+// ========================================
+
+interface GuardianToNotify {
+  guardian_id: string;
+  guardian_email: string;
+  guardian_name: string;
+}
+
+// Buscar guardians que devem ser notificados
+const getGuardiansToNotify = async (
+  patientId: string,
+  notificationType: string
+): Promise<GuardianToNotify[]> => {
+  try {
+    const { data, error } = await supabase.rpc('get_guardians_to_notify', {
+      _patient_id: patientId,
+      _notification_type: notificationType,
+    });
+
+    if (error) {
+      console.error('Erro ao buscar guardians:', error);
+      return [];
+    }
+
+    return data || [];
+  } catch (error) {
+    console.error('Erro ao buscar guardians:', error);
+    return [];
+  }
+};
+
+// Enviar notificação para um guardian
+const sendGuardianNotification = (
+  guardianId: string,
+  title: string,
+  body: string,
+  clickAction: string = '/'
+) => {
+  // Enviar notificação via Service Worker
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    navigator.serviceWorker.controller.postMessage({
+      type: 'SHOW_NOTIFICATION',
+      payload: {
+        title,
+        body,
+        icon: '/icon-192.png',
+        badge: '/icon-192.png',
+        tag: `guardian-${guardianId}`,
+        data: { url: clickAction },
+      },
+    });
+  }
+};
+
+// Notificar guardians quando paciente toma medicamento
+export const notifyGuardiansOfMedicationTaken = async (
+  patientId: string,
+  patientName: string,
+  medicationName: string,
+  time: string
+) => {
+  const guardians = await getGuardiansToNotify(patientId, 'medication_taken');
+
+  guardians.forEach((guardian) => {
+    sendGuardianNotification(
+      guardian.guardian_id,
+      `💊 ${patientName} tomou medicamento`,
+      `${medicationName} às ${time}`,
+      '/?tab=meds'
+    );
+  });
+};
+
+// Notificar guardians quando paciente perde medicamento
+export const notifyGuardiansOfMedicationMissed = async (
+  patientId: string,
+  patientName: string,
+  medicationName: string,
+  time: string
+) => {
+  const guardians = await getGuardiansToNotify(patientId, 'medication_missed');
+
+  guardians.forEach((guardian) => {
+    sendGuardianNotification(
+      guardian.guardian_id,
+      `⚠️ ${patientName} perdeu medicamento`,
+      `${medicationName} (${time}) não foi tomado`,
+      '/?tab=meds'
+    );
+  });
+};
+
+// Notificar guardians sobre lembrete de medicamento
+export const notifyGuardiansOfMedicationUpcoming = async (
+  patientId: string,
+  patientName: string,
+  medicationName: string,
+  time: string
+) => {
+  const guardians = await getGuardiansToNotify(patientId, 'medication_upcoming');
+
+  guardians.forEach((guardian) => {
+    sendGuardianNotification(
+      guardian.guardian_id,
+      `🔔 Lembrete: ${patientName}`,
+      `${medicationName} em 30 minutos (${time})`,
+      '/?tab=meds'
+    );
+  });
+};
+
+// Notificar guardians quando nova consulta é criada
+export const notifyGuardiansOfAppointmentCreated = async (
+  patientId: string,
+  patientName: string,
+  doctorName: string,
+  specialty: string,
+  date: Date
+) => {
+  const guardians = await getGuardiansToNotify(patientId, 'appointment_created');
+
+  const dateStr = date.toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
+  guardians.forEach((guardian) => {
+    sendGuardianNotification(
+      guardian.guardian_id,
+      `📅 ${patientName} agendou consulta`,
+      `${doctorName} - ${specialty} em ${dateStr}`,
+      '/?tab=appointments'
+    );
+  });
+};
+
+// Notificar guardians sobre lembrete de consulta
+export const notifyGuardiansOfAppointmentUpcoming = async (
+  patientId: string,
+  patientName: string,
+  doctorName: string,
+  specialty: string,
+  date: Date
+) => {
+  const guardians = await getGuardiansToNotify(patientId, 'appointment_upcoming');
+
+  const dateStr = date.toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
+  guardians.forEach((guardian) => {
+    sendGuardianNotification(
+      guardian.guardian_id,
+      `🔔 Lembrete: Consulta de ${patientName} amanhã`,
+      `${doctorName} - ${specialty} às ${dateStr}`,
+      '/?tab=appointments'
+    );
+  });
+};

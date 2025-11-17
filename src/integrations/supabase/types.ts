@@ -179,6 +179,62 @@ export type Database = {
         }
         Relationships: []
       }
+      guardian_notification_preferences: {
+        Row: {
+          created_at: string | null
+          enabled: boolean
+          guardian_id: string
+          id: string
+          notify_appointment_cancelled: boolean
+          notify_appointment_completed: boolean
+          notify_appointment_created: boolean
+          notify_appointment_upcoming: boolean
+          notify_medication_missed: boolean
+          notify_medication_taken: boolean
+          notify_medication_upcoming: boolean
+          patient_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          enabled?: boolean
+          guardian_id: string
+          id?: string
+          notify_appointment_cancelled?: boolean
+          notify_appointment_completed?: boolean
+          notify_appointment_created?: boolean
+          notify_appointment_upcoming?: boolean
+          notify_medication_missed?: boolean
+          notify_medication_taken?: boolean
+          notify_medication_upcoming?: boolean
+          patient_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          enabled?: boolean
+          guardian_id?: string
+          id?: string
+          notify_appointment_cancelled?: boolean
+          notify_appointment_completed?: boolean
+          notify_appointment_created?: boolean
+          notify_appointment_upcoming?: boolean
+          notify_medication_missed?: boolean
+          notify_medication_taken?: boolean
+          notify_medication_upcoming?: boolean
+          patient_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guardian_notification_preferences_guardian_id_patient_id_fkey"
+            columns: ["guardian_id", "patient_id"]
+            isOneToOne: true
+            referencedRelation: "guardian_relationships"
+            referencedColumns: ["guardian_id", "patient_id"]
+          },
+        ]
+      }
       guardian_relationships: {
         Row: {
           access_level: string
@@ -423,6 +479,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_guardians_to_notify: {
+        Args: { _notification_type: string; _patient_id: string }
+        Returns: {
+          guardian_email: string
+          guardian_id: string
+          guardian_name: string
+        }[]
+      }
       get_patients_for_guardian: {
         Args: { _guardian_id: string }
         Returns: {
