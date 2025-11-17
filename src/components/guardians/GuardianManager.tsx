@@ -8,7 +8,9 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Users, UserPlus, Mail, Check, X, Trash2 } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { GuardianNotificationSettings } from './GuardianNotificationSettings';
+import { Users, UserPlus, Mail, Check, X, Trash2, Bell } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -28,6 +30,8 @@ export const GuardianManager = () => {
   const [relationshipType, setRelationshipType] = useState('');
   const [revokeDialogOpen, setRevokeDialogOpen] = useState(false);
   const [selectedRelationship, setSelectedRelationship] = useState<string | null>(null);
+  const [notificationSettingsOpen, setNotificationSettingsOpen] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState<{ id: string; name: string } | null>(null);
 
   const handleSendInvite = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -293,6 +297,23 @@ export const GuardianManager = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={notificationSettingsOpen} onOpenChange={setNotificationSettingsOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Configurações de Notificação</DialogTitle>
+            <DialogDescription>
+              Configure quais notificações você deseja receber sobre este paciente
+            </DialogDescription>
+          </DialogHeader>
+          {selectedPatient && (
+            <GuardianNotificationSettings
+              patientId={selectedPatient.id}
+              patientName={selectedPatient.name}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

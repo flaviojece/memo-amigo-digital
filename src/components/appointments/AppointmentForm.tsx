@@ -10,7 +10,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { scheduleAppointmentNotification, deleteNotifications } from "@/lib/notificationScheduler";
+import { 
+  scheduleAppointmentNotification, 
+  deleteNotifications,
+  notifyGuardiansOfAppointmentCreated,
+  notifyGuardiansOfAppointmentUpcoming
+} from "@/lib/notificationScheduler";
 
 interface AppointmentFormProps {
   appointmentId?: string | null;
@@ -112,6 +117,35 @@ export function AppointmentForm({ appointmentId, onSuccess, onCancel }: Appointm
       await scheduleAppointmentNotification(
         user.id,
         savedAppointmentId,
+        data.doctor_name,
+        data.specialty,
+        new Date(data.date)
+      );
+
+      // Buscar nome do paciente para notificações
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', user.id)
+        .single();
+
+      const patientName = profile?.full_name || 'Paciente';
+
+      // Se for nova consulta, notificar guardians
+      if (!appointmentId) {
+        await notifyGuardiansOfAppointmentCreated(
+          user.id,
+          patientName,
+          data.doctor_name,
+          data.specialty,
+          new Date(data.date)
+        );
+      }
+
+      // Notificar guardians sobre lembrete (1 dia antes)
+      await notifyGuardiansOfAppointmentUpcoming(
+        user.id,
+        patientName,
         data.doctor_name,
         data.specialty,
         new Date(data.date)
