@@ -46,9 +46,8 @@ export function WelcomeHeader() {
   const formatDate = () => {
     return currentTime.toLocaleDateString('pt-BR', {
       weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+      day: 'numeric',
+      month: 'long'
     });
   };
 
@@ -61,14 +60,14 @@ export function WelcomeHeader() {
 
   return (
     <header className="bg-gradient-warm text-primary-foreground p-6 rounded-b-memo shadow-card">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
             <Heart className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h1 className="text-senior-xl font-bold">Dr. Memo</h1>
-            <p className="text-white/90 text-senior-sm">Cuidando de você</p>
+            <h1 className="text-senior-xl font-bold text-white">Dr. Memo</h1>
+            <p className="text-white/70 text-senior-xs">Cuidando de você</p>
           </div>
         </div>
         
@@ -84,11 +83,11 @@ export function WelcomeHeader() {
         </div>
       </div>
 
-      <div className="text-center">
-        <h2 className="text-senior-2xl font-bold mb-2">
+      <div className="text-center space-y-1">
+        <h2 className="text-senior-xl font-bold text-white mb-1">
           {getGreeting()}, {getUserName()}! 👋
         </h2>
-        <p className="text-white/90 text-senior-base capitalize mb-1">
+        <p className="text-white/80 text-senior-sm capitalize">
           {formatDate()}
         </p>
         <p className="text-white/95 text-senior-lg font-semibold">
