@@ -32,10 +32,10 @@ export function Navigation({ activeTab, onTabChange }: NavigationProps) {
               onClick={() => onTabChange(tab.id)}
               className={cn(
                 "flex flex-col items-center p-3 rounded-senior transition-all duration-300",
-                "min-w-[64px] min-h-[64px] text-senior-xs font-semibold",
+                "min-w-[68px] min-h-[68px] text-senior-xs font-semibold touch-manipulation",
                 isActive 
                   ? "bg-primary text-primary-foreground shadow-button" 
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted/80"
               )}
               aria-label={`${tab.label}${isActive ? ' (página atual)' : ''}`}
               aria-current={isActive ? 'page' : undefined}

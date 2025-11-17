@@ -4,6 +4,7 @@ import { Navigation } from "@/components/ui/navigation";
 import { HomePage } from "@/components/home/HomePage";
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { InstallPrompt } from "@/components/mobile/InstallPrompt";
 import Medications from "./Medications";
 import Appointments from "./Appointments";
 import Contacts from "./Contacts";
@@ -45,6 +46,7 @@ const Index = () => {
   return (
     <div className="bg-background min-h-screen pattern-checkered">
       {renderContent()}
+      <InstallPrompt />
       <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
   );

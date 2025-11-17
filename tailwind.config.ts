@@ -10,6 +10,12 @@ export default {
 	],
 	prefix: "",
 	theme: {
+		// Mobile-first touch target sizes (WCAG AAA: min 44x44px)
+		spacing: {
+			'touch-min': '44px',
+			'touch-comfortable': '48px',
+			'touch-large': '56px',
+		},
 		container: {
 			center: true,
 			padding: '2rem',

@@ -22,8 +22,8 @@ export function QuickActionCard({
     <button
       onClick={onClick}
       className={cn(
-        "card-memo p-6 text-left w-full transition-all duration-300",
-        "hover:scale-105 active:scale-95 min-h-[120px]",
+        "card-memo p-6 text-left w-full transition-all duration-300 touch-manipulation",
+        "hover:scale-105 active:scale-95 min-h-[120px] min-h-touch-comfortable",
         variant === "emergency" && "bg-destructive text-destructive-foreground shadow-emergency border-destructive",
         variant === "accent" && "bg-accent text-accent-foreground",
         className
