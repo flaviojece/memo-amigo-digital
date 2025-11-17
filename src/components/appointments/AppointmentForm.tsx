@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { scheduleAppointmentNotification, deleteNotifications } from "@/lib/notificationScheduler";
 
 interface AppointmentFormProps {
   appointmentId?: string | null;
@@ -68,45 +69,69 @@ export function AppointmentForm({ appointmentId, onSuccess, onCancel }: Appointm
     if (!user) return;
     setIsLoading(true);
 
-    const appointmentData = {
-      doctor_name: data.doctor_name,
-      specialty: data.specialty,
-      date: data.date,
-      location: data.location,
-      phone: data.phone,
-      notes: data.notes,
-      status: data.status,
-      user_id: user.id,
-    };
+    try {
+      const appointmentData = {
+        doctor_name: data.doctor_name,
+        specialty: data.specialty,
+        date: data.date,
+        location: data.location,
+        phone: data.phone,
+        notes: data.notes,
+        status: data.status,
+        user_id: user.id,
+      };
 
-    let error;
-    if (appointmentId) {
-      ({ error } = await supabase
-        .from("appointments")
-        .update(appointmentData)
-        .eq("id", appointmentId));
-    } else {
-      ({ error } = await supabase
-        .from("appointments")
-        .insert([appointmentData]));
-    }
+      let savedAppointmentId: string;
 
-    setIsLoading(false);
+      if (appointmentId) {
+        // Edição: deletar notificações antigas
+        await deleteNotifications('appointment', appointmentId);
+        
+        const { data: updatedData, error } = await supabase
+          .from("appointments")
+          .update(appointmentData)
+          .eq("id", appointmentId)
+          .select()
+          .single();
 
-    if (error) {
+        if (error) throw error;
+        savedAppointmentId = updatedData.id;
+      } else {
+        // Criação
+        const { data: newData, error } = await supabase
+          .from("appointments")
+          .insert([appointmentData])
+          .select()
+          .single();
+
+        if (error) throw error;
+        savedAppointmentId = newData.id;
+      }
+
+      // Agendar notificação (1 dia antes)
+      await scheduleAppointmentNotification(
+        user.id,
+        savedAppointmentId,
+        data.doctor_name,
+        data.specialty,
+        new Date(data.date)
+      );
+
+      setIsLoading(false);
+
+      toast({
+        title: "Sucesso",
+        description: `Consulta ${appointmentId ? 'atualizada' : 'agendada'} com sucesso!`,
+      });
+      onSuccess();
+    } catch (error: any) {
+      setIsLoading(false);
       toast({
         title: "Erro",
-        description: "Não foi possível salvar a consulta.",
+        description: error.message || "Não foi possível salvar a consulta.",
         variant: "destructive",
       });
-      return;
     }
-
-    toast({
-      title: "Sucesso",
-      description: `Consulta ${appointmentId ? 'atualizada' : 'agendada'} com sucesso!`,
-    });
-    onSuccess();
   };
 
   return (

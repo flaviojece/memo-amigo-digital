@@ -220,12 +220,76 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_schedules: {
+        Row: {
+          appointment_id: string | null
+          body: string
+          click_action: string | null
+          created_at: string | null
+          icon: string | null
+          id: string
+          medication_id: string | null
+          scheduled_for: string
+          sent: boolean | null
+          sent_at: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          body: string
+          click_action?: string | null
+          created_at?: string | null
+          icon?: string | null
+          id?: string
+          medication_id?: string | null
+          scheduled_for: string
+          sent?: boolean | null
+          sent_at?: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          appointment_id?: string | null
+          body?: string
+          click_action?: string | null
+          created_at?: string | null
+          icon?: string | null
+          id?: string
+          medication_id?: string | null
+          scheduled_for?: string
+          sent?: boolean | null
+          sent_at?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_schedules_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_schedules_medication_id_fkey"
+            columns: ["medication_id"]
+            isOneToOne: false
+            referencedRelation: "medications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string | null
           email: string | null
           full_name: string | null
           id: string
+          notifications_enabled: boolean | null
           updated_at: string | null
         }
         Insert: {
@@ -233,6 +297,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id: string
+          notifications_enabled?: boolean | null
           updated_at?: string | null
         }
         Update: {
@@ -240,6 +305,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          notifications_enabled?: boolean | null
           updated_at?: string | null
         }
         Relationships: []

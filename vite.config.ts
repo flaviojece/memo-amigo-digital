@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => ({
     mode === 'development' && componentTagger(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'robots.txt'],
+      includeAssets: ['favicon.ico', 'robots.txt', 'sw.js'],
       manifest: {
         name: 'Dr. Memo - Cuidado Sênior',
         short_name: 'Dr. Memo',
@@ -58,6 +58,9 @@ export default defineConfig(({ mode }) => ({
             }
           }
         ]
+      },
+      devOptions: {
+        enabled: true
       }
     })
   ].filter(Boolean),

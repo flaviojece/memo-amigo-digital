@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, X } from "lucide-react";
+import { scheduleMedicationNotifications, deleteNotifications } from "@/lib/notificationScheduler";
 
 interface MedicationFormProps {
   medicationId?: string | null;
@@ -72,46 +73,71 @@ export function MedicationForm({ medicationId, onSuccess, onCancel }: Medication
     if (!user) return;
     setIsLoading(true);
 
-    const medicationData = {
-      name: data.name,
-      dosage: data.dosage,
-      frequency: data.frequency,
-      start_date: data.start_date,
-      end_date: data.end_date,
-      notes: data.notes,
-      active: data.active,
-      times: times as any,
-      user_id: user.id,
-    };
+    try {
+      const medicationData = {
+        name: data.name,
+        dosage: data.dosage,
+        frequency: data.frequency,
+        start_date: data.start_date,
+        end_date: data.end_date,
+        notes: data.notes,
+        active: data.active,
+        times: times as any,
+        user_id: user.id,
+      };
 
-    let error;
-    if (medicationId) {
-      ({ error } = await supabase
-        .from("medications")
-        .update(medicationData)
-        .eq("id", medicationId));
-    } else {
-      ({ error } = await supabase
-        .from("medications")
-        .insert([medicationData]));
-    }
+      let savedMedicationId: string;
 
-    setIsLoading(false);
+      if (medicationId) {
+        // Edição: deletar notificações antigas
+        await deleteNotifications('medication', medicationId);
+        
+        const { data: updatedData, error } = await supabase
+          .from("medications")
+          .update(medicationData)
+          .eq("id", medicationId)
+          .select()
+          .single();
 
-    if (error) {
+        if (error) throw error;
+        savedMedicationId = updatedData.id;
+      } else {
+        // Criação
+        const { data: newData, error } = await supabase
+          .from("medications")
+          .insert([medicationData])
+          .select()
+          .single();
+
+        if (error) throw error;
+        savedMedicationId = newData.id;
+      }
+
+      // Agendar notificações
+      await scheduleMedicationNotifications(
+        user.id,
+        savedMedicationId,
+        data.name,
+        times,
+        new Date(data.start_date),
+        data.end_date ? new Date(data.end_date) : undefined
+      );
+
+      setIsLoading(false);
+
+      toast({
+        title: "Sucesso",
+        description: `Medicamento ${medicationId ? 'atualizado' : 'cadastrado'} com sucesso!`,
+      });
+      onSuccess();
+    } catch (error: any) {
+      setIsLoading(false);
       toast({
         title: "Erro",
-        description: "Não foi possível salvar o medicamento.",
+        description: error.message || "Não foi possível salvar o medicamento.",
         variant: "destructive",
       });
-      return;
     }
-
-    toast({
-      title: "Sucesso",
-      description: `Medicamento ${medicationId ? 'atualizado' : 'cadastrado'} com sucesso!`,
-    });
-    onSuccess();
   };
 
   const addTime = () => {
