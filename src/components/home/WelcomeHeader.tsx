@@ -1,11 +1,9 @@
 import { Heart, Wifi, WifiOff } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
-interface WelcomeHeaderProps {
-  userName?: string;
-}
-
-export function WelcomeHeader({ userName = "Usuário" }: WelcomeHeaderProps) {
+export function WelcomeHeader() {
+  const { user } = useAuth();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
@@ -32,6 +30,17 @@ export function WelcomeHeader({ userName = "Usuário" }: WelcomeHeaderProps) {
     if (hour < 12) return "Bom dia";
     if (hour < 18) return "Boa tarde";
     return "Boa noite";
+  };
+
+  const getUserName = () => {
+    if (!user) return "Usuário";
+    
+    const fullName = user.user_metadata?.full_name;
+    if (fullName) {
+      return fullName.split(' ')[0];
+    }
+    
+    return user.email?.split('@')[0] || "Usuário";
   };
 
   const formatDate = () => {
@@ -77,7 +86,7 @@ export function WelcomeHeader({ userName = "Usuário" }: WelcomeHeaderProps) {
 
       <div className="text-center">
         <h2 className="text-senior-2xl font-bold mb-2">
-          {getGreeting()}, {userName}! 👋
+          {getGreeting()}, {getUserName()}! 👋
         </h2>
         <p className="text-white/90 text-senior-base capitalize mb-1">
           {formatDate()}

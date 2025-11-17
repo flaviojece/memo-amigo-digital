@@ -1,10 +1,13 @@
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { Navigation } from "@/components/ui/navigation";
 import { HomePage } from "@/components/home/HomePage";
 import { PlaceholderScreen } from "@/components/placeholder/PlaceholderScreen";
-import { Pill, Calendar, Users, Settings } from "lucide-react";
+import { Pill, Calendar, Users, Settings, LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
+  const { signOut } = useAuth();
   const [activeTab, setActiveTab] = useState("home");
 
   const renderContent = () => {
@@ -37,11 +40,18 @@ const Index = () => {
         );
       case "more":
         return (
-          <PlaceholderScreen
-            title="Configurações"
-            description="Personalize o Dr. Memo, gerencie sua conta e acesse funcionalidades extras como memórias e benefícios."
-            icon={<Settings className="w-16 h-16 text-muted-foreground" />}
-          />
+          <div className="flex flex-col items-center justify-center min-h-[60vh] p-8">
+            <h2 className="text-senior-2xl font-display text-foreground mb-8">Configurações</h2>
+            <Button
+              onClick={signOut}
+              variant="destructive"
+              size="lg"
+              className="min-h-[60px] min-w-[200px] text-senior-lg"
+            >
+              <LogOut className="mr-2" size={24} />
+              Sair
+            </Button>
+          </div>
         );
       default:
         return <HomePage />;

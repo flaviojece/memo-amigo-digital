@@ -37,7 +37,7 @@ export function HomePage() {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <WelcomeHeader userName="Maria" />
+      <WelcomeHeader />
       
       <main className="p-4 space-y-6">
         {/* Cards de ação rápida */}
