@@ -9,10 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Eye, EyeOff } from "lucide-react";
+import { PasswordStrengthMeter } from "@/components/auth/PasswordStrengthMeter";
 
 const Login = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordValue, setPasswordValue] = useState("");
   const { user, signIn, signUp } = useAuth();
   const navigate = useNavigate();
 
@@ -23,7 +26,7 @@ const Login = () => {
 
   const signupForm = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
-    defaultValues: { email: "", password: "", fullName: "" },
+    defaultValues: { email: "", password: "", fullName: "", confirmPassword: "" },
   });
 
   useEffect(() => {
@@ -173,6 +176,10 @@ const Login = () => {
                   className="h-14 text-lg pr-12"
                   placeholder="••••••••"
                   {...signupForm.register("password")}
+                  onChange={(e) => {
+                    signupForm.register("password").onChange(e);
+                    setPasswordValue(e.target.value);
+                  }}
                 />
                 <button
                   type="button"
@@ -182,9 +189,37 @@ const Login = () => {
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
+              
+              <PasswordStrengthMeter password={passwordValue} />
+              
               {signupForm.formState.errors.password && (
                 <p className="text-destructive text-sm mt-1">
                   {signupForm.formState.errors.password.message}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="confirm-password" className="text-lg">Confirmar Senha</Label>
+              <div className="relative mt-2">
+                <Input
+                  id="confirm-password"
+                  type={showConfirmPassword ? "text" : "password"}
+                  className="h-14 text-lg pr-12"
+                  placeholder="••••••••"
+                  {...signupForm.register("confirmPassword")}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
+              {signupForm.formState.errors.confirmPassword && (
+                <p className="text-destructive text-sm mt-1">
+                  {signupForm.formState.errors.confirmPassword.message}
                 </p>
               )}
             </div>
