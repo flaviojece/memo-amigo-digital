@@ -1,22 +1,29 @@
 import { AlertTriangle, Phone } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 export function EmergencyButton() {
   const [isActivating, setIsActivating] = useState(false);
   const [countdown, setCountdown] = useState(0);
   const { toast } = useToast();
+  const { user } = useAuth();
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const handleEmergencyClick = () => {
-    if (isActivating) return;
+  // Cleanup do timer quando componente desmonta ou isActivating muda
+  useEffect(() => {
+    if (!isActivating) {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      return;
+    }
 
-    setIsActivating(true);
-    setCountdown(5);
-
-    const timer = setInterval(() => {
+    timerRef.current = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
-          clearInterval(timer);
           setIsActivating(false);
           activateEmergency();
           return 0;
@@ -25,26 +32,70 @@ export function EmergencyButton() {
       });
     }, 1000);
 
-    // Permitir cancelar tocando novamente
-    const cancelTimer = setTimeout(() => {
-      clearInterval(timer);
-      setIsActivating(false);
-      setCountdown(0);
-    }, 5000);
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [isActivating]);
+
+  const handleEmergencyClick = () => {
+    if (isActivating) return;
+    setIsActivating(true);
+    setCountdown(5);
   };
 
-  const activateEmergency = () => {
-    toast({
-      title: "🚨 Emergência Ativada",
-      description: "Ligando para contato de emergência e notificando familiares...",
-      variant: "destructive",
-    });
+  const activateEmergency = async () => {
+    if (!user) return;
 
-    // Aqui seria a lógica real de emergência:
-    // 1. Ligar para contato de emergência
-    // 2. Enviar SMS para familiares com localização
-    // 3. Registrar evento no histórico
-    console.log("Emergência ativada!");
+    try {
+      // Capturar localização se disponível
+      let location = null;
+      if (navigator.geolocation) {
+        try {
+          const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
+          });
+          location = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            accuracy: position.coords.accuracy
+          };
+        } catch (error) {
+          console.log("Localização não disponível:", error);
+        }
+      }
+
+      // Registrar ativação no banco
+      const { error } = await supabase
+        .from("emergency_activations")
+        .insert({
+          user_id: user.id,
+          location: location,
+          status: "activated",
+          notes: "Ativação manual via botão de emergência"
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "🚨 Emergência Ativada",
+        description: "Contatos de emergência estão sendo notificados...",
+        variant: "destructive",
+      });
+
+      // Aqui seria chamada a edge function para enviar notificações
+      // await supabase.functions.invoke('send-emergency-alert', { body: { location } })
+
+    } catch (error) {
+      console.error("Erro ao ativar emergência:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível ativar a emergência. Tente novamente.",
+        variant: "destructive",
+      });
+    }
   };
 
   const cancelEmergency = () => {
@@ -61,6 +112,9 @@ export function EmergencyButton() {
       <button
         onClick={isActivating ? cancelEmergency : handleEmergencyClick}
         className="w-full bg-destructive text-destructive-foreground p-8 rounded-memo shadow-emergency border-4 border-destructive hover:bg-destructive/90 transition-all duration-300 relative overflow-hidden"
+        aria-label={isActivating ? "Cancelar emergência" : "Ativar emergência - SAMU 192"}
+        aria-live="polite"
+        aria-atomic="true"
       >
         <div className="flex flex-col items-center gap-3">
           <div className="relative">

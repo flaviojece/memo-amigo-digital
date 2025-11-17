@@ -16,7 +16,11 @@ const tabs = [
 
 export function Navigation({ activeTab, onTabChange }: NavigationProps) {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-card border-t-2 border-border shadow-card z-50">
+    <nav 
+      className="fixed bottom-0 left-0 right-0 bg-card border-t-2 border-border shadow-card z-50"
+      role="navigation"
+      aria-label="Navegação principal"
+    >
       <div className="flex justify-around items-center py-2 px-4 max-w-md mx-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon;
@@ -33,6 +37,8 @@ export function Navigation({ activeTab, onTabChange }: NavigationProps) {
                   ? "bg-primary text-primary-foreground shadow-button" 
                   : "text-muted-foreground hover:text-foreground hover:bg-muted"
               )}
+              aria-label={`${tab.label}${isActive ? ' (página atual)' : ''}`}
+              aria-current={isActive ? 'page' : undefined}
             >
               <Icon className="w-6 h-6 mb-1" />
               <span className="text-xs">{tab.label}</span>
