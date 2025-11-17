@@ -2,9 +2,11 @@ import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigation } from "@/components/ui/navigation";
 import { HomePage } from "@/components/home/HomePage";
-import { PlaceholderScreen } from "@/components/placeholder/PlaceholderScreen";
-import { Pill, Calendar, Users, Settings, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Medications from "./Medications";
+import Appointments from "./Appointments";
+import Contacts from "./Contacts";
 
 const Index = () => {
   const { signOut } = useAuth();
@@ -15,29 +17,11 @@ const Index = () => {
       case "home":
         return <HomePage />;
       case "meds":
-        return (
-          <PlaceholderScreen
-            title="Meus Remédios"
-            description="Aqui você poderá gerenciar todos os seus medicamentos, definir horários e receber lembretes personalizados."
-            icon={<Pill className="w-16 h-16 text-primary" />}
-          />
-        );
+        return <Medications />;
       case "appointments":
-        return (
-          <PlaceholderScreen
-            title="Minhas Consultas"
-            description="Organize sua agenda médica, agende consultas e receba lembretes automáticos."
-            icon={<Calendar className="w-16 h-16 text-secondary" />}
-          />
-        );
+        return <Appointments />;
       case "contacts":
-        return (
-          <PlaceholderScreen
-            title="Meus Contatos"
-            description="Mantenha os contatos da família, médicos e emergência sempre organizados e acessíveis."
-            icon={<Users className="w-16 h-16 text-accent" />}
-          />
-        );
+        return <Contacts />;
       case "more":
         return (
           <div className="flex flex-col items-center justify-center min-h-[60vh] p-8">

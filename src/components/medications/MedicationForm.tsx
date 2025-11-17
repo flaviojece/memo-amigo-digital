@@ -73,8 +73,14 @@ export function MedicationForm({ medicationId, onSuccess, onCancel }: Medication
     setIsLoading(true);
 
     const medicationData = {
-      ...data,
-      times,
+      name: data.name,
+      dosage: data.dosage,
+      frequency: data.frequency,
+      start_date: data.start_date,
+      end_date: data.end_date,
+      notes: data.notes,
+      active: data.active,
+      times: times as any,
       user_id: user.id,
     };
 
