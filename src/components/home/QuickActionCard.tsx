@@ -28,6 +28,7 @@ export function QuickActionCard({
         variant === "accent" && "bg-accent text-accent-foreground",
         className
       )}
+      aria-label={`${title}${subtitle ? ': ' + subtitle : ''}`}
     >
       <div className="flex items-start gap-4">
         <div className={cn(
