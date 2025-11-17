@@ -69,7 +69,13 @@ export function AppointmentForm({ appointmentId, onSuccess, onCancel }: Appointm
     setIsLoading(true);
 
     const appointmentData = {
-      ...data,
+      doctor_name: data.doctor_name,
+      specialty: data.specialty,
+      date: data.date,
+      location: data.location,
+      phone: data.phone,
+      notes: data.notes,
+      status: data.status,
       user_id: user.id,
     };
 

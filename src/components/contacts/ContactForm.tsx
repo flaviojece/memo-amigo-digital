@@ -73,7 +73,11 @@ export function ContactForm({ contactId, onSuccess, onCancel }: ContactFormProps
     setIsLoading(true);
 
     const contactData = {
-      ...data,
+      name: data.name,
+      relationship: data.relationship,
+      phone: data.phone,
+      email: data.email,
+      photo_url: data.photo_url,
       is_favorite: isFavorite,
       is_emergency: isEmergency,
       user_id: user.id,
