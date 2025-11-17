@@ -6,6 +6,7 @@ import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { InstallPrompt } from "@/components/mobile/InstallPrompt";
 import { NotificationSettings } from "@/components/notifications/NotificationSettings";
+import { GuardianManager } from "@/components/guardians/GuardianManager";
 import Medications from "./Medications";
 import Appointments from "./Appointments";
 import Contacts from "./Contacts";
@@ -31,6 +32,9 @@ const Index = () => {
             
             {/* Notificações */}
             <NotificationSettings />
+            
+            {/* Gestão de Cuidadores */}
+            <GuardianManager />
             
             {/* Botão de sair */}
             <Button

@@ -10,6 +10,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 // Lazy load pages for better mobile performance
 const Index = lazy(() => import("./pages/Index"));
 const Login = lazy(() => import("./pages/Login"));
+const AcceptInvitation = lazy(() => import("./pages/AcceptInvitation"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
           }>
             <Routes>
               <Route path="/login" element={<Login />} />
+              <Route path="/accept-invitation" element={<AcceptInvitation />} />
               <Route
                 path="/"
                 element={
