@@ -111,7 +111,7 @@ export function EmergencyButton() {
     <div className="relative">
       <button
         onClick={isActivating ? cancelEmergency : handleEmergencyClick}
-        className="w-full bg-destructive text-destructive-foreground p-10 rounded-memo shadow-emergency border-4 border-destructive hover:bg-destructive/90 transition-all duration-300 relative overflow-hidden min-h-[160px] animate-pulse-slow"
+        className="w-full bg-destructive text-destructive-foreground p-10 rounded-memo shadow-emergency border-4 border-destructive hover:bg-destructive/90 transition-all duration-300 relative overflow-hidden min-h-[160px]"
         aria-label={isActivating ? "Cancelar emergência" : "Ativar emergência - SAMU 192"}
         aria-live="polite"
         aria-atomic="true"
@@ -130,21 +130,21 @@ export function EmergencyButton() {
             </h3>
             
             {isActivating ? (
-              <div className="space-y-2">
-                <p className="text-senior-lg font-semibold">
+              <div className="space-y-1">
+                <p className="text-senior-base font-semibold">
                   Ativando em {countdown}s
                 </p>
-                <p className="text-senior-sm text-white/90">
+                <p className="text-senior-xs text-white/90">
                   Toque para cancelar
                 </p>
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <div className="flex items-center justify-center gap-2">
                   <Phone className="w-5 h-5" />
-                  <span className="text-senior-base">192 - SAMU</span>
+                  <span className="text-senior-sm">192 - SAMU</span>
                 </div>
-                <p className="text-senior-sm text-white/90">
+                <p className="text-senior-xs text-white/90">
                   Toque para ativar
                 </p>
               </div>

@@ -32,7 +32,7 @@ export function Navigation({ activeTab, onTabChange }: NavigationProps) {
               onClick={() => onTabChange(tab.id)}
               className={cn(
                 "flex flex-col items-center p-3 rounded-senior transition-all duration-300",
-                "min-w-[68px] min-h-[68px] text-senior-xs font-semibold touch-manipulation",
+                "min-w-[68px] min-h-[68px] font-semibold touch-manipulation",
                 isActive 
                   ? "bg-primary text-primary-foreground shadow-button" 
                   : "text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted/80"
