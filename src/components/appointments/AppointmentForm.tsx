@@ -12,10 +12,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   scheduleAppointmentNotification, 
-  deleteNotifications,
-  notifyGuardiansOfAppointmentCreated,
-  notifyGuardiansOfAppointmentUpcoming
+  deleteNotifications
 } from "@/lib/notificationScheduler";
+import { notifyGuardiansOfAppointmentCreated } from "@/lib/guardianNotifications";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 interface AppointmentFormProps {
   appointmentId?: string | null;
@@ -133,23 +134,14 @@ export function AppointmentForm({ appointmentId, onSuccess, onCancel }: Appointm
 
       // Se for nova consulta, notificar guardians
       if (!appointmentId) {
+        const formattedDate = format(new Date(data.date), "EEEE, dd/MM 'às' HH:mm", { locale: ptBR });
         await notifyGuardiansOfAppointmentCreated(
           user.id,
-          patientName,
           data.doctor_name,
           data.specialty,
-          new Date(data.date)
+          formattedDate
         );
       }
-
-      // Notificar guardians sobre lembrete (1 dia antes)
-      await notifyGuardiansOfAppointmentUpcoming(
-        user.id,
-        patientName,
-        data.doctor_name,
-        data.specialty,
-        new Date(data.date)
-      );
 
       setIsLoading(false);
 

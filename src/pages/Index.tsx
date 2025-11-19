@@ -18,7 +18,7 @@ const Index = () => {
   const renderContent = () => {
     switch (activeTab) {
       case "home":
-        return <HomePage />;
+        return <HomePage onTabChange={setActiveTab} />;
       case "meds":
         return <Medications />;
       case "appointments":
@@ -49,7 +49,7 @@ const Index = () => {
           </div>
         );
       default:
-        return <HomePage />;
+        return <HomePage onTabChange={setActiveTab} />;
     }
   };
 

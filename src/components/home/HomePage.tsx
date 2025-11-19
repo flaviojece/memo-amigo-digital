@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { WelcomeHeader } from "./WelcomeHeader";
 import { QuickActionCard } from "./QuickActionCard";
 import { EmergencyButton } from "./EmergencyButton";
+import { FavoriteContactsModal } from "./FavoriteContactsModal";
 import { 
   Pill, 
   Calendar, 
@@ -11,28 +13,110 @@ import {
   Heart
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { format, parseISO } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
-export function HomePage() {
+interface HomePageProps {
+  onTabChange: (tab: string) => void;
+}
+
+export function HomePage({ onTabChange }: HomePageProps) {
   const { toast } = useToast();
+  const { user } = useAuth();
+  const [showCallModal, setShowCallModal] = useState(false);
 
-  const handleCardClick = (action: string) => {
-    toast({
-      title: `${action} selecionado`,
-      description: "Esta funcionalidade será implementada em breve!",
-    });
+  // Buscar próximo medicamento
+  const { data: nextMedication } = useQuery({
+    queryKey: ["next-medication", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("medications")
+        .select("*")
+        .eq("user_id", user?.id)
+        .eq("active", true)
+        .lte("start_date", new Date().toISOString())
+        .or(`end_date.is.null,end_date.gte.${new Date().toISOString()}`)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single();
+      
+      if (error && error.code !== 'PGRST116') throw error;
+      return data;
+    },
+    enabled: !!user
+  });
+
+  // Buscar próxima consulta
+  const { data: nextAppointment } = useQuery({
+    queryKey: ["next-appointment", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("appointments")
+        .select("*")
+        .eq("user_id", user?.id)
+        .gte("date", new Date().toISOString())
+        .eq("status", "scheduled")
+        .order("date", { ascending: true })
+        .limit(1)
+        .single();
+      
+      if (error && error.code !== 'PGRST116') throw error;
+      return data;
+    },
+    enabled: !!user
+  });
+
+  // Buscar contatos favoritos
+  const { data: favoriteContacts } = useQuery({
+    queryKey: ["favorite-contacts", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("emergency_contacts")
+        .select("*")
+        .eq("user_id", user?.id)
+        .eq("is_favorite", true)
+        .order("name", { ascending: true });
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!user
+  });
+
+  // Buscar contagem de guardiões
+  const { data: guardiansCount } = useQuery({
+    queryKey: ["guardians-count", user?.id],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from("guardian_relationships")
+        .select("*", { count: 'exact', head: true })
+        .eq("patient_id", user?.id)
+        .eq("status", "active");
+      
+      if (error) throw error;
+      return count || 0;
+    },
+    enabled: !!user
+  });
+
+  // Calcular próximo horário do medicamento
+  const getNextMedicationTime = (med: any) => {
+    if (!med) return null;
+    const times = Array.isArray(med.times) ? med.times : JSON.parse(med.times || '[]');
+    const now = new Date();
+    const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+    
+    const nextTime = times.find((t: string) => t > currentTime);
+    return nextTime || times[0];
   };
 
-  // Dados mockados para demonstração
-  const nextMedicine = {
-    name: "Losartana 50mg",
-    time: "14:30",
-    remaining: "em 2 horas"
-  };
-
-  const nextAppointment = {
-    doctor: "Dr. Silva",
-    specialty: "Cardiologista", 
-    date: "Quinta-feira, 15:00"
+  // Formatar data da consulta
+  const formatAppointmentDate = (date: string) => {
+    const d = parseISO(date);
+    return format(d, "EEEE, dd/MM 'às' HH:mm", { locale: ptBR });
   };
 
   return (
@@ -49,23 +133,31 @@ export function HomePage() {
           <div className="grid gap-4">
             <QuickActionCard
               title="Próximo Remédio"
-              subtitle={`${nextMedicine.name} - ${nextMedicine.time} (${nextMedicine.remaining})`}
+              subtitle={
+                nextMedication
+                  ? `${nextMedication.name} - ${getNextMedicationTime(nextMedication) || 'Sem horários definidos'}`
+                  : "Nenhum medicamento cadastrado"
+              }
               icon={<Pill className="w-8 h-8 text-primary" />}
-              onClick={() => handleCardClick("Próximo Remédio")}
+              onClick={() => onTabChange("meds")}
             />
 
             <QuickActionCard
               title="Próxima Consulta"
-              subtitle={`${nextAppointment.doctor} - ${nextAppointment.specialty}\n${nextAppointment.date}`}
+              subtitle={
+                nextAppointment
+                  ? `${nextAppointment.doctor_name} - ${nextAppointment.specialty}\n${formatAppointmentDate(nextAppointment.date)}`
+                  : "Nenhuma consulta agendada"
+              }
               icon={<Stethoscope className="w-8 h-8 text-secondary" />}
-              onClick={() => handleCardClick("Próxima Consulta")}
+              onClick={() => onTabChange("appointments")}
             />
 
             <QuickActionCard
               title="Contatos Favoritos"
-              subtitle="Família e médicos sempre à mão"
+              subtitle={`${favoriteContacts?.length || 0} contatos favoritos`}
               icon={<Heart className="w-8 h-8 text-accent" />}
-              onClick={() => handleCardClick("Contatos Favoritos")}
+              onClick={() => setShowCallModal(true)}
               variant="accent"
             />
           </div>
@@ -81,25 +173,25 @@ export function HomePage() {
             <QuickActionCard
               title="Remédios"
               icon={<Pill className="w-6 h-6 text-primary" />}
-              onClick={() => handleCardClick("Remédios")}
+              onClick={() => onTabChange("meds")}
             />
 
             <QuickActionCard
               title="Consultas"
               icon={<Calendar className="w-6 h-6 text-secondary" />}
-              onClick={() => handleCardClick("Consultas")}
+              onClick={() => onTabChange("appointments")}
             />
 
             <QuickActionCard
               title="Ligar"
               icon={<Phone className="w-6 h-6 text-accent" />}
-              onClick={() => handleCardClick("Ligar")}
+              onClick={() => setShowCallModal(true)}
             />
 
             <QuickActionCard
               title="Horários"
               icon={<Clock className="w-6 h-6 text-muted-foreground" />}
-              onClick={() => handleCardClick("Horários")}
+              onClick={() => onTabChange("meds")}
             />
           </div>
         </section>
@@ -120,11 +212,16 @@ export function HomePage() {
               Última sincronização: Agora
             </p>
             <p className="text-senior-sm text-muted-foreground">
-              Familiares conectados: 2 anjos 👨‍👩‍👧‍👦
+              Familiares conectados: {guardiansCount || 0} anjos 👨‍👩‍👧‍👦
             </p>
           </div>
         </section>
       </main>
+
+      <FavoriteContactsModal 
+        open={showCallModal} 
+        onOpenChange={setShowCallModal} 
+      />
     </div>
   );
 }
