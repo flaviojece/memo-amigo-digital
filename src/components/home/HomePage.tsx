@@ -204,14 +204,14 @@ export function HomePage({ onTabChange }: HomePageProps) {
         <section>
           <button
             onClick={() => setShowLocationModal(true)}
-            className="w-full p-4 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 
+            className="w-full py-8 px-4 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 
                        text-white hover:from-blue-600 hover:to-blue-700 
                        transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]
                        shadow-md hover:shadow-lg flex items-center justify-center gap-3"
           >
-            <Radio className="w-5 h-5" />
-            <span className="font-semibold text-base">Compartilhar Minha Localização</span>
-            <MapPin className="w-5 h-5" />
+            <Radio className="w-6 h-6" />
+            <span className="font-semibold text-lg">Compartilhar Minha Localização</span>
+            <MapPin className="w-6 h-6" />
           </button>
         </section>
 
