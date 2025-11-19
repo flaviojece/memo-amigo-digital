@@ -68,25 +68,46 @@ export function EmergencyButton() {
       }
 
       // Registrar ativação no banco
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("emergency_activations")
         .insert({
           user_id: user.id,
           location: location,
           status: "activated",
           notes: "Ativação manual via botão de emergência"
-        });
+        })
+        .select()
+        .single();
 
       if (error) throw error;
+
+      // Chamar edge function para enviar alertas
+      try {
+        const { data: alertData, error: alertError } = await supabase.functions.invoke(
+          'send-emergency-alert',
+          {
+            body: {
+              userId: user.id,
+              activationId: data.id,
+              location
+            }
+          }
+        );
+
+        if (alertError) {
+          console.error('Erro ao enviar alertas:', alertError);
+        } else {
+          console.log('Alertas enviados:', alertData);
+        }
+      } catch (alertError) {
+        console.error('Erro ao chamar função de alerta:', alertError);
+      }
 
       toast({
         title: "🚨 Emergência Ativada",
         description: "Contatos de emergência estão sendo notificados...",
         variant: "destructive",
       });
-
-      // Aqui seria chamada a edge function para enviar notificações
-      // await supabase.functions.invoke('send-emergency-alert', { body: { location } })
 
     } catch (error) {
       console.error("Erro ao ativar emergência:", error);
