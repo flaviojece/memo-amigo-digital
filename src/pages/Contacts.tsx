@@ -7,8 +7,13 @@ import { Button } from "@/components/ui/button";
 import { ContactList } from "@/components/contacts/ContactList";
 import { ContactForm } from "@/components/contacts/ContactForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { BackToHomeButton } from "@/components/ui/BackToHomeButton";
 
-export default function Contacts() {
+interface ContactsProps {
+  onTabChange?: (tab: string) => void;
+}
+
+export default function Contacts({ onTabChange }: ContactsProps) {
   const { user } = useAuth();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -44,6 +49,10 @@ export default function Contacts() {
   return (
     <div className="min-h-screen bg-background pattern-bg pb-24">
       <div className="max-w-4xl mx-auto p-4">
+        {onTabChange && (
+          <BackToHomeButton onBackToHome={() => onTabChange("home")} />
+        )}
+        
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-senior-3xl font-bold text-foreground">
             👥 Meus Contatos

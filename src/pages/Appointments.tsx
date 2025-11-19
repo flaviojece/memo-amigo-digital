@@ -8,8 +8,13 @@ import { AppointmentList } from "@/components/appointments/AppointmentList";
 import { AppointmentForm } from "@/components/appointments/AppointmentForm";
 import { PatientSelector } from "@/components/guardians/PatientSelector";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { BackToHomeButton } from "@/components/ui/BackToHomeButton";
 
-export default function Appointments() {
+interface AppointmentsProps {
+  onTabChange?: (tab: string) => void;
+}
+
+export default function Appointments({ onTabChange }: AppointmentsProps) {
   const { user } = useAuth();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -47,7 +52,11 @@ export default function Appointments() {
   return (
     <div className="min-h-screen bg-background pattern-bg pb-24">
       <div className="max-w-4xl mx-auto p-4 space-y-4">
-        <PatientSelector 
+        {onTabChange && (
+          <BackToHomeButton onBackToHome={() => onTabChange("home")} />
+        )}
+        
+        <PatientSelector
           selectedPatientId={selectedPatientId}
           onSelectPatient={setSelectedPatientId}
         />

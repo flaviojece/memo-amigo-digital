@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { InstallPrompt } from "@/components/mobile/InstallPrompt";
 import { NotificationSettings } from "@/components/notifications/NotificationSettings";
 import { GuardianManager } from "@/components/guardians/GuardianManager";
+import { BackToHomeButton } from "@/components/ui/BackToHomeButton";
 import Medications from "./Medications";
 import Appointments from "./Appointments";
 import Contacts from "./Contacts";
@@ -20,14 +21,16 @@ const Index = () => {
       case "home":
         return <HomePage onTabChange={setActiveTab} />;
       case "meds":
-        return <Medications />;
+        return <Medications onTabChange={setActiveTab} />;
       case "appointments":
-        return <Appointments />;
+        return <Appointments onTabChange={setActiveTab} />;
       case "contacts":
-        return <Contacts />;
+        return <Contacts onTabChange={setActiveTab} />;
       case "more":
         return (
           <div className="flex flex-col min-h-[60vh] p-6 space-y-6">
+            <BackToHomeButton onBackToHome={() => setActiveTab("home")} />
+            
             <h2 className="text-senior-2xl font-display text-foreground">Configurações</h2>
             
             {/* Notificações */}
