@@ -74,7 +74,7 @@ export function WelcomeHeader() {
           </div>
           <div>
             <h1 className="text-senior-xl font-bold text-white text-center">Dr. Memo</h1>
-            <p className="text-white/70 text-senior-xs">Cuidando de você</p>
+            <p className="text-white/70 text-senior-xs text-center">Cuidando de você</p>
           </div>
         </div>
         
