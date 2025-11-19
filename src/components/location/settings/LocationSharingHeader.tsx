@@ -81,12 +81,12 @@ export function LocationSharingHeader({ settings }: LocationSharingHeaderProps) 
                 <MapPin className="w-12 h-12 text-green-500 animate-pulse flex-shrink-0" />
                 <div>
                   <div className="flex items-center gap-3 mb-2">
-                    <span className="font-bold text-senior-2xl">Compartilhando Localização</span>
-                    <Badge className="bg-green-500 text-white text-senior-base px-3 py-1">
+                    <span className="font-bold text-xl">Compartilhando Localização</span>
+                    <Badge className="bg-green-500 text-white px-3 py-1">
                       ATIVO
                     </Badge>
                   </div>
-                  <p className="text-senior-lg text-muted-foreground">
+                  <p className="text-base text-muted-foreground">
                     Seus anjos podem ver onde você está agora
                   </p>
                 </div>
@@ -96,12 +96,12 @@ export function LocationSharingHeader({ settings }: LocationSharingHeaderProps) 
                 <MapPin className="w-12 h-12 text-muted-foreground flex-shrink-0" />
                 <div>
                   <div className="flex items-center gap-3 mb-2">
-                    <span className="font-bold text-senior-2xl">Compartilhamento Pausado</span>
-                    <Badge variant="secondary" className="text-senior-base px-3 py-1">
+                    <span className="font-bold text-xl">Compartilhamento Pausado</span>
+                    <Badge variant="secondary" className="px-3 py-1">
                       PAUSADO
                     </Badge>
                   </div>
-                  <p className="text-senior-lg text-muted-foreground">
+                  <p className="text-base text-muted-foreground">
                     Ative para seus anjos verem sua localização
                   </p>
                 </div>
@@ -112,7 +112,7 @@ export function LocationSharingHeader({ settings }: LocationSharingHeaderProps) 
           <div className="flex flex-col items-center gap-3">
             <Label 
               htmlFor="sharing-toggle" 
-              className="text-senior-xl font-bold cursor-pointer"
+              className="text-lg font-bold cursor-pointer"
             >
               {isSharing ? "Pausar" : "Ativar"}
             </Label>
@@ -127,7 +127,7 @@ export function LocationSharingHeader({ settings }: LocationSharingHeaderProps) 
         </div>
 
         {toggleSharingMutation.isPending && (
-          <div className="mt-6 text-center text-senior-base text-muted-foreground">
+          <div className="mt-6 text-center text-sm text-muted-foreground">
             Atualizando configurações...
           </div>
         )}
