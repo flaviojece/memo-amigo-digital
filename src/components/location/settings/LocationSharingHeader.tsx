@@ -73,44 +73,64 @@ export function LocationSharingHeader({ settings }: LocationSharingHeaderProps) 
 
   return (
     <Card className="border-2">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+      <CardContent className="pt-8 pb-8">
+        <div className="flex items-center justify-between gap-6">
+          <div className="flex items-center gap-6 flex-1">
             {isSharing ? (
-              <MapPin className="w-6 h-6 text-green-500" />
+              <>
+                <MapPin className="w-12 h-12 text-green-500 animate-pulse flex-shrink-0" />
+                <div>
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="font-bold text-senior-2xl">Compartilhando Localização</span>
+                    <Badge className="bg-green-500 text-white text-senior-base px-3 py-1">
+                      ATIVO
+                    </Badge>
+                  </div>
+                  <p className="text-senior-lg text-muted-foreground">
+                    Seus anjos podem ver onde você está agora
+                  </p>
+                </div>
+              </>
             ) : (
-              <Pause className="w-6 h-6 text-muted-foreground" />
+              <>
+                <MapPin className="w-12 h-12 text-muted-foreground flex-shrink-0" />
+                <div>
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="font-bold text-senior-2xl">Compartilhamento Pausado</span>
+                    <Badge variant="secondary" className="text-senior-base px-3 py-1">
+                      PAUSADO
+                    </Badge>
+                  </div>
+                  <p className="text-senior-lg text-muted-foreground">
+                    Ative para seus anjos verem sua localização
+                  </p>
+                </div>
+              </>
             )}
-            <div>
-              <CardTitle className="text-senior-xl">Status do Compartilhamento</CardTitle>
-              <CardDescription>
-                {isSharing 
-                  ? "Seus guardiões podem ver sua localização em tempo real"
-                  : "Compartilhamento pausado. Seus guardiões não podem ver sua localização"}
-              </CardDescription>
-            </div>
           </div>
-          <Badge 
-            variant={isSharing ? "default" : "secondary"}
-            className={`text-lg px-4 py-2 ${isSharing ? "bg-green-500" : ""}`}
-          >
-            {isSharing ? "ATIVO" : "PAUSADO"}
-          </Badge>
+
+          <div className="flex flex-col items-center gap-3">
+            <Label 
+              htmlFor="sharing-toggle" 
+              className="text-senior-xl font-bold cursor-pointer"
+            >
+              {isSharing ? "Pausar" : "Ativar"}
+            </Label>
+            <Switch
+              id="sharing-toggle"
+              checked={isSharing}
+              onCheckedChange={(checked) => toggleSharingMutation.mutate(checked)}
+              disabled={toggleSharingMutation.isPending}
+              className="data-[state=checked]:bg-green-500 scale-150"
+            />
+          </div>
         </div>
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
-          <Label htmlFor="sharing-toggle" className="text-senior-lg cursor-pointer">
-            {isSharing ? "Desativar compartilhamento" : "Ativar compartilhamento"}
-          </Label>
-          <Switch
-            id="sharing-toggle"
-            checked={isSharing}
-            onCheckedChange={(checked) => toggleSharingMutation.mutate(checked)}
-            disabled={toggleSharingMutation.isPending}
-            className="scale-125"
-          />
-        </div>
+
+        {toggleSharingMutation.isPending && (
+          <div className="mt-6 text-center text-senior-base text-muted-foreground">
+            Atualizando configurações...
+          </div>
+        )}
       </CardContent>
     </Card>
   );
