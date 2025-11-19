@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import Map, { Marker, Source, Layer, NavigationControl } from "react-map-gl";
+import mapboxgl from "mapbox-gl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -19,12 +19,9 @@ interface LiveLocationMapProps {
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
 export function LiveLocationMap({ patientId, onClose }: LiveLocationMapProps) {
-  const mapRef = useRef<any>(null);
-  const [viewport, setViewport] = useState({
-    latitude: -23.5505,
-    longitude: -46.6333,
-    zoom: 15,
-  });
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const map = useRef<mapboxgl.Map | null>(null);
+  const markerRef = useRef<mapboxgl.Marker | null>(null);
   const [location, setLocation] = useState<any>(null);
   const [history, setHistory] = useState<any[]>([]);
 
@@ -66,6 +63,104 @@ export function LiveLocationMap({ patientId, onClose }: LiveLocationMapProps) {
     setHistory(data || []);
   };
 
+  // Inicializar mapa
+  useEffect(() => {
+    if (!mapContainer.current || map.current) return;
+
+    if (!MAPBOX_TOKEN) {
+      console.error("VITE_MAPBOX_ACCESS_TOKEN não configurado");
+      return;
+    }
+
+    mapboxgl.accessToken = MAPBOX_TOKEN;
+
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: "mapbox://styles/mapbox/streets-v12",
+      center: [-46.6333, -23.5505],
+      zoom: 15,
+    });
+
+    map.current.addControl(new mapboxgl.NavigationControl(), "top-right");
+
+    return () => {
+      map.current?.remove();
+    };
+  }, []);
+
+  // Atualizar marker e linha de histórico
+  useEffect(() => {
+    if (!map.current || !location) return;
+
+    // Atualizar ou criar marker
+    if (markerRef.current) {
+      markerRef.current.setLngLat([location.longitude, location.latitude]);
+    } else {
+      const el = document.createElement('div');
+      el.className = 'relative';
+      el.innerHTML = `
+        <div class="absolute -top-4 -left-4 w-8 h-8 bg-blue-500 rounded-full animate-ping opacity-75"></div>
+        <div class="relative bg-blue-600 rounded-full p-2 shadow-lg border-2 border-white">
+          <svg class="w-8 h-8 text-white" fill="white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+      `;
+      markerRef.current = new mapboxgl.Marker({ element: el })
+        .setLngLat([location.longitude, location.latitude])
+        .addTo(map.current);
+    }
+
+    // Centralizar mapa
+    map.current.flyTo({
+      center: [location.longitude, location.latitude],
+      zoom: 15,
+    });
+
+    // Adicionar linha de histórico
+    if (history.length > 1) {
+      const coordinates = history.map((h) => [h.longitude, h.latitude]);
+
+      if (map.current.getSource("route")) {
+        (map.current.getSource("route") as mapboxgl.GeoJSONSource).setData({
+          type: "Feature",
+          properties: {},
+          geometry: {
+            type: "LineString",
+            coordinates,
+          },
+        });
+      } else {
+        map.current.addSource("route", {
+          type: "geojson",
+          data: {
+            type: "Feature",
+            properties: {},
+            geometry: {
+              type: "LineString",
+              coordinates,
+            },
+          },
+        });
+
+        map.current.addLayer({
+          id: "route",
+          type: "line",
+          source: "route",
+          layout: {
+            "line-join": "round",
+            "line-cap": "round",
+          },
+          paint: {
+            "line-color": "#3b82f6",
+            "line-width": 4,
+            "line-opacity": 0.7,
+          },
+        });
+      }
+    }
+  }, [location, history]);
+
   // Subscribe em atualizações em tempo real
   useEffect(() => {
     // Buscar localização inicial
@@ -78,11 +173,6 @@ export function LiveLocationMap({ patientId, onClose }: LiveLocationMapProps) {
 
       if (data) {
         setLocation(data);
-        setViewport((prev) => ({
-          ...prev,
-          latitude: data.latitude as number,
-          longitude: data.longitude as number,
-        }));
       }
     };
 
@@ -104,13 +194,6 @@ export function LiveLocationMap({ patientId, onClose }: LiveLocationMapProps) {
           const newLocation = payload.new as any;
           setLocation(newLocation);
 
-          // Centralizar mapa na nova posição
-          setViewport((prev) => ({
-            ...prev,
-            latitude: newLocation.latitude as number,
-            longitude: newLocation.longitude as number,
-          }));
-
           // Adicionar ao histórico local
           setHistory((prev) => [
             ...prev,
@@ -130,29 +213,24 @@ export function LiveLocationMap({ patientId, onClose }: LiveLocationMapProps) {
   }, [patientId]);
 
   const handleRecenter = () => {
-    if (location) {
-      setViewport((prev) => ({
-        ...prev,
-        latitude: location.latitude,
-        longitude: location.longitude,
-        zoom: 16,
-      }));
-
-      // Animar mapa
-      mapRef.current?.flyTo({
+    if (map.current && location) {
+      map.current.flyTo({
         center: [location.longitude, location.latitude],
         zoom: 16,
-        duration: 1000,
       });
     }
   };
 
   const handleZoomIn = () => {
-    setViewport((prev) => ({ ...prev, zoom: Math.min(prev.zoom + 1, 20) }));
+    if (map.current) {
+      map.current.zoomIn();
+    }
   };
 
   const handleZoomOut = () => {
-    setViewport((prev) => ({ ...prev, zoom: Math.max(prev.zoom - 1, 1) }));
+    if (map.current) {
+      map.current.zoomOut();
+    }
   };
 
   if (!MAPBOX_TOKEN) {
@@ -183,61 +261,8 @@ export function LiveLocationMap({ patientId, onClose }: LiveLocationMapProps) {
 
   return (
     <div className="relative h-screen w-full">
-      {/* Mapa */}
-      <Map
-        ref={mapRef}
-        {...viewport}
-        onMove={(evt) => setViewport(evt.viewState)}
-        mapStyle="mapbox://styles/mapbox/streets-v12"
-        mapboxAccessToken={MAPBOX_TOKEN}
-        style={{ width: "100%", height: "100%" }}
-      >
-        <NavigationControl position="top-right" />
-
-        {/* Marcador da posição atual */}
-        {location && (
-          <Marker
-            latitude={location.latitude}
-            longitude={location.longitude}
-            anchor="bottom"
-          >
-            <div className="relative">
-              {/* Pulso animado */}
-              <div className="absolute -top-4 -left-4 w-8 h-8 bg-blue-500 rounded-full animate-ping opacity-75" />
-              
-              {/* Ícone principal */}
-              <div className="relative bg-blue-600 rounded-full p-2 shadow-lg border-2 border-white">
-                <NavigationIcon className="w-8 h-8 text-white" fill="white" />
-              </div>
-            </div>
-          </Marker>
-        )}
-
-        {/* Trajeto recente (polyline) */}
-        {history.length > 1 && (
-          <Source
-            type="geojson"
-            data={{
-              type: "Feature",
-              properties: {},
-              geometry: {
-                type: "LineString",
-                coordinates: history.map((h) => [h.longitude, h.latitude]),
-              },
-            }}
-          >
-            <Layer
-              id="route"
-              type="line"
-              paint={{
-                "line-color": "#3b82f6",
-                "line-width": 4,
-                "line-opacity": 0.7,
-              }}
-            />
-          </Source>
-        )}
-      </Map>
+      {/* Container do Mapa */}
+      <div ref={mapContainer} className="absolute inset-0" />
 
       {/* Botão Voltar */}
       <Button
