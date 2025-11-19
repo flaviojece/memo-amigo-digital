@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigation } from "@/components/ui/navigation";
 import { HomePage } from "@/components/home/HomePage";
+import { PatientsLocationList } from "@/components/location/PatientsLocationList";
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { InstallPrompt } from "@/components/mobile/InstallPrompt";
@@ -26,6 +27,8 @@ const Index = () => {
         return <Appointments onTabChange={setActiveTab} />;
       case "contacts":
         return <Contacts onTabChange={setActiveTab} />;
+      case "location":
+        return <PatientsLocationList />;
       case "more":
         return (
           <div className="flex flex-col min-h-[60vh] p-6 space-y-6">

@@ -3,6 +3,7 @@ import { WelcomeHeader } from "./WelcomeHeader";
 import { QuickActionCard } from "./QuickActionCard";
 import { EmergencyButton } from "./EmergencyButton";
 import { FavoriteContactsModal } from "./FavoriteContactsModal";
+import { LocationSharingModal } from "@/components/location/LocationSharingModal";
 import { 
   Pill, 
   Calendar, 
@@ -10,7 +11,9 @@ import {
   Clock,
   Stethoscope,
   Phone,
-  Heart
+  Heart,
+  MapPin,
+  Radio
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useQuery } from "@tanstack/react-query";
@@ -27,6 +30,7 @@ export function HomePage({ onTabChange }: HomePageProps) {
   const { toast } = useToast();
   const { user } = useAuth();
   const [showCallModal, setShowCallModal] = useState(false);
+  const [showLocationModal, setShowLocationModal] = useState(false);
 
   // Buscar próximo medicamento
   const { data: nextMedication } = useQuery({
@@ -221,6 +225,12 @@ export function HomePage({ onTabChange }: HomePageProps) {
       <FavoriteContactsModal 
         open={showCallModal} 
         onOpenChange={setShowCallModal} 
+      />
+
+      {/* Modal de compartilhamento de localização */}
+      <LocationSharingModal
+        open={showLocationModal}
+        onOpenChange={setShowLocationModal}
       />
     </div>
   );
