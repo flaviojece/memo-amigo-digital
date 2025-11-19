@@ -73,7 +73,7 @@ export function WelcomeHeader() {
             <Heart className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h1 className="text-senior-xl font-bold text-white">Dr. Memo</h1>
+            <h1 className="text-senior-xl font-bold text-white text-center">Dr. Memo</h1>
             <p className="text-white/70 text-senior-xs">Cuidando de você</p>
           </div>
         </div>
