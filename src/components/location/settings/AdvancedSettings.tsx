@@ -17,22 +17,22 @@ export function AdvancedSettings({ settings, lastLocation }: AdvancedSettingsPro
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
       <CollapsibleTrigger asChild>
         <Button
-          variant="outline"
-          size="lg"
-          className="w-full justify-between h-auto py-3"
+          variant="ghost"
+          size="sm"
+          className="w-full justify-between text-muted-foreground hover:text-foreground"
         >
           <div className="flex items-center gap-2">
-            <Settings className="w-5 h-5" />
-            <span>Configurações Avançadas</span>
+            <Settings className="w-4 h-4" />
+            <span className="text-sm">Configurações Avançadas</span>
           </div>
           {isOpen ? (
-            <ChevronUp className="w-5 h-5" />
+            <ChevronUp className="w-4 h-4" />
           ) : (
-            <ChevronDown className="w-5 h-5" />
+            <ChevronDown className="w-4 h-4" />
           )}
         </Button>
       </CollapsibleTrigger>
-      <CollapsibleContent className="space-y-6 mt-6">
+      <CollapsibleContent className="space-y-4 mt-4">
         <PrivacyControls settings={settings} />
         <TechnicalInfo lastLocation={lastLocation} settings={settings} />
       </CollapsibleContent>

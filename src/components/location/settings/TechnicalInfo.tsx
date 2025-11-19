@@ -14,30 +14,29 @@ export function TechnicalInfo({ lastLocation, settings }: TechnicalInfoProps) {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <Activity className="w-5 h-5" />
+    <Card className="border shadow-sm">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-base font-semibold">
+          <Activity className="w-4 h-4" />
           Informações Técnicas
         </CardTitle>
-        <CardDescription className="text-sm">
-          Dados da última atualização de localização
+        <CardDescription className="text-xs">
+          Dados da última atualização
         </CardDescription>
       </CardHeader>
       <CardContent>
         {!lastLocation ? (
-          <div className="text-center py-8 text-muted-foreground">
-            <MapPin className="w-10 h-10 mx-auto mb-2 opacity-50" />
-            <p className="text-sm">Aguardando primeira atualização...</p>
-            <p className="text-xs">A localização será compartilhada em breve</p>
+          <div className="text-center py-6 text-muted-foreground">
+            <MapPin className="w-8 h-8 mx-auto mb-2 opacity-40" />
+            <p className="text-xs">Aguardando atualização...</p>
           </div>
         ) : (
-          <div className="grid gap-4">
-            <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+          <div className="grid gap-2">
+            <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
               <div className="flex items-center gap-3">
                 <Clock className="w-4 h-4 text-muted-foreground" />
                 <div>
-                  <p className="font-medium text-sm">Última Atualização</p>
+                  <p className="font-medium text-xs">Última Atualização</p>
                   <p className="text-xs text-muted-foreground">
                     {formatDistanceToNow(new Date(lastLocation.updated_at), {
                       addSuffix: true,
@@ -49,7 +48,7 @@ export function TechnicalInfo({ lastLocation, settings }: TechnicalInfoProps) {
             </div>
 
             {lastLocation.battery_level !== null && (
-              <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                 <div className="flex items-center gap-3">
                   <Battery className={`w-4 h-4 ${
                     lastLocation.battery_level > 0.5 
@@ -59,7 +58,7 @@ export function TechnicalInfo({ lastLocation, settings }: TechnicalInfoProps) {
                         : "text-red-500"
                   }`} />
                   <div>
-                    <p className="font-medium text-sm">Bateria</p>
+                    <p className="font-medium text-xs">Bateria</p>
                     <p className="text-xs text-muted-foreground">
                       {Math.round(lastLocation.battery_level * 100)}%
                     </p>
@@ -68,12 +67,10 @@ export function TechnicalInfo({ lastLocation, settings }: TechnicalInfoProps) {
               </div>
             )}
 
-            <div className="p-4 bg-muted/50 rounded-lg">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">
-                  {lastLocation.is_moving ? "🚶 Em movimento" : "🧍 Parado"}
-                </span>
-              </div>
+            <div className="p-3 bg-muted/50 rounded-lg">
+              <span className="text-xs font-medium">
+                {lastLocation.is_moving ? "🚶 Em movimento" : "🧍 Parado"}
+              </span>
             </div>
           </div>
         )}
