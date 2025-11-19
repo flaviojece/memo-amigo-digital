@@ -68,7 +68,7 @@ export function WelcomeHeader() {
   return (
     <header className="bg-gradient-warm text-primary-foreground p-6 rounded-b-memo shadow-card">
       <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
             <Heart className="w-6 h-6 text-white" />
           </div>
@@ -78,7 +78,7 @@ export function WelcomeHeader() {
           </div>
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <div className="flex items-center gap-1 text-white/70 text-senior-xs">
             {isOnline ? <Wifi className="w-4 h-4" /> : <WifiOff className="w-4 h-4" />}
             <span className="hidden sm:inline">

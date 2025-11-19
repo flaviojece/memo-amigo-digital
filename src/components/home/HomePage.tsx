@@ -207,7 +207,7 @@ export function HomePage({ onTabChange }: HomePageProps) {
             className="w-full min-h-[70px] px-4 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 
                        text-white hover:from-blue-600 hover:to-blue-700 
                        transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]
-                       shadow-md hover:shadow-lg flex items-center justify-center gap-3"
+                       shadow-md hover:shadow-lg flex items-center justify-center gap-4"
           >
             <Radio className="w-6 h-6" />
             <span className="font-semibold text-lg">Compartilhar Minha Localização</span>

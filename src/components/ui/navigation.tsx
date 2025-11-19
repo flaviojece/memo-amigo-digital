@@ -40,7 +40,7 @@ export function Navigation({ activeTab, onTabChange }: NavigationProps) {
               aria-label={`${tab.label}${isActive ? ' (página atual)' : ''}`}
               aria-current={isActive ? 'page' : undefined}
             >
-              <Icon className="w-6 h-6 mb-1" />
+              <Icon className="w-6 h-6 mb-2" />
               <span className="text-xs">{tab.label}</span>
             </button>
           );

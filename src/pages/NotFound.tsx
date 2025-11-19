@@ -28,7 +28,7 @@ const NotFound = () => {
           
           <Button asChild size="lg" className="w-full text-senior-lg">
             <Link to="/">
-              <Home className="w-6 h-6 mr-2" />
+              <Home className="w-6 h-6 mr-3" />
               Voltar para Início
             </Link>
           </Button>
