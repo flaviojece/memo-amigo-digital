@@ -173,7 +173,7 @@ export function GuardiansManager() {
                   {receivedInvitations.map((invitation) => (
                     <div key={invitation.id} className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-900">
                       <div className="flex-1">
-                        <p className="font-medium text-sm">{invitation.patient_name || invitation.patient_email}</p>
+                        <p className="font-medium text-sm">{invitation.patient?.full_name || invitation.patient?.email}</p>
                         <p className="text-xs text-muted-foreground">Quer que você seja seu anjo</p>
                       </div>
                       <div className="flex gap-2">
