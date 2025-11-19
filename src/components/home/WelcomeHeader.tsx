@@ -1,9 +1,16 @@
-import { Heart, Wifi, WifiOff } from "lucide-react";
+import { Heart, Wifi, WifiOff, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function WelcomeHeader() {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
@@ -71,15 +78,32 @@ export function WelcomeHeader() {
           </div>
         </div>
         
-        <div className="flex items-center gap-2 text-white/90">
-          {isOnline ? (
-            <Wifi className="w-5 h-5" />
-          ) : (
-            <WifiOff className="w-5 h-5" />
-          )}
-          <span className="text-senior-xs">
-            {isOnline ? "Online" : "Offline"}
-          </span>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 text-white/70 text-senior-xs">
+            {isOnline ? <Wifi className="w-4 h-4" /> : <WifiOff className="w-4 h-4" />}
+            <span className="hidden sm:inline">
+              {isOnline ? "Online" : "Offline"}
+            </span>
+          </div>
+          
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={signOut}
+                  className="h-8 w-8 text-white/70 hover:text-white hover:bg-white/10 transition-all"
+                  aria-label="Sair"
+                >
+                  <LogOut className="w-4 h-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Sair</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
 
