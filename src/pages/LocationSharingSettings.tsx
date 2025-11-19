@@ -50,7 +50,7 @@ export default function LocationSharingSettings() {
       <div className="flex items-center justify-center min-h-screen bg-background">
         <div className="text-center space-y-4">
           <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-senior-lg text-muted-foreground">Carregando...</p>
+          <p className="text-base text-muted-foreground">Carregando...</p>
         </div>
       </div>
     );
@@ -70,7 +70,7 @@ export default function LocationSharingSettings() {
             <ArrowLeft className="w-5 h-5" />
             Voltar
           </Button>
-          <h1 className="text-senior-2xl font-bold text-foreground">
+          <h1 className="text-2xl font-bold text-foreground">
             Configurações de Compartilhamento
           </h1>
         </div>

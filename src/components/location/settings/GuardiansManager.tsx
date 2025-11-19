@@ -67,20 +67,19 @@ export function GuardiansManager() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="flex items-center gap-3 text-senior-2xl">
-                <Users className="w-8 h-8" />
+              <CardTitle className="flex items-center gap-3 text-xl">
+                <Users className="w-6 h-6" />
                 Meus Anjos/Guardiões
               </CardTitle>
-              <CardDescription className="text-senior-base mt-1">
+              <CardDescription className="text-sm mt-1">
                 Pessoas que podem ver sua localização
               </CardDescription>
             </div>
             <Button
               onClick={() => setShowInviteForm(!showInviteForm)}
-              size="lg"
-              className="gap-2 text-senior-base px-6"
+              className="gap-2"
             >
-              <UserPlus className="w-5 h-5" />
+              <UserPlus className="w-4 h-4" />
               Adicionar Anjo
             </Button>
           </div>
@@ -90,7 +89,7 @@ export function GuardiansManager() {
           {showInviteForm && (
             <form onSubmit={handleSendInvite} className="p-4 bg-muted/50 rounded-lg space-y-4">
               <div>
-                <Label htmlFor="email" className="text-senior-base">Email do guardião</Label>
+                <Label htmlFor="email">Email do guardião</Label>
                 <Input
                   id="email"
                   type="email"
@@ -98,13 +97,12 @@ export function GuardiansManager() {
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
                   required
-                  className="text-senior-base"
                 />
               </div>
               <div>
-                <Label htmlFor="relationship" className="text-senior-base">Tipo de relacionamento</Label>
+                <Label htmlFor="relationship">Tipo de relacionamento</Label>
                 <Select value={relationshipType} onValueChange={setRelationshipType} required>
-                  <SelectTrigger id="relationship" className="text-senior-base">
+                  <SelectTrigger id="relationship">
                     <SelectValue placeholder="Selecione..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -137,9 +135,9 @@ export function GuardiansManager() {
           {/* Lista de guardiões ativos */}
           {guardians.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
-              <Users className="w-16 h-16 mx-auto mb-4 opacity-50" />
-              <p className="text-senior-lg font-semibold">Nenhum anjo cadastrado ainda</p>
-              <p className="text-senior-base mt-2">Adicione pessoas de confiança para compartilhar sua localização</p>
+              <Users className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <p className="text-base font-semibold">Nenhum anjo cadastrado ainda</p>
+              <p className="text-sm mt-2">Adicione pessoas de confiança para compartilhar sua localização</p>
             </div>
           ) : (
             <div className="grid gap-4">
@@ -153,13 +151,13 @@ export function GuardiansManager() {
                       <Users className="w-7 h-7 text-primary" />
                     </div>
                     <div>
-                      <p className="font-bold text-senior-lg">{guardian.guardian_name}</p>
-                      <p className="text-senior-base text-muted-foreground">{guardian.guardian_email}</p>
+                      <p className="font-bold text-base">{guardian.guardian_name}</p>
+                      <p className="text-sm text-muted-foreground">{guardian.guardian_email}</p>
                       <div className="flex gap-2 mt-2">
-                        <Badge variant="outline" className="text-senior-sm px-2 py-1">
+                        <Badge variant="outline" className="text-xs">
                           {guardian.relationship_type || "Guardião"}
                         </Badge>
-                        <Badge variant="secondary" className="text-senior-sm px-2 py-1">
+                        <Badge variant="secondary" className="text-xs">
                           {guardian.access_level}
                         </Badge>
                       </div>
@@ -167,14 +165,14 @@ export function GuardiansManager() {
                   </div>
                   <Button
                     variant="destructive"
-                    size="lg"
+                    size="sm"
                     onClick={() => {
                       setSelectedRelationship(guardian.id);
                       setRevokeDialogOpen(true);
                     }}
                     className="gap-2"
                   >
-                    <Trash2 className="w-5 h-5" />
+                    <Trash2 className="w-4 h-4" />
                     Remover
                   </Button>
                 </div>
@@ -188,11 +186,11 @@ export function GuardiansManager() {
       {(sentInvitations.length > 0 || receivedInvitations.length > 0) && (
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-senior-xl">
-              <Mail className="w-6 h-6" />
+            <CardTitle className="flex items-center gap-2 text-xl">
+              <Mail className="w-5 h-5" />
               Convites Pendentes
             </CardTitle>
-            <CardDescription className="text-senior-sm">
+            <CardDescription className="text-sm">
               Convites enviados e recebidos aguardando resposta
             </CardDescription>
           </CardHeader>
@@ -200,7 +198,7 @@ export function GuardiansManager() {
             {/* Convites Enviados */}
             {sentInvitations.length > 0 && (
               <div>
-                <h4 className="font-semibold text-senior-base mb-3 flex items-center gap-2">
+                <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
                   <Clock className="w-4 h-4" />
                   Enviados por mim
                 </h4>
@@ -211,8 +209,8 @@ export function GuardiansManager() {
                       className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
                     >
                       <div>
-                        <p className="font-medium text-senior-base">{invitation.invited_email}</p>
-                        <p className="text-senior-sm text-muted-foreground">
+                        <p className="font-medium text-sm">{invitation.invited_email}</p>
+                        <p className="text-xs text-muted-foreground">
                           Enviado em {format(new Date(invitation.created_at), "dd/MM/yyyy", { locale: ptBR })}
                         </p>
                       </div>
@@ -236,7 +234,7 @@ export function GuardiansManager() {
             {/* Convites Recebidos */}
             {receivedInvitations.length > 0 && (
               <div>
-                <h4 className="font-semibold text-senior-base mb-3">Recebidos</h4>
+                <h4 className="font-semibold text-sm mb-3">Recebidos</h4>
                 <div className="space-y-2">
                   {receivedInvitations.map((invitation) => (
                     <div
@@ -244,10 +242,10 @@ export function GuardiansManager() {
                       className="p-3 bg-primary/5 border-2 border-primary/20 rounded-lg space-y-3"
                     >
                       <div>
-                        <p className="font-semibold text-senior-base">
+                        <p className="font-semibold text-sm">
                           {invitation.patient?.full_name || "Paciente"} quer que você seja um guardião
                         </p>
-                        <p className="text-senior-sm text-muted-foreground">
+                        <p className="text-xs text-muted-foreground">
                           {invitation.patient?.email || invitation.invited_email}
                         </p>
                       </div>

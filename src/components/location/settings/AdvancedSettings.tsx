@@ -19,7 +19,7 @@ export function AdvancedSettings({ settings, lastLocation }: AdvancedSettingsPro
         <Button
           variant="outline"
           size="lg"
-          className="w-full justify-between text-senior-base h-auto py-4"
+          className="w-full justify-between h-auto py-3"
         >
           <div className="flex items-center gap-2">
             <Settings className="w-5 h-5" />
