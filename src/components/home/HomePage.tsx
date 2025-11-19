@@ -200,6 +200,21 @@ export function HomePage({ onTabChange }: HomePageProps) {
           </div>
         </section>
 
+        {/* Botão de Compartilhar Localização */}
+        <section>
+          <button
+            onClick={() => setShowLocationModal(true)}
+            className="w-full p-4 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 
+                       text-white hover:from-blue-600 hover:to-blue-700 
+                       transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]
+                       shadow-md hover:shadow-lg flex items-center justify-center gap-3"
+          >
+            <Radio className="w-5 h-5" />
+            <span className="font-semibold text-base">Compartilhar Minha Localização</span>
+            <MapPin className="w-5 h-5" />
+          </button>
+        </section>
+
         {/* Botão de Emergência */}
         <section className="space-y-4">
           <h2 className="text-senior-xl font-bold text-foreground mb-4">
