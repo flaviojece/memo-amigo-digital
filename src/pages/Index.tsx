@@ -3,8 +3,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Navigation } from "@/components/ui/navigation";
 import { HomePage } from "@/components/home/HomePage";
 import { PatientsLocationList } from "@/components/location/PatientsLocationList";
-import { LogOut } from "lucide-react";
+import { LogOut, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { InstallPrompt } from "@/components/mobile/InstallPrompt";
 import { NotificationSettings } from "@/components/notifications/NotificationSettings";
 import { GuardianManager } from "@/components/guardians/GuardianManager";
@@ -28,13 +29,28 @@ const Index = () => {
       case "contacts":
         return <Contacts onTabChange={setActiveTab} />;
       case "location":
-        return <PatientsLocationList />;
+        return <PatientsLocationList onBackToMore={() => setActiveTab("more")} />;
       case "more":
         return (
           <div className="flex flex-col min-h-[60vh] p-6 space-y-6">
             <BackToHomeButton onBackToHome={() => setActiveTab("home")} />
             
             <h2 className="text-senior-2xl font-display text-foreground">Configurações</h2>
+            
+            {/* Localização dos Pacientes */}
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setActiveTab("location")}>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-3 text-senior-lg">
+                  <MapPin className="w-6 h-6 text-primary" />
+                  Localização dos Pacientes
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground text-senior-sm">
+                  Acompanhe a localização em tempo real dos pacientes sob seus cuidados
+                </p>
+              </CardContent>
+            </Card>
             
             {/* Notificações */}
             <NotificationSettings />
