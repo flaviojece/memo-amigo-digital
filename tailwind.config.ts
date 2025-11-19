@@ -30,6 +30,13 @@ export default {
 				ring: 'hsl(var(--ring))',
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
+				radio: {
+					'wood': 'hsl(33 31% 41%)',      // #8B6F47 - Marrom madeira escuro
+					'wood-light': 'hsl(33 27% 52%)', // #A88A5C - Tom mais claro
+					'metal': 'hsl(33 26% 29%)',      // #5D4E37 - Bronze escuro
+					'screen': 'hsl(33 47% 84%)',     // #E8DCC4 - Creme claro
+					'glow': 'hsl(12 76% 48%)',       // #DD4B1A - Vermelho queimado
+				},
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))',

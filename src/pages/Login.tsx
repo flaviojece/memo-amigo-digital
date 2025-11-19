@@ -51,7 +51,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-retro medical-pattern">
-      <Card className="w-full max-w-md p-8 bg-radio-wood border-2 border-radio-metal shadow-floating animate-fade-in-up">
+      <Card className="w-full max-w-md p-8 bg-radio-wood border-4 border-radio-metal shadow-floating animate-fade-in-up">
         {/* Radio Header com coração pulsante */}
         <div className="mb-8 text-center">
           <div className="flex justify-center mb-4">
@@ -110,7 +110,7 @@ const Login = () => {
                 <Input
                   id="email"
                   type="email"
-                  className="h-14 text-lg"
+                  className="h-14 text-lg bg-white"
                   placeholder="seu@email.com"
                   {...loginForm.register("email")}
                 />
@@ -128,7 +128,7 @@ const Login = () => {
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  className="h-14 text-lg pr-12"
+                  className="h-14 text-lg pr-12 bg-white"
                   placeholder="••••••••"
                   {...loginForm.register("password")}
                 />
@@ -164,7 +164,7 @@ const Login = () => {
                 <Input
                   id="fullName"
                   type="text"
-                  className="h-14 text-lg"
+                  className="h-14 text-lg bg-white"
                   placeholder="Seu nome"
                   {...signupForm.register("fullName")}
                 />
@@ -182,7 +182,7 @@ const Login = () => {
                 <Input
                   id="signup-email"
                   type="email"
-                  className="h-14 text-lg"
+                  className="h-14 text-lg bg-white"
                   placeholder="seu@email.com"
                   {...signupForm.register("email")}
                 />
@@ -200,7 +200,7 @@ const Login = () => {
                 <Input
                   id="signup-password"
                   type={showPassword ? "text" : "password"}
-                  className="h-14 text-lg pr-12"
+                  className="h-14 text-lg pr-12 bg-white"
                   placeholder="••••••••"
                   {...signupForm.register("password")}
                   onChange={(e) => {
@@ -232,7 +232,7 @@ const Login = () => {
                 <Input
                   id="confirm-password"
                   type={showConfirmPassword ? "text" : "password"}
-                  className="h-14 text-lg pr-12"
+                  className="h-14 text-lg pr-12 bg-white"
                   placeholder="••••••••"
                   {...signupForm.register("confirmPassword")}
                 />
