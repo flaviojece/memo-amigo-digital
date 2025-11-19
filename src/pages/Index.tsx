@@ -32,10 +32,15 @@ const Index = () => {
         return <PatientsLocationList onBackToMore={() => setActiveTab("more")} />;
       case "more":
         return (
-          <div className="flex flex-col min-h-[60vh] p-6 space-y-6">
+          <div className="flex flex-col min-h-[60vh] p-6 pb-32 space-y-6">
             <BackToHomeButton onBackToHome={() => setActiveTab("home")} />
             
-            <h2 className="text-senior-2xl font-display text-foreground">Configurações</h2>
+            <div className="space-y-2">
+              <h2 className="text-senior-2xl font-display text-foreground">Configurações</h2>
+              <p className="text-muted-foreground text-senior-sm">
+                Acesse as opções de configuração através desta aba "Mais" no menu inferior
+              </p>
+            </div>
             
             {/* Localização dos Pacientes */}
             <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setActiveTab("location")}>
@@ -76,7 +81,7 @@ const Index = () => {
   };
 
   return (
-    <div className="bg-background min-h-screen pattern-checkered">
+    <div className="bg-background min-h-screen pattern-checkered pb-24">
       {renderContent()}
       <InstallPrompt />
       <Navigation activeTab={activeTab} onTabChange={setActiveTab} />

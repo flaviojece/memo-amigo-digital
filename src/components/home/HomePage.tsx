@@ -200,6 +200,18 @@ export function HomePage({ onTabChange }: HomePageProps) {
           </div>
         </section>
 
+        {/* Acesso à Localização dos Pacientes */}
+        {guardiansCount !== undefined && guardiansCount === 0 && (
+          <section className="space-y-4">
+            <QuickActionCard
+              title="Localização dos Pacientes"
+              subtitle="Acompanhe quem está sob seus cuidados"
+              icon={<MapPin className="text-primary" />}
+              onClick={() => onTabChange("location")}
+            />
+          </section>
+        )}
+
         {/* Botão de Compartilhar Localização */}
         <section>
           <button
