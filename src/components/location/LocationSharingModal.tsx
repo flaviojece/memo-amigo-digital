@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -30,8 +31,8 @@ export function LocationSharingModal({ open, onOpenChange }: LocationSharingModa
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [hasConsented, setHasConsented] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
 
   // Buscar configurações de compartilhamento
   const { data: settings, isLoading } = useQuery({
@@ -329,78 +330,17 @@ export function LocationSharingModal({ open, onOpenChange }: LocationSharingModa
 
           {/* LADO DIREITO: Configurações */}
           <button
-            onClick={() => setShowSettings(!showSettings)}
+            onClick={() => {
+              onOpenChange(false);
+              navigate('/location-sharing-settings');
+            }}
             className="p-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white flex flex-col items-center justify-center gap-2 hover:from-blue-600 hover:to-blue-700 transition-all min-h-[120px]"
           >
             <Settings className="w-8 h-8" />
             <span className="font-semibold">Configurações</span>
-            <ChevronDown className={`w-5 h-5 transition-transform ${showSettings ? 'rotate-180' : ''}`} />
+            <ChevronDown className="w-5 h-5" />
           </button>
         </div>
-
-        {/* SEÇÃO DE CONFIGURAÇÕES EXPANDÍVEL */}
-        {showSettings && (
-          <div className="space-y-4 mt-4 p-4 bg-muted rounded-lg border">
-            {/* Status Info */}
-            {settings?.is_sharing && lastLocation && (
-              <Alert>
-                <Clock className="h-4 w-4" />
-                <AlertDescription>
-                  <strong>Última atualização:</strong>{" "}
-                  {formatDistanceToNow(new Date(lastLocation.updated_at), {
-                    addSuffix: true,
-                    locale: ptBR,
-                  })}
-                  {lastLocation.battery_level && (
-                    <>
-                      {" • "}
-                      <Battery className="inline w-4 h-4" />
-                      {lastLocation.battery_level}%
-                    </>
-                  )}
-                </AlertDescription>
-              </Alert>
-            )}
-
-            {/* Lista de Guardiões */}
-            <div>
-              <strong className="flex items-center gap-2 mb-2 text-sm">
-                <Users className="w-4 h-4" />
-                Quem pode ver:
-              </strong>
-              {guardians && guardians.length > 0 ? (
-                <div className="space-y-1">
-                  {guardians.map((g: any) => (
-                    <div key={g.id} className="flex items-center gap-2 text-sm py-1">
-                      <div className={`w-2 h-2 rounded-full ${settings?.is_sharing ? 'bg-green-500' : 'bg-gray-400'}`} />
-                      <span className="font-medium">
-                        {g.profiles?.full_name || g.profiles?.email}
-                      </span>
-                      <span className="text-muted-foreground text-xs">
-                        ({g.relationship_type || "guardião"})
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  Você ainda não tem guardiões cadastrados.
-                </p>
-              )}
-            </div>
-
-            {/* Dica de bateria */}
-            {settings?.is_sharing && (
-              <Alert variant="default">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription className="text-xs">
-                  💡 <strong>Dica:</strong> Para economizar bateria, mantenha seu
-                  dispositivo conectado ao carregador enquanto o rastreamento estiver ativo.
-                </AlertDescription>
-              </Alert>
-            )}
-          </div>
-        )}
       </DialogContent>
     </Dialog>
   );
