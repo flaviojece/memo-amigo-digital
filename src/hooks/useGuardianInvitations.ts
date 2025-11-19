@@ -107,27 +107,19 @@ export const useGuardianInvitations = () => {
 
     // Enviar email via edge function
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-invitation-email`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          },
-          body: JSON.stringify({
-            invited_email: email,
-            patient_name: profile?.full_name || user.email || 'Um paciente',
-            relationship_type: relationshipType,
-            invitation_token: invitation.invitation_token,
-            message: message,
-            site_url: window.location.origin,
-          }),
+      const { data, error: emailError } = await supabase.functions.invoke('send-invitation-email', {
+        body: {
+          invited_email: email,
+          patient_name: profile?.full_name || user.email || 'Um paciente',
+          relationship_type: relationshipType,
+          invitation_token: invitation.invitation_token,
+          message: message,
+          site_url: window.location.origin,
         }
-      );
+      });
 
-      if (!response.ok) {
-        console.error('Failed to send email:', await response.text());
+      if (emailError) {
+        console.error('Failed to send email:', emailError);
         toast.success('Convite criado, mas houve um erro ao enviar o email');
       } else {
         toast.success('Convite enviado por email para ' + email);
