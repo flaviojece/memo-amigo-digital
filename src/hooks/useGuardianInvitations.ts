@@ -82,21 +82,61 @@ export const useGuardianInvitations = () => {
       return false;
     }
 
-    const { error } = await supabase
+    const { data: invitation, error } = await supabase
       .from('guardian_invitations')
       .insert({
         patient_id: user.id,
         invited_email: email,
         relationship_type: relationshipType,
         message: message || null,
-      });
+      })
+      .select()
+      .single();
 
-    if (error) {
+    if (error || !invitation) {
       toast.error('Erro ao enviar convite');
       return false;
     }
 
-    toast.success('Convite enviado com sucesso!');
+    // Buscar nome do paciente
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('full_name')
+      .eq('id', user.id)
+      .single();
+
+    // Enviar email via edge function
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-invitation-email`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
+          body: JSON.stringify({
+            invited_email: email,
+            patient_name: profile?.full_name || user.email || 'Um paciente',
+            relationship_type: relationshipType,
+            invitation_token: invitation.invitation_token,
+            message: message,
+            site_url: window.location.origin,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        console.error('Failed to send email:', await response.text());
+        toast.success('Convite criado, mas houve um erro ao enviar o email');
+      } else {
+        toast.success('Convite enviado por email para ' + email);
+      }
+    } catch (emailError) {
+      console.error('Error sending email:', emailError);
+      toast.success('Convite criado, mas houve um erro ao enviar o email');
+    }
+
     await loadSentInvitations();
     return true;
   };
