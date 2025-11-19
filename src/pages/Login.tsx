@@ -65,17 +65,17 @@ const Login = () => {
           </div>
           
           {/* Badges de confiança */}
-          <div className="flex items-center justify-center gap-4 mt-4 text-xs text-muted-foreground">
+          <div className="flex items-center justify-center gap-4 mt-4 text-xs text-white/90">
             <div className="flex items-center gap-1">
-              <Shield className="w-4 h-4 text-secondary" />
+              <Shield className="w-4 h-4 text-green-400" />
               <span>Dados Seguros</span>
             </div>
             <div className="flex items-center gap-1">
-              <Sparkles className="w-4 h-4 text-accent" />
+              <Sparkles className="w-4 h-4 text-yellow-400" />
               <span>Fácil de usar</span>
             </div>
             <div className="flex items-center gap-1">
-              <Users className="w-4 h-4 text-primary" />
+              <Users className="w-4 h-4 text-blue-400" />
               <span>+1000 usuários</span>
             </div>
           </div>
@@ -105,7 +105,7 @@ const Login = () => {
         {!isSignUp ? (
           <form onSubmit={loginForm.handleSubmit(handleLogin)} className="space-y-4">
             <div>
-              <Label htmlFor="email" className="text-lg">Email</Label>
+              <Label htmlFor="email" className="text-lg text-white font-semibold">Email</Label>
               <div className="relative mt-2 input-glow rounded-lg">
                 <Input
                   id="email"
@@ -115,15 +115,15 @@ const Login = () => {
                   {...loginForm.register("email")}
                 />
               </div>
-              {loginForm.formState.errors.email && (
-                <p className="text-destructive text-sm mt-1">
-                  {loginForm.formState.errors.email.message}
-                </p>
-              )}
+                {loginForm.formState.errors.email && (
+                  <p className="text-red-600 bg-white/90 px-2 py-1 rounded text-sm mt-1 font-semibold">
+                    {loginForm.formState.errors.email.message}
+                  </p>
+                )}
             </div>
 
             <div>
-              <Label htmlFor="password" className="text-lg">Senha</Label>
+              <Label htmlFor="password" className="text-lg text-white font-semibold">Senha</Label>
               <div className="relative mt-2 input-glow rounded-lg">
                 <Input
                   id="password"
@@ -132,19 +132,19 @@ const Login = () => {
                   placeholder="••••••••"
                   {...loginForm.register("password")}
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                >
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
+                  >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
-              {loginForm.formState.errors.password && (
-                <p className="text-destructive text-sm mt-1">
-                  {loginForm.formState.errors.password.message}
-                </p>
-              )}
+                {loginForm.formState.errors.password && (
+                  <p className="text-red-600 bg-white/90 px-2 py-1 rounded text-sm mt-1 font-semibold">
+                    {loginForm.formState.errors.password.message}
+                  </p>
+                )}
             </div>
 
             <Button
@@ -159,7 +159,7 @@ const Login = () => {
           // Formulário de Cadastro
           <form onSubmit={signupForm.handleSubmit(handleSignup)} className="space-y-4">
             <div>
-              <Label htmlFor="fullName" className="text-lg">Nome Completo</Label>
+              <Label htmlFor="fullName" className="text-lg text-white font-semibold">Nome Completo</Label>
               <div className="relative mt-2 input-glow rounded-lg">
                 <Input
                   id="fullName"
@@ -169,15 +169,15 @@ const Login = () => {
                   {...signupForm.register("fullName")}
                 />
               </div>
-              {signupForm.formState.errors.fullName && (
-                <p className="text-destructive text-sm mt-1">
-                  {signupForm.formState.errors.fullName.message}
-                </p>
-              )}
+                {signupForm.formState.errors.fullName && (
+                  <p className="text-red-600 bg-white/90 px-2 py-1 rounded text-sm mt-1 font-semibold">
+                    {signupForm.formState.errors.fullName.message}
+                  </p>
+                )}
             </div>
 
             <div>
-              <Label htmlFor="signup-email" className="text-lg">Email</Label>
+              <Label htmlFor="signup-email" className="text-lg text-white font-semibold">Email</Label>
               <div className="relative mt-2 input-glow rounded-lg">
                 <Input
                   id="signup-email"
@@ -187,15 +187,15 @@ const Login = () => {
                   {...signupForm.register("email")}
                 />
               </div>
-              {signupForm.formState.errors.email && (
-                <p className="text-destructive text-sm mt-1">
-                  {signupForm.formState.errors.email.message}
-                </p>
-              )}
+                {signupForm.formState.errors.email && (
+                  <p className="text-red-600 bg-white/90 px-2 py-1 rounded text-sm mt-1 font-semibold">
+                    {signupForm.formState.errors.email.message}
+                  </p>
+                )}
             </div>
 
             <div>
-              <Label htmlFor="signup-password" className="text-lg">Senha</Label>
+              <Label htmlFor="signup-password" className="text-lg text-white font-semibold">Senha</Label>
               <div className="relative mt-2 input-glow rounded-lg">
                 <Input
                   id="signup-password"
@@ -208,26 +208,26 @@ const Login = () => {
                     setPasswordValue(e.target.value);
                   }}
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                >
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
+                  >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
               
               <PasswordStrengthMeter password={passwordValue} />
               
-              {signupForm.formState.errors.password && (
-                <p className="text-destructive text-sm mt-1">
-                  {signupForm.formState.errors.password.message}
-                </p>
-              )}
+                {signupForm.formState.errors.password && (
+                  <p className="text-red-600 bg-white/90 px-2 py-1 rounded text-sm mt-1 font-semibold">
+                    {signupForm.formState.errors.password.message}
+                  </p>
+                )}
             </div>
 
             <div>
-              <Label htmlFor="confirm-password" className="text-lg">Confirmar Senha</Label>
+              <Label htmlFor="confirm-password" className="text-lg text-white font-semibold">Confirmar Senha</Label>
               <div className="relative mt-2 input-glow rounded-lg">
                 <Input
                   id="confirm-password"
@@ -236,19 +236,19 @@ const Login = () => {
                   placeholder="••••••••"
                   {...signupForm.register("confirmPassword")}
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                >
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
+                  >
                   {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
-              {signupForm.formState.errors.confirmPassword && (
-                <p className="text-destructive text-sm mt-1">
-                  {signupForm.formState.errors.confirmPassword.message}
-                </p>
-              )}
+                {signupForm.formState.errors.confirmPassword && (
+                  <p className="text-red-600 bg-white/90 px-2 py-1 rounded text-sm mt-1 font-semibold">
+                    {signupForm.formState.errors.confirmPassword.message}
+                  </p>
+                )}
             </div>
 
             <Button
