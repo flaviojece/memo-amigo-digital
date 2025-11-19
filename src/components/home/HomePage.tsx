@@ -204,7 +204,7 @@ export function HomePage({ onTabChange }: HomePageProps) {
         <section>
           <button
             onClick={() => setShowLocationModal(true)}
-            className="w-full py-8 px-4 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 
+            className="w-full min-h-[70px] px-4 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 
                        text-white hover:from-blue-600 hover:to-blue-700 
                        transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]
                        shadow-md hover:shadow-lg flex items-center justify-center gap-3"
