@@ -15,7 +15,8 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { MapPin, Shield, Users, Clock, Battery, CheckCircle, AlertCircle } from "lucide-react";
+import { MapPin, Shield, Users, Clock, Battery, CheckCircle, AlertCircle, Settings, ChevronDown } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { locationTracker } from "@/services/locationTrackingService";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -30,6 +31,7 @@ export function LocationSharingModal({ open, onOpenChange }: LocationSharingModa
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [hasConsented, setHasConsented] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   // Buscar configurações de compartilhamento
   const { data: settings, isLoading } = useQuery({
@@ -285,129 +287,120 @@ export function LocationSharingModal({ open, onOpenChange }: LocationSharingModa
     );
   }
 
-  // TELA 2: Controle (já consentiu)
+  // TELA 2: Controle com Botão Dividido (já consentiu)
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <div className="flex items-center gap-3 mb-2">
-            <MapPin className="w-8 h-8 text-primary" />
-            <DialogTitle className="text-2xl">Compartilhamento de Localização</DialogTitle>
-          </div>
+          <DialogTitle>Compartilhar Localização</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
-          {/* Status Card */}
-          <div
-            className={`p-6 rounded-xl border-2 transition-all ${
-              settings?.is_sharing
-                ? "bg-green-50 border-green-300"
-                : "bg-gray-50 border-gray-300"
+        {/* BOTÃO DIVIDIDO */}
+        <div className="grid grid-cols-2 gap-0 rounded-lg overflow-hidden border-2 border-border">
+          
+          {/* LADO ESQUERDO: Toggle */}
+          <button
+            onClick={() => settings?.is_sharing ? deactivateMutation.mutate() : activateMutation.mutate()}
+            disabled={activateMutation.isPending || deactivateMutation.isPending}
+            className={`p-6 flex flex-col items-center justify-center gap-3 transition-all min-h-[120px] ${
+              settings?.is_sharing 
+                ? 'bg-gradient-to-br from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700' 
+                : 'bg-gradient-to-br from-gray-400 to-gray-500 text-white hover:from-gray-500 hover:to-gray-600'
             }`}
           >
-            <div className="text-center space-y-4">
-              <div className="flex items-center justify-center gap-3">
-                {settings?.is_sharing ? (
-                  <>
-                    <div className="w-4 h-4 bg-green-500 rounded-full animate-pulse" />
-                    <span className="text-2xl font-bold text-green-700">ATIVO</span>
-                  </>
-                ) : (
-                  <>
-                    <div className="w-4 h-4 bg-gray-400 rounded-full" />
-                    <span className="text-2xl font-bold text-gray-700">PAUSADO</span>
-                  </>
-                )}
-              </div>
-
-              <p className="text-sm text-muted-foreground">
-                {settings?.is_sharing
-                  ? "Seus familiares estão vendo sua localização agora"
-                  : "Seus familiares não podem ver sua localização"}
-              </p>
-
-              {/* Toggle grande */}
-              <Button
-                onClick={() =>
-                  settings?.is_sharing
-                    ? deactivateMutation.mutate()
-                    : activateMutation.mutate()
-                }
-                disabled={activateMutation.isPending || deactivateMutation.isPending}
-                variant={settings?.is_sharing ? "destructive" : "default"}
-                size="lg"
-                className="w-full h-14 text-lg font-bold"
-              >
-                {settings?.is_sharing ? "🔴 DESLIGAR" : "🟢 LIGAR"}
-              </Button>
+            <div className="flex items-center gap-2">
+              {settings?.is_sharing && (
+                <div className="w-3 h-3 bg-white rounded-full animate-pulse" />
+              )}
+              <span className="text-xl font-bold">
+                {settings?.is_sharing ? 'ATIVO' : 'PAUSADO'}
+              </span>
             </div>
-          </div>
+            
+            {/* Switch Visual */}
+            <Switch checked={settings?.is_sharing} className="pointer-events-none" />
+            
+            <span className="text-xs opacity-90">
+              {activateMutation.isPending || deactivateMutation.isPending 
+                ? 'Processando...' 
+                : settings?.is_sharing ? 'Toque para desligar' : 'Toque para ligar'}
+            </span>
+          </button>
 
-          {/* Info: Última atualização */}
-          {settings?.is_sharing && lastLocation && (
-            <Alert>
-              <Clock className="h-5 w-5" />
-              <AlertDescription className="ml-2">
-                <strong>Última atualização:</strong>{" "}
-                {formatDistanceToNow(new Date(lastLocation.updated_at), {
-                  addSuffix: true,
-                  locale: ptBR,
-                })}
-                {lastLocation.battery_level && (
-                  <>
-                    {" • "}
-                    <Battery className="inline w-4 h-4" />
-                    {lastLocation.battery_level}%
-                  </>
-                )}
-              </AlertDescription>
-            </Alert>
-          )}
+          {/* LADO DIREITO: Configurações */}
+          <button
+            onClick={() => setShowSettings(!showSettings)}
+            className="p-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white flex flex-col items-center justify-center gap-2 hover:from-blue-600 hover:to-blue-700 transition-all min-h-[120px]"
+          >
+            <Settings className="w-8 h-8" />
+            <span className="font-semibold">Configurações</span>
+            <ChevronDown className={`w-5 h-5 transition-transform ${showSettings ? 'rotate-180' : ''}`} />
+          </button>
+        </div>
 
-          <Separator />
+        {/* SEÇÃO DE CONFIGURAÇÕES EXPANDÍVEL */}
+        {showSettings && (
+          <div className="space-y-4 mt-4 p-4 bg-muted rounded-lg border">
+            {/* Status Info */}
+            {settings?.is_sharing && lastLocation && (
+              <Alert>
+                <Clock className="h-4 w-4" />
+                <AlertDescription>
+                  <strong>Última atualização:</strong>{" "}
+                  {formatDistanceToNow(new Date(lastLocation.updated_at), {
+                    addSuffix: true,
+                    locale: ptBR,
+                  })}
+                  {lastLocation.battery_level && (
+                    <>
+                      {" • "}
+                      <Battery className="inline w-4 h-4" />
+                      {lastLocation.battery_level}%
+                    </>
+                  )}
+                </AlertDescription>
+              </Alert>
+            )}
 
-          {/* Quem está vendo */}
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <Users className="w-5 h-5 text-primary" />
-              <strong>Quem pode ver:</strong>
+            {/* Lista de Guardiões */}
+            <div>
+              <strong className="flex items-center gap-2 mb-2 text-sm">
+                <Users className="w-4 h-4" />
+                Quem pode ver:
+              </strong>
+              {guardians && guardians.length > 0 ? (
+                <div className="space-y-1">
+                  {guardians.map((g: any) => (
+                    <div key={g.id} className="flex items-center gap-2 text-sm py-1">
+                      <div className={`w-2 h-2 rounded-full ${settings?.is_sharing ? 'bg-green-500' : 'bg-gray-400'}`} />
+                      <span className="font-medium">
+                        {g.profiles?.full_name || g.profiles?.email}
+                      </span>
+                      <span className="text-muted-foreground text-xs">
+                        ({g.relationship_type || "guardião"})
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  Você ainda não tem guardiões cadastrados.
+                </p>
+              )}
             </div>
-            {guardians && guardians.length > 0 ? (
-              <ul className="space-y-2">
-                {guardians.map((g: any) => (
-                  <li key={g.id} className="flex items-center gap-2 text-sm">
-                    <div
-                      className={`w-2 h-2 rounded-full ${
-                        settings?.is_sharing ? "bg-green-500" : "bg-gray-400"
-                      }`}
-                    />
-                    <span className="font-medium">
-                      {g.profiles?.full_name || g.profiles?.email}
-                    </span>
-                    <span className="text-muted-foreground">
-                      ({g.relationship_type || "guardião"})
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-sm text-muted-foreground">
-                Você ainda não tem guardiões cadastrados.
-              </p>
+
+            {/* Dica de bateria */}
+            {settings?.is_sharing && (
+              <Alert variant="default">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription className="text-xs">
+                  💡 <strong>Dica:</strong> Para economizar bateria, mantenha seu
+                  dispositivo conectado ao carregador enquanto o rastreamento estiver ativo.
+                </AlertDescription>
+              </Alert>
             )}
           </div>
-
-          {/* Avisos */}
-          {settings?.is_sharing && (
-            <Alert variant="default">
-              <AlertCircle className="h-5 w-5" />
-              <AlertDescription className="ml-2 text-sm">
-                💡 <strong>Dica:</strong> Para economizar bateria, mantenha seu
-                dispositivo conectado ao carregador enquanto o rastreamento estiver ativo.
-              </AlertDescription>
-            </Alert>
-          )}
-        </div>
+        )}
       </DialogContent>
     </Dialog>
   );
