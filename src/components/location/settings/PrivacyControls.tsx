@@ -8,34 +8,34 @@ interface PrivacyControlsProps {
 
 export function PrivacyControls({ settings }: PrivacyControlsProps) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <Shield className="w-5 h-5" />
+    <Card className="border shadow-sm">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-base font-semibold">
+          <Shield className="w-4 h-4" />
           Privacidade e Segurança
         </CardTitle>
-        <CardDescription className="text-sm">
-          Como seus dados de localização são protegidos
+        <CardDescription className="text-xs">
+          Como seus dados são protegidos
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <Alert>
-          <Info className="h-4 w-4" />
-          <AlertDescription className="text-sm ml-2">
-            <strong>Sua privacidade é garantida:</strong>
-            <ul className="list-disc list-inside mt-2 space-y-1 text-xs">
-              <li>Apenas guardiões autorizados podem ver sua localização</li>
-              <li>Você pode pausar o compartilhamento a qualquer momento</li>
-              <li>Suas localizações são criptografadas e seguras</li>
-              <li>Você controla quem tem acesso aos seus dados</li>
+      <CardContent className="space-y-3">
+        <Alert className="border-0 bg-muted/30">
+          <Info className="h-3 w-3" />
+          <AlertDescription className="text-xs ml-2">
+            <strong className="text-xs">Sua privacidade é garantida:</strong>
+            <ul className="list-disc list-inside mt-1.5 space-y-0.5 text-xs">
+              <li>Apenas guardiões autorizados veem sua localização</li>
+              <li>Você pode pausar a qualquer momento</li>
+              <li>Dados criptografados e seguros</li>
+              <li>Controle total sobre acessos</li>
             </ul>
           </AlertDescription>
         </Alert>
 
         {settings?.consent_given_at && (
-          <div className="p-4 bg-muted/50 rounded-lg">
+          <div className="p-3 bg-muted/50 rounded-lg">
             <div className="flex justify-between text-xs">
-              <span className="text-muted-foreground">Consentimento dado em:</span>
+              <span className="text-muted-foreground">Consentimento:</span>
               <span className="font-medium">
                 {new Date(settings.consent_given_at).toLocaleDateString("pt-BR")}
               </span>

@@ -1,12 +1,11 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { MapPin, Pause } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { locationTracker } from "@/services/locationTrackingService";
 
 interface LocationSharingHeaderProps {
@@ -72,63 +71,56 @@ export function LocationSharingHeader({ settings }: LocationSharingHeaderProps) 
   const isSharing = settings?.is_sharing ?? false;
 
   return (
-    <Card className="border-2">
-      <CardContent className="pt-8 pb-8">
-        <div className="flex items-center justify-between gap-6">
-          <div className="flex items-center gap-6 flex-1">
-            {isSharing ? (
-              <>
-                <MapPin className="w-12 h-12 text-green-500 animate-pulse flex-shrink-0" />
-                <div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="font-bold text-xl">Compartilhando Localização</span>
-                    <Badge className="bg-green-500 text-white px-3 py-1">
-                      ATIVO
-                    </Badge>
-                  </div>
-                  <p className="text-base text-muted-foreground">
-                    Seus anjos podem ver onde você está agora
-                  </p>
-                </div>
-              </>
-            ) : (
-              <>
-                <MapPin className="w-12 h-12 text-muted-foreground flex-shrink-0" />
-                <div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="font-bold text-xl">Compartilhamento Pausado</span>
-                    <Badge variant="secondary" className="px-3 py-1">
-                      PAUSADO
-                    </Badge>
-                  </div>
-                  <p className="text-base text-muted-foreground">
-                    Ative para seus anjos verem sua localização
-                  </p>
-                </div>
-              </>
-            )}
-          </div>
-
-          <div className="flex flex-col items-center gap-3">
-            <Label 
-              htmlFor="sharing-toggle" 
-              className="text-lg font-bold cursor-pointer"
+    <Card className="border shadow-sm">
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div
+              className={`p-2 rounded-full ${
+                isSharing
+                  ? "bg-green-100 dark:bg-green-900/30"
+                  : "bg-gray-100 dark:bg-gray-800"
+              }`}
             >
-              {isSharing ? "Pausar" : "Ativar"}
-            </Label>
-            <Switch
-              id="sharing-toggle"
-              checked={isSharing}
-              onCheckedChange={(checked) => toggleSharingMutation.mutate(checked)}
-              disabled={toggleSharingMutation.isPending}
-              className="data-[state=checked]:bg-green-500 scale-150"
-            />
+              <MapPin
+                className={`w-5 h-5 ${
+                  isSharing
+                    ? "text-green-600 dark:text-green-400"
+                    : "text-gray-400 dark:text-gray-500"
+                }`}
+              />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-base">
+                  {isSharing ? "Compartilhando" : "Pausado"}
+                </span>
+                <Badge
+                  variant={isSharing ? "default" : "secondary"}
+                  className="text-xs"
+                >
+                  {isSharing ? "ATIVO" : "PAUSADO"}
+                </Badge>
+              </div>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {isSharing
+                  ? "Seus anjos podem ver sua localização"
+                  : "Ative para compartilhar sua localização"}
+              </p>
+            </div>
           </div>
+          <Switch
+            checked={isSharing}
+            onCheckedChange={(checked) => toggleSharingMutation.mutate(checked)}
+            disabled={toggleSharingMutation.isPending}
+            className="data-[state=checked]:bg-green-600"
+          />
         </div>
 
         {toggleSharingMutation.isPending && (
-          <div className="mt-6 text-center text-sm text-muted-foreground">
-            Atualizando configurações...
+          <div className="flex items-center gap-2 text-muted-foreground text-xs mt-3 pt-3 border-t">
+            <div className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+            <span>Atualizando...</span>
           </div>
         )}
       </CardContent>

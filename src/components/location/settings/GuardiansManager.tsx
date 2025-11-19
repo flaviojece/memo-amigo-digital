@@ -8,9 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Users, UserPlus, Mail, Check, X, Trash2, Clock } from "lucide-react";
-import { format } from "date-fns";
+import { Users, UserPlus, Mail, Check, X, Send, Clock, UserX } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 export function GuardiansManager() {
@@ -26,245 +27,158 @@ export function GuardiansManager() {
   } = useGuardianInvitations();
 
   const [inviteEmail, setInviteEmail] = useState("");
-  const [relationshipType, setRelationshipType] = useState("");
-  const [revokeDialogOpen, setRevokeDialogOpen] = useState(false);
-  const [selectedRelationship, setSelectedRelationship] = useState<string | null>(null);
-  const [showInviteForm, setShowInviteForm] = useState(false);
+  const [relationshipType, setRelationshipType] = useState("family");
+  const [selectedGuardianForRemoval, setSelectedGuardianForRemoval] = useState<any>(null);
+  const [isRemovalDialogOpen, setIsRemovalDialogOpen] = useState(false);
 
-  const handleSendInvite = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inviteEmail || !relationshipType) return;
-
+  const handleSendInvite = async () => {
+    if (!inviteEmail) return;
+    
     const success = await sendInvitation(inviteEmail, relationshipType);
     if (success) {
       setInviteEmail("");
-      setRelationshipType("");
-      setShowInviteForm(false);
+      setRelationshipType("family");
     }
   };
 
   const handleRevokeConfirm = async () => {
-    if (!selectedRelationship) return;
-    await revokeGuardian(selectedRelationship);
-    setRevokeDialogOpen(false);
-    setSelectedRelationship(null);
+    if (!selectedGuardianForRemoval) return;
+    await revokeGuardian(selectedGuardianForRemoval.id);
+    setIsRemovalDialogOpen(false);
+    setSelectedGuardianForRemoval(null);
   };
 
   if (relationshipsLoading || invitationsLoading) {
     return (
-      <Card>
+      <Card className="border shadow-sm">
         <CardContent className="py-8">
-          <div className="text-center">Carregando guardiões...</div>
+          <div className="text-center text-sm text-muted-foreground">Carregando...</div>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Meus Anjos/Guardiões Ativos */}
-      <Card className="border-2">
-        <CardHeader>
+    <div className="space-y-4">
+      <Card className="border shadow-sm">
+        <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="flex items-center gap-3 text-xl">
-                <Users className="w-6 h-6" />
-                Meus Anjos/Guardiões
+              <CardTitle className="text-base font-semibold flex items-center gap-2">
+                <Users className="w-4 h-4" />
+                Meus Anjos
               </CardTitle>
-              <CardDescription className="text-sm mt-1">
-                Pessoas que podem ver sua localização
+              <CardDescription className="text-xs">
+                {guardians.length} pessoa(s) com acesso à sua localização
               </CardDescription>
             </div>
-            <Button
-              onClick={() => setShowInviteForm(!showInviteForm)}
-              className="gap-2"
-            >
-              <UserPlus className="w-4 h-4" />
-              Adicionar Anjo
-            </Button>
           </div>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Formulário de convite */}
-          {showInviteForm && (
-            <form onSubmit={handleSendInvite} className="p-4 bg-muted/50 rounded-lg space-y-4">
-              <div>
-                <Label htmlFor="email">Email do guardião</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="exemplo@email.com"
-                  value={inviteEmail}
-                  onChange={(e) => setInviteEmail(e.target.value)}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="relationship">Tipo de relacionamento</Label>
-                <Select value={relationshipType} onValueChange={setRelationshipType} required>
-                  <SelectTrigger id="relationship">
-                    <SelectValue placeholder="Selecione..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="family">Familiar</SelectItem>
-                    <SelectItem value="caregiver">Cuidador(a)</SelectItem>
-                    <SelectItem value="friend">Amigo(a)</SelectItem>
-                    <SelectItem value="healthcare">Profissional de Saúde</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex gap-2">
-                <Button type="submit" className="flex-1">
-                  Enviar Convite
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setShowInviteForm(false);
-                    setInviteEmail("");
-                    setRelationshipType("");
-                  }}
-                >
-                  Cancelar
-                </Button>
-              </div>
-            </form>
-          )}
-
-          {/* Lista de guardiões ativos */}
+        <CardContent className="space-y-3">
           {guardians.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              <Users className="w-12 h-12 mx-auto mb-3 opacity-50" />
-              <p className="text-base font-semibold">Nenhum anjo cadastrado ainda</p>
-              <p className="text-sm mt-2">Adicione pessoas de confiança para compartilhar sua localização</p>
+            <div className="text-center py-6 text-muted-foreground">
+              <UserX className="w-8 h-8 mx-auto mb-2 opacity-40" />
+              <p className="text-sm font-medium">Nenhum anjo autorizado</p>
+              <p className="text-xs">Convide pessoas para acompanhar você</p>
             </div>
           ) : (
-            <div className="grid gap-4">
+            <div className="space-y-2">
               {guardians.map((guardian) => (
-                <div
-                  key={guardian.id}
-                  className="flex items-center justify-between p-6 bg-gradient-to-r from-muted/50 to-muted/30 rounded-lg hover:shadow-md transition-all border border-border"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                      <Users className="w-7 h-7 text-primary" />
-                    </div>
+                <div key={guardian.id} className="flex items-center justify-between p-3 hover:bg-muted/50 rounded-lg transition-colors">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="w-9 h-9">
+                      <AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold">
+                        {guardian.guardian_name?.split(" ").map((n: string) => n[0]).join("").toUpperCase() || "?"}
+                      </AvatarFallback>
+                    </Avatar>
                     <div>
-                      <p className="font-bold text-base">{guardian.guardian_name}</p>
-                      <p className="text-sm text-muted-foreground">{guardian.guardian_email}</p>
-                      <div className="flex gap-2 mt-2">
-                        <Badge variant="outline" className="text-xs">
-                          {guardian.relationship_type || "Guardião"}
-                        </Badge>
-                        <Badge variant="secondary" className="text-xs">
-                          {guardian.access_level}
-                        </Badge>
+                      <p className="font-medium text-sm">{guardian.guardian_name}</p>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Mail className="w-3 h-3" />
+                        <span>{guardian.guardian_email}</span>
+                        {guardian.relationship_type && (
+                          <>
+                            <span>•</span>
+                            <Badge variant="outline" className="text-xs px-1.5 py-0">
+                              {guardian.relationship_type === "family" ? "Família" : guardian.relationship_type === "friend" ? "Amigo" : guardian.relationship_type === "caregiver" ? "Cuidador" : guardian.relationship_type}
+                            </Badge>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => {
-                      setSelectedRelationship(guardian.id);
-                      setRevokeDialogOpen(true);
-                    }}
-                    className="gap-2"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    Remover
+                  <Button variant="ghost" size="sm" onClick={() => { setSelectedGuardianForRemoval(guardian); setIsRemovalDialogOpen(true); }} className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-8 p-0">
+                    <X className="w-4 h-4" />
                   </Button>
                 </div>
               ))}
             </div>
           )}
+          <Separator className="my-3" />
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <UserPlus className="w-4 h-4 text-primary" />
+              <h3 className="font-medium text-sm">Adicionar Anjo</h3>
+            </div>
+            <div className="grid gap-3">
+              <div>
+                <Label htmlFor="invite-email" className="text-xs font-medium">Email do Anjo</Label>
+                <Input id="invite-email" type="email" placeholder="anjo@exemplo.com" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} className="mt-1 h-9 text-sm" />
+              </div>
+              <div>
+                <Label htmlFor="relationship-type" className="text-xs font-medium">Tipo de Relacionamento</Label>
+                <Select value={relationshipType} onValueChange={setRelationshipType}>
+                  <SelectTrigger id="relationship-type" className="mt-1 h-9 text-sm"><SelectValue placeholder="Selecione" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="family">Família</SelectItem>
+                    <SelectItem value="friend">Amigo</SelectItem>
+                    <SelectItem value="caregiver">Cuidador</SelectItem>
+                    <SelectItem value="other">Outro</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button onClick={handleSendInvite} disabled={!inviteEmail} className="w-full" size="sm"><Send className="w-3 h-3 mr-2" />Enviar Convite</Button>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
-      {/* Convites Pendentes */}
       {(sentInvitations.length > 0 || receivedInvitations.length > 0) && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-xl">
-              <Mail className="w-5 h-5" />
-              Convites Pendentes
-            </CardTitle>
-            <CardDescription className="text-sm">
-              Convites enviados e recebidos aguardando resposta
-            </CardDescription>
+        <Card className="border shadow-sm">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base font-semibold flex items-center gap-2"><Clock className="w-4 h-4" />Convites Pendentes</CardTitle>
+            <CardDescription className="text-xs">Convites enviados e recebidos</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Convites Enviados */}
             {sentInvitations.length > 0 && (
               <div>
-                <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
-                  <Clock className="w-4 h-4" />
-                  Enviados por mim
-                </h4>
+                <h4 className="font-medium mb-2 text-xs flex items-center gap-2 text-muted-foreground"><Send className="w-3 h-3" />Enviados ({sentInvitations.length})</h4>
                 <div className="space-y-2">
                   {sentInvitations.map((invitation) => (
-                    <div
-                      key={invitation.id}
-                      className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
-                    >
-                      <div>
+                    <div key={invitation.id} className="flex items-center justify-between p-3 hover:bg-muted/50 rounded-lg transition-colors">
+                      <div className="flex-1">
                         <p className="font-medium text-sm">{invitation.invited_email}</p>
-                        <p className="text-xs text-muted-foreground">
-                          Enviado em {format(new Date(invitation.created_at), "dd/MM/yyyy", { locale: ptBR })}
-                        </p>
+                        <p className="text-xs text-muted-foreground">{formatDistanceToNow(new Date(invitation.created_at!), { addSuffix: true, locale: ptBR })}</p>
                       </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => revokeInvitation(invitation.id)}
-                      >
-                        Cancelar
-                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => revokeInvitation(invitation.id)} className="text-destructive hover:text-destructive h-8 w-8 p-0"><X className="w-4 h-4" /></Button>
                     </div>
                   ))}
                 </div>
               </div>
             )}
-
-            {sentInvitations.length > 0 && receivedInvitations.length > 0 && (
-              <Separator />
-            )}
-
-            {/* Convites Recebidos */}
             {receivedInvitations.length > 0 && (
               <div>
-                <h4 className="font-semibold text-sm mb-3">Recebidos</h4>
+                <h4 className="font-medium mb-2 text-xs flex items-center gap-2 text-muted-foreground"><Mail className="w-3 h-3" />Recebidos ({receivedInvitations.length})</h4>
                 <div className="space-y-2">
                   {receivedInvitations.map((invitation) => (
-                    <div
-                      key={invitation.id}
-                      className="p-3 bg-primary/5 border-2 border-primary/20 rounded-lg space-y-3"
-                    >
-                      <div>
-                        <p className="font-semibold text-sm">
-                          {invitation.patient?.full_name || "Paciente"} quer que você seja um guardião
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {invitation.patient?.email || invitation.invited_email}
-                        </p>
+                    <div key={invitation.id} className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-900">
+                      <div className="flex-1">
+                        <p className="font-medium text-sm">{invitation.patient_name || invitation.patient_email}</p>
+                        <p className="text-xs text-muted-foreground">Quer que você seja seu anjo</p>
                       </div>
                       <div className="flex gap-2">
-                        <Button
-                          className="flex-1 gap-2"
-                          onClick={() => acceptInvitation(invitation.id)}
-                        >
-                          <Check className="w-4 h-4" />
-                          Aceitar
-                        </Button>
-                        <Button
-                          variant="outline"
-                          className="flex-1 gap-2"
-                          onClick={() => declineInvitation(invitation.id)}
-                        >
-                          <X className="w-4 h-4" />
-                          Recusar
-                        </Button>
+                        <Button size="sm" onClick={() => acceptInvitation(invitation.id)} className="gap-1 h-8 text-xs"><Check className="w-3 h-3" />Aceitar</Button>
+                        <Button variant="outline" size="sm" onClick={() => declineInvitation(invitation.id)} className="h-8 w-8 p-0"><X className="w-3 h-3" /></Button>
                       </div>
                     </div>
                   ))}
@@ -275,20 +189,15 @@ export function GuardiansManager() {
         </Card>
       )}
 
-      {/* Dialog de confirmação de revogação */}
-      <AlertDialog open={revokeDialogOpen} onOpenChange={setRevokeDialogOpen}>
+      <AlertDialog open={isRemovalDialogOpen} onOpenChange={setIsRemovalDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Remover acesso do guardião?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Esta pessoa não poderá mais ver sua localização. Você pode convidá-la novamente depois se quiser.
-            </AlertDialogDescription>
+            <AlertDialogTitle>Remover Acesso?</AlertDialogTitle>
+            <AlertDialogDescription>Você está prestes a remover o acesso de <strong>{selectedGuardianForRemoval?.guardian_name}</strong> à sua localização. Esta pessoa não poderá mais ver onde você está.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleRevokeConfirm}>
-              Confirmar Remoção
-            </AlertDialogAction>
+            <AlertDialogAction onClick={handleRevokeConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Remover Acesso</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
