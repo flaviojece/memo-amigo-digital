@@ -176,4 +176,109 @@ Todos os valores em HSL para consistência
     transform: translateY(-2px);
     box-shadow: 0 8px 24px hsl(33 31% 24% / 0.15);
   }
+
+  /* Animações de Login */
+  @keyframes heartbeat {
+    0%, 100% { 
+      transform: scale(1); 
+    }
+    25% { 
+      transform: scale(1.1); 
+    }
+    50% { 
+      transform: scale(1); 
+    }
+    75% { 
+      transform: scale(1.05); 
+    }
+  }
+
+  @keyframes float {
+    0%, 100% { 
+      transform: translateY(0px) rotate(0deg); 
+    }
+    25% {
+      transform: translateY(-10px) rotate(2deg);
+    }
+    50% { 
+      transform: translateY(-5px) rotate(-2deg); 
+    }
+    75% {
+      transform: translateY(-15px) rotate(1deg);
+    }
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% { 
+      box-shadow: 0 0 20px hsl(var(--primary) / 0.2), inset 0 0 10px hsl(var(--primary) / 0.1); 
+    }
+    50% { 
+      box-shadow: 0 0 30px hsl(var(--primary) / 0.4), inset 0 0 15px hsl(var(--primary) / 0.2); 
+    }
+  }
+
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-heartbeat {
+    animation: heartbeat 2s ease-in-out infinite;
+  }
+
+  .animate-float {
+    animation: float 20s ease-in-out infinite;
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.6s ease-out forwards;
+  }
+
+  .input-glow:focus-within {
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+
+  /* Background médico animado */
+  .medical-pattern {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .medical-pattern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      radial-gradient(circle at 20% 30%, hsl(var(--primary) / 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, hsl(var(--accent) / 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, hsl(var(--secondary) / 0.03) 0%, transparent 70%);
+    animation: float 25s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  .medical-pattern::after {
+    content: '💊 ❤️ ⏰ 🏥 💊 ❤️ ⏰ 🏥 💊 ❤️ ⏰ 🏥 💊 ❤️ ⏰ 🏥';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    font-size: 3rem;
+    opacity: 0.03;
+    line-height: 6rem;
+    letter-spacing: 4rem;
+    word-wrap: break-word;
+    overflow: hidden;
+    pointer-events: none;
+    animation: float 30s ease-in-out infinite reverse;
+  }
 }
