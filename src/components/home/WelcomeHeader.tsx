@@ -67,7 +67,7 @@ export function WelcomeHeader() {
 
   return (
     <header className="bg-gradient-warm text-primary-foreground p-6 rounded-b-memo shadow-card">
-      <div className="grid grid-cols-3 items-center mb-3">
+      <div className="grid grid-cols-[auto_1fr_auto] items-center mb-3">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
             <Heart className="w-6 h-6 text-white" />
@@ -75,8 +75,8 @@ export function WelcomeHeader() {
         </div>
         
         <div className="text-center">
-          <h1 className="text-senior-xl font-bold text-white">Dr. Memo</h1>
-          <p className="text-white/70 text-senior-xs">Cuidando de você</p>
+          <h1 className="text-senior-xl font-bold text-white whitespace-nowrap">Dr. Memo</h1>
+          <p className="text-white/70 text-senior-xs whitespace-nowrap">Cuidando de você</p>
         </div>
         
         <div className="flex items-center gap-3 justify-end">
