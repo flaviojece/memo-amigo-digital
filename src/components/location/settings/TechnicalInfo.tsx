@@ -52,14 +52,14 @@ export function TechnicalInfo({ lastLocation, settings }: TechnicalInfoProps) {
               <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
                 <div className="flex items-center gap-3">
                   <Battery className={`w-5 h-5 ${
-                    lastLocation.battery_level > 50 
+                    lastLocation.battery_level > 0.5 
                       ? "text-green-500" 
-                      : lastLocation.battery_level > 20 
+                      : lastLocation.battery_level > 0.2 
                         ? "text-yellow-500" 
                         : "text-red-500"
                   }`} />
                   <div>
-                    <p className="font-medium text-senior-base">Nível de Bateria</p>
+                    <p className="font-medium text-senior-base">Bateria</p>
                     <p className="text-senior-sm text-muted-foreground">
                       {Math.round(lastLocation.battery_level * 100)}%
                     </p>
@@ -68,36 +68,12 @@ export function TechnicalInfo({ lastLocation, settings }: TechnicalInfoProps) {
               </div>
             )}
 
-            <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
-              <div className="flex items-center gap-3">
-                <MapPin className="w-5 h-5 text-muted-foreground" />
-                <div>
-                  <p className="font-medium text-senior-base">Precisão</p>
-                  <p className="text-senior-sm text-muted-foreground">
-                    ±{Math.round(lastLocation.accuracy || 0)} metros
-                  </p>
-                </div>
+            <div className="p-4 bg-muted/50 rounded-lg">
+              <div className="flex items-center justify-between">
+                <span className="text-senior-base font-medium">
+                  {lastLocation.is_moving ? "🚶 Em movimento" : "🧍 Parado"}
+                </span>
               </div>
-            </div>
-
-            {lastLocation.speed !== null && lastLocation.speed > 0 && (
-              <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <Activity className="w-5 h-5 text-muted-foreground" />
-                  <div>
-                    <p className="font-medium text-senior-base">Velocidade</p>
-                    <p className="text-senior-sm text-muted-foreground">
-                      {(lastLocation.speed * 3.6).toFixed(1)} km/h
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-senior-sm text-blue-900">
-                <strong>Status:</strong> {lastLocation.is_moving ? "Em movimento" : "Parado"}
-              </p>
             </div>
           </div>
         )}

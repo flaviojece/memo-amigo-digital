@@ -63,21 +63,22 @@ export function GuardiansManager() {
   return (
     <div className="space-y-6">
       {/* Meus Anjos/Guardiões Ativos */}
-      <Card>
+      <Card className="border-2">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="flex items-center gap-2 text-senior-xl">
-                <Users className="w-6 h-6" />
+              <CardTitle className="flex items-center gap-3 text-senior-2xl">
+                <Users className="w-8 h-8" />
                 Meus Anjos/Guardiões
               </CardTitle>
-              <CardDescription className="text-senior-sm">
-                Pessoas autorizadas a ver sua localização
+              <CardDescription className="text-senior-base mt-1">
+                Pessoas que podem ver sua localização
               </CardDescription>
             </div>
             <Button
               onClick={() => setShowInviteForm(!showInviteForm)}
-              className="gap-2"
+              size="lg"
+              className="gap-2 text-senior-base px-6"
             >
               <UserPlus className="w-5 h-5" />
               Adicionar Anjo
@@ -135,39 +136,46 @@ export function GuardiansManager() {
 
           {/* Lista de guardiões ativos */}
           {guardians.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <Users className="w-12 h-12 mx-auto mb-2 opacity-50" />
-              <p className="text-senior-base">Nenhum guardião cadastrado ainda</p>
-              <p className="text-senior-sm">Clique em "Adicionar Anjo" para começar</p>
+            <div className="text-center py-12 text-muted-foreground">
+              <Users className="w-16 h-16 mx-auto mb-4 opacity-50" />
+              <p className="text-senior-lg font-semibold">Nenhum anjo cadastrado ainda</p>
+              <p className="text-senior-base mt-2">Adicione pessoas de confiança para compartilhar sua localização</p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="grid gap-4">
               {guardians.map((guardian) => (
                 <div
                   key={guardian.id}
-                  className="flex items-center justify-between p-4 bg-card border rounded-lg"
+                  className="flex items-center justify-between p-6 bg-gradient-to-r from-muted/50 to-muted/30 rounded-lg hover:shadow-md transition-all border border-border"
                 >
-                  <div className="flex-1">
-                    <p className="font-semibold text-senior-lg">{guardian.guardian_name}</p>
-                    <p className="text-senior-sm text-muted-foreground">{guardian.guardian_email}</p>
-                    <div className="flex gap-2 mt-2">
-                      <Badge variant="outline">
-                        {guardian.relationship_type || "Não especificado"}
-                      </Badge>
-                      <Badge variant="secondary">
-                        {guardian.access_level}
-                      </Badge>
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                      <Users className="w-7 h-7 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-senior-lg">{guardian.guardian_name}</p>
+                      <p className="text-senior-base text-muted-foreground">{guardian.guardian_email}</p>
+                      <div className="flex gap-2 mt-2">
+                        <Badge variant="outline" className="text-senior-sm px-2 py-1">
+                          {guardian.relationship_type || "Guardião"}
+                        </Badge>
+                        <Badge variant="secondary" className="text-senior-sm px-2 py-1">
+                          {guardian.access_level}
+                        </Badge>
+                      </div>
                     </div>
                   </div>
                   <Button
                     variant="destructive"
-                    size="sm"
+                    size="lg"
                     onClick={() => {
                       setSelectedRelationship(guardian.id);
                       setRevokeDialogOpen(true);
                     }}
+                    className="gap-2"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-5 h-5" />
+                    Remover
                   </Button>
                 </div>
               ))}

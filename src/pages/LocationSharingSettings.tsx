@@ -6,8 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LocationSharingHeader } from "@/components/location/settings/LocationSharingHeader";
 import { GuardiansManager } from "@/components/location/settings/GuardiansManager";
-import { PrivacyControls } from "@/components/location/settings/PrivacyControls";
-import { TechnicalInfo } from "@/components/location/settings/TechnicalInfo";
+import { AdvancedSettings } from "@/components/location/settings/AdvancedSettings";
 
 export default function LocationSharingSettings() {
   const { user } = useAuth();
@@ -82,11 +81,8 @@ export default function LocationSharingSettings() {
         {/* Gerenciamento de guardiões/anjos */}
         <GuardiansManager />
 
-        {/* Controles de privacidade */}
-        <PrivacyControls settings={settings} />
-
-        {/* Informações técnicas */}
-        <TechnicalInfo lastLocation={lastLocation} settings={settings} />
+        {/* Configurações avançadas (colapsável) */}
+        <AdvancedSettings settings={settings} lastLocation={lastLocation} />
       </div>
     </div>
   );
