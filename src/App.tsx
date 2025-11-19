@@ -11,6 +11,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 const Index = lazy(() => import("./pages/Index"));
 const Login = lazy(() => import("./pages/Login"));
 const AcceptInvitation = lazy(() => import("./pages/AcceptInvitation"));
+const LocationSharingSettings = lazy(() => import("./pages/LocationSharingSettings"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -38,6 +39,14 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <Index />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/location-sharing-settings"
+                element={
+                  <ProtectedRoute>
+                    <LocationSharingSettings />
                   </ProtectedRoute>
                 }
               />
