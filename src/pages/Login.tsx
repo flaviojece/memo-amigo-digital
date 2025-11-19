@@ -51,7 +51,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-retro medical-pattern">
-      <Card className="w-full max-w-md p-8 bg-radio-wood border-2 border-radio-metal shadow-elegant animate-fade-in-up">
+      <Card className="w-full max-w-md p-8 bg-radio-wood border-2 border-radio-metal shadow-floating animate-fade-in-up">
         {/* Radio Header com coração pulsante */}
         <div className="mb-8 text-center">
           <div className="flex justify-center mb-4">
