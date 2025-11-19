@@ -30,7 +30,7 @@ export function QuickActionCard({
       )}
       aria-label={`${title}${subtitle ? ': ' + subtitle : ''}`}
     >
-      <div className="flex items-center gap-10">
+      <div className="flex items-center gap-16">
         <div className={cn(
           "p-3 rounded-senior flex-shrink-0",
           "[&_svg]:w-7 [&_svg]:h-7",
