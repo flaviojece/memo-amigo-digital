@@ -142,7 +142,7 @@ export function HomePage({ onTabChange }: HomePageProps) {
                   ? `${nextMedication.name} - ${getNextMedicationTime(nextMedication) || 'Sem horários definidos'}`
                   : "Nenhum medicamento cadastrado"
               }
-              icon={<Pill className="w-8 h-8 text-primary" />}
+              icon={<Pill className="text-primary" />}
               onClick={() => onTabChange("meds")}
             />
 
@@ -153,14 +153,14 @@ export function HomePage({ onTabChange }: HomePageProps) {
                   ? `${nextAppointment.doctor_name} - ${nextAppointment.specialty}\n${formatAppointmentDate(nextAppointment.date)}`
                   : "Nenhuma consulta agendada"
               }
-              icon={<Stethoscope className="w-8 h-8 text-secondary" />}
+              icon={<Stethoscope className="text-secondary" />}
               onClick={() => onTabChange("appointments")}
             />
 
             <QuickActionCard
               title="Contatos Favoritos"
               subtitle={`${favoriteContacts?.length || 0} contatos favoritos`}
-              icon={<Heart className="w-8 h-8 text-accent" />}
+              icon={<Heart className="text-accent" />}
               onClick={() => setShowCallModal(true)}
               variant="accent"
             />
@@ -176,25 +176,25 @@ export function HomePage({ onTabChange }: HomePageProps) {
           <div className="grid grid-cols-2 gap-4">
             <QuickActionCard
               title="Remédios"
-              icon={<Pill className="w-6 h-6 text-primary" />}
+              icon={<Pill className="text-primary" />}
               onClick={() => onTabChange("meds")}
             />
 
             <QuickActionCard
               title="Consultas"
-              icon={<Calendar className="w-6 h-6 text-secondary" />}
+              icon={<Calendar className="text-secondary" />}
               onClick={() => onTabChange("appointments")}
             />
 
             <QuickActionCard
               title="Ligar"
-              icon={<Phone className="w-6 h-6 text-accent" />}
+              icon={<Phone className="text-accent" />}
               onClick={() => setShowCallModal(true)}
             />
 
             <QuickActionCard
               title={"Horário das\nMedicações"}
-              icon={<Clock className="w-6 h-6 text-muted-foreground" />}
+              icon={<Clock className="text-muted-foreground" />}
               onClick={() => onTabChange("meds")}
             />
           </div>
