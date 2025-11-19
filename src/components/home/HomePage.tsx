@@ -193,7 +193,7 @@ export function HomePage({ onTabChange }: HomePageProps) {
             />
 
             <QuickActionCard
-              title="Horário das Medicações"
+              title={"Horário das\nMedicações"}
               icon={<Clock className="w-6 h-6 text-muted-foreground" />}
               onClick={() => onTabChange("meds")}
             />
