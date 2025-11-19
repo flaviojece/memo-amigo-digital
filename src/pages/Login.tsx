@@ -65,7 +65,7 @@ const Login = () => {
           </div>
           
           {/* Badges de confiança */}
-          <div className="flex items-center justify-center gap-4 mt-4 text-xs text-white/90">
+          <div className="flex items-center justify-between mt-4 text-xs text-white/90">
             <div className="flex items-center gap-1">
               <Shield className="w-4 h-4 text-green-400" />
               <span>Dados Seguros</span>
