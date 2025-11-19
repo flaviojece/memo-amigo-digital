@@ -277,6 +277,111 @@ export type Database = {
         }
         Relationships: []
       }
+      live_locations: {
+        Row: {
+          accuracy: number | null
+          battery_level: number | null
+          heading: number | null
+          is_moving: boolean | null
+          last_movement_at: string | null
+          latitude: number
+          longitude: number
+          speed: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          accuracy?: number | null
+          battery_level?: number | null
+          heading?: number | null
+          is_moving?: boolean | null
+          last_movement_at?: string | null
+          latitude: number
+          longitude: number
+          speed?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          accuracy?: number | null
+          battery_level?: number | null
+          heading?: number | null
+          is_moving?: boolean | null
+          last_movement_at?: string | null
+          latitude?: number
+          longitude?: number
+          speed?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      location_history: {
+        Row: {
+          accuracy: number | null
+          heading: number | null
+          id: number
+          latitude: number
+          longitude: number
+          recorded_at: string | null
+          speed: number | null
+          user_id: string
+        }
+        Insert: {
+          accuracy?: number | null
+          heading?: number | null
+          id?: number
+          latitude: number
+          longitude: number
+          recorded_at?: string | null
+          speed?: number | null
+          user_id: string
+        }
+        Update: {
+          accuracy?: number | null
+          heading?: number | null
+          id?: number
+          latitude?: number
+          longitude?: number
+          recorded_at?: string | null
+          speed?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      location_sharing_settings: {
+        Row: {
+          accuracy_threshold_meters: number | null
+          consent_given_at: string | null
+          consent_text: string | null
+          created_at: string | null
+          is_sharing: boolean
+          update_interval_seconds: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          accuracy_threshold_meters?: number | null
+          consent_given_at?: string | null
+          consent_text?: string | null
+          created_at?: string | null
+          is_sharing?: boolean
+          update_interval_seconds?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          accuracy_threshold_meters?: number | null
+          consent_given_at?: string | null
+          consent_text?: string | null
+          created_at?: string | null
+          is_sharing?: boolean
+          update_interval_seconds?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       medication_logs: {
         Row: {
           created_at: string | null
