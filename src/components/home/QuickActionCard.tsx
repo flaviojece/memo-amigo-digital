@@ -22,7 +22,7 @@ export function QuickActionCard({
     <button
       onClick={onClick}
       className={cn(
-        "card-memo p-6 text-left w-full transition-all duration-300 touch-manipulation",
+        "card-memo p-6 w-full flex justify-center transition-all duration-300 touch-manipulation",
         "hover:scale-105 active:scale-95 active:brightness-95 min-h-[140px] min-h-touch-comfortable",
         variant === "emergency" && "bg-destructive text-destructive-foreground shadow-emergency border-destructive",
         variant === "accent" && "bg-accent text-accent-foreground",
@@ -30,9 +30,9 @@ export function QuickActionCard({
       )}
       aria-label={`${title}${subtitle ? ': ' + subtitle : ''}`}
     >
-      <div className="flex items-center gap-16">
+      <div className="flex items-center gap-8 mx-auto">
         <div className={cn(
-          "p-3 rounded-senior flex-shrink-0",
+          "p-3 rounded-senior flex-shrink-0 mr-6",
           "[&_svg]:w-7 [&_svg]:h-7",
           variant === "emergency" ? "bg-white/20" : "bg-primary/10"
         )}>
