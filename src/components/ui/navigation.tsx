@@ -1,3 +1,4 @@
+import React from "react";
 import { Home, Pill, Calendar, Users, MoreHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -15,6 +16,23 @@ const tabs = [
 ];
 
 export function Navigation({ activeTab, onTabChange }: NavigationProps) {
+  const [hasAnimated, setHasAnimated] = React.useState(false);
+  
+  React.useEffect(() => {
+    // Animar apenas uma vez e salvar no localStorage
+    const animated = localStorage.getItem('moreButtonAnimated');
+    if (!animated) {
+      setHasAnimated(false);
+      const timer = setTimeout(() => {
+        localStorage.setItem('moreButtonAnimated', 'true');
+        setHasAnimated(true);
+      }, 3000); // Após 3 segundos (tempo da animação)
+      return () => clearTimeout(timer);
+    } else {
+      setHasAnimated(true);
+    }
+  }, []);
+
   return (
     <nav 
       className="fixed bottom-0 left-0 right-0 w-full bg-white border-t-4 border-primary shadow-lg z-[9999] min-h-[80px] pb-[env(safe-area-inset-bottom,0px)]"
@@ -34,7 +52,10 @@ export function Navigation({ activeTab, onTabChange }: NavigationProps) {
               className={cn(
                 "flex flex-col items-center p-2 sm:p-3 rounded-senior transition-all duration-300",
                 "flex-1 max-w-[80px] min-h-[68px] font-semibold touch-manipulation",
-                isMoreTab && !isActive && "bg-accent text-accent-foreground shadow-button border-2 border-accent",
+                isMoreTab && !isActive && cn(
+                  "bg-accent text-accent-foreground shadow-button border-2 border-accent",
+                  !hasAnimated && "animate-bounce-attention"
+                ),
                 isActive 
                   ? "bg-primary text-primary-foreground shadow-button" 
                   : !isMoreTab && "text-foreground hover:text-foreground hover:bg-muted active:bg-muted/80"
