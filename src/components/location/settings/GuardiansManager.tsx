@@ -200,16 +200,51 @@ export function GuardiansManager() {
                           </div>
                           <p className="text-xs text-muted-foreground">{formatDistanceToNow(new Date(invitation.created_at!), { addSuffix: true, locale: ptBR })}</p>
                         </div>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={() => revokeInvitation(invitation.id)} 
-                          disabled={isRevoked}
-                          className={`h-8 w-8 p-0 ${isRevoked ? 'opacity-50 cursor-not-allowed' : 'text-destructive hover:text-destructive hover:bg-destructive/10'}`}
-                          title={isRevoked ? 'Convite já revogado' : 'Revogar convite'}
-                        >
-                          {isRevoked ? <CheckCircle2 className="w-4 h-4 text-muted-foreground" /> : <X className="w-4 h-4" />}
-                        </Button>
+                        <div className="flex gap-2">
+                          {/* Botão Reenviar Email - apenas para convites pendentes */}
+                          {invitation.status === 'pending' && (
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => resendInvitationEmail(invitation)}
+                                    className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                    title="Reenviar email"
+                                  >
+                                    <RefreshCw className="w-4 h-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Reenviar email de convite</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          )}
+                          
+                          {/* Botão Excluir - para todos exceto aceitos */}
+                          {invitation.status !== 'accepted' && (
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => deleteInvitation(invitation.id)}
+                                    className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                    title="Excluir convite"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Excluir convite permanentemente</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          )}
+                        </div>
                       </div>
                     );
                   })}
