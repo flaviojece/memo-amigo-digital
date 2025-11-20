@@ -71,14 +71,14 @@ export const useGuardianInvitations = () => {
 
     const { data: existing } = await supabase
       .from('guardian_invitations')
-      .select('id')
+      .select('id, status')
       .eq('patient_id', user.id)
       .eq('invited_email', email)
       .eq('status', 'pending')
       .maybeSingle();
 
     if (existing) {
-      toast.error('Já existe um convite pendente para este email');
+      toast.error('Já existe um convite pendente para este email. Use "Reenviar" ou "Excluir" o convite existente.');
       return false;
     }
 
@@ -220,6 +220,58 @@ export const useGuardianInvitations = () => {
     return true;
   };
 
+  const deleteInvitation = async (invitationId: string) => {
+    const { error } = await supabase
+      .from('guardian_invitations')
+      .delete()
+      .eq('id', invitationId);
+
+    if (error) {
+      toast.error('Erro ao excluir convite');
+      return false;
+    }
+
+    toast.success('Convite excluído');
+    await loadSentInvitations();
+    return true;
+  };
+
+  const resendInvitationEmail = async (invitation: Invitation) => {
+    if (!user) return false;
+
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', user.id)
+        .single();
+
+      const { error: emailError } = await supabase.functions.invoke('send-invitation-email', {
+        body: {
+          invited_email: invitation.invited_email,
+          patient_name: profile?.full_name || user.email || 'Um paciente',
+          relationship_type: invitation.relationship_type || 'family',
+          invitation_token: invitation.id,
+          message: null,
+          site_url: window.location.origin,
+        }
+      });
+
+      if (emailError) {
+        console.error('Failed to resend email:', emailError);
+        toast.error('Erro ao reenviar email');
+        return false;
+      }
+
+      toast.success('Email reenviado para ' + invitation.invited_email);
+      return true;
+    } catch (error) {
+      console.error('Error resending email:', error);
+      toast.error('Erro ao reenviar email');
+      return false;
+    }
+  };
+
   return {
     sentInvitations,
     receivedInvitations,
@@ -228,6 +280,8 @@ export const useGuardianInvitations = () => {
     acceptInvitation,
     declineInvitation,
     revokeInvitation,
+    deleteInvitation,
+    resendInvitationEmail,
     reload: () => Promise.all([loadSentInvitations(), loadReceivedInvitations()]),
   };
 };
