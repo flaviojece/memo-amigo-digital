@@ -28,6 +28,14 @@ export default function AcceptInvitation() {
       return;
     }
 
+    // Check if user is logged in
+    if (!user) {
+      sessionStorage.setItem('pendingInvitationToken', token);
+      toast.error('Você precisa estar logado para aceitar o convite');
+      navigate('/login');
+      return;
+    }
+
     const { data, error } = await supabase
       .from('guardian_invitations')
       .select('*, patient:profiles!patient_id(full_name, email)')
