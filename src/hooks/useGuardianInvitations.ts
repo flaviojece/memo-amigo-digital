@@ -122,7 +122,16 @@ export const useGuardianInvitations = () => {
         console.error('Failed to send email:', emailError);
         toast.success('Convite criado, mas houve um erro ao enviar o email');
       } else {
-        toast.success('Convite enviado por email para ' + email);
+        toast.success(`Convite enviado para ${email}!`, {
+          description: 'Ative o compartilhamento de localização para que seu anjo possa te encontrar.',
+          action: {
+            label: 'Ativar Agora',
+            onClick: () => {
+              window.location.href = '/location-sharing-settings';
+            }
+          },
+          duration: 10000,
+        });
       }
     } catch (emailError) {
       console.error('Error sending email:', emailError);

@@ -66,12 +66,28 @@ const handler = async (req: Request): Promise<Response> => {
               
               <p><strong>${patient_name}</strong> convidou você para ser seu <strong>${relationshipLabel}</strong> no Dr. Memo.</p>
               
-              <p>Como anjo, você poderá:</p>
-              <ul>
-                <li>Acompanhar medicações e consultas</li>
-                <li>Receber notificações importantes</li>
-                <li>Ajudar no cuidado e bem-estar</li>
+              <h3 style="color: #333; font-size: 18px; margin-top: 24px;">Como funciona?</h3>
+              <ol style="line-height: 2; color: #555;">
+                <li><strong>Aceite o convite</strong> clicando no botão abaixo</li>
+                <li><strong>Faça login</strong> ou crie sua conta gratuita</li>
+                <li><strong>Pronto!</strong> Você poderá acompanhar tudo automaticamente</li>
+              </ol>
+
+              <h3 style="color: #333; font-size: 18px; margin-top: 24px;">O que você verá como Anjo:</h3>
+              <ul style="line-height: 2; color: #555;">
+                <li>📋 Acompanhar medicações e horários</li>
+                <li>🩺 Visualizar consultas agendadas</li>
+                <li>📞 Acessar contatos de emergência</li>
+                <li>📍 Ver localização em tempo real (quando ativada)</li>
+                <li>🔔 Receber notificações importantes</li>
               </ul>
+
+              <div style="background: #fff3cd; padding: 16px; border-radius: 8px; border-left: 4px solid #ffc107; margin: 24px 0;">
+                <strong style="color: #856404;">💡 Sobre a localização:</strong><br>
+                <span style="color: #856404; font-size: 14px;">
+                  ${patient_name} precisará ativar o compartilhamento de localização no aplicativo para que você possa visualizar onde ele(a) está em tempo real.
+                </span>
+              </div>
 
               ${message ? `
               <div class="message-box">

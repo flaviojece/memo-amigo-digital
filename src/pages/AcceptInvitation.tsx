@@ -112,8 +112,14 @@ export default function AcceptInvitation() {
       });
     }
 
-    toast.success('Convite aceito com sucesso!');
-    navigate('/');
+    toast.success("Convite aceito! Redirecionando...", {
+      description: "Você agora é um Anjo e pode acompanhar o cuidado do paciente.",
+      duration: 3000,
+    });
+    
+    setTimeout(() => {
+      navigate("/");
+    }, 2000);
   };
 
   const handleDecline = async () => {
@@ -155,6 +161,20 @@ export default function AcceptInvitation() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div className="bg-blue-50 dark:bg-blue-950/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800 mb-4">
+            <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-3 text-senior-base">
+              ℹ️ O que você verá como Anjo:
+            </h3>
+            <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-2 ml-4 list-none">
+              <li>📋 Medicamentos e horários</li>
+              <li>🩺 Consultas agendadas</li>
+              <li>📞 Contatos de emergência</li>
+              <li>📍 Localização em tempo real (quando ativada pelo paciente)</li>
+              <li>🔔 Notificações importantes</li>
+            </ul>
+          </div>
+          
+
           <div className="p-4 bg-muted rounded-lg">
             <p className="font-medium">{invitation.patient?.full_name || 'Usuário'}</p>
             <p className="text-sm text-muted-foreground">{invitation.patient?.email}</p>
