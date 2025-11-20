@@ -29,7 +29,7 @@ export const useGuardianInvitations = () => {
       .from('guardian_invitations')
       .select('*')
       .eq('patient_id', user.id)
-      .in('status', ['pending', 'accepted', 'declined'])
+      .in('status', ['pending', 'accepted', 'declined', 'revoked'])
       .order('created_at', { ascending: false });
 
     if (!error && data) {

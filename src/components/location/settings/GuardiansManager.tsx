@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Users, UserPlus, Mail, Check, X, Send, Clock, UserX } from "lucide-react";
+import { Users, UserPlus, Mail, Check, X, Send, Clock, UserX, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -154,15 +154,62 @@ export function GuardiansManager() {
               <div>
                 <h4 className="font-medium mb-2 text-xs flex items-center gap-2 text-muted-foreground"><Send className="w-3 h-3" />Enviados ({sentInvitations.length})</h4>
                 <div className="space-y-2">
-                  {sentInvitations.map((invitation) => (
-                    <div key={invitation.id} className="flex items-center justify-between p-3 hover:bg-muted/50 rounded-lg transition-colors">
-                      <div className="flex-1">
-                        <p className="font-medium text-sm">{invitation.invited_email}</p>
-                        <p className="text-xs text-muted-foreground">{formatDistanceToNow(new Date(invitation.created_at!), { addSuffix: true, locale: ptBR })}</p>
+                  {sentInvitations.map((invitation) => {
+                    const statusConfig = {
+                      pending: { 
+                        label: 'Pendente', 
+                        variant: 'default' as const, 
+                        icon: <Clock className="w-3 h-3" />,
+                        className: 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-500/20'
+                      },
+                      revoked: { 
+                        label: 'Revogado', 
+                        variant: 'secondary' as const, 
+                        icon: <XCircle className="w-3 h-3" />,
+                        className: 'bg-muted text-muted-foreground border-border'
+                      },
+                      accepted: { 
+                        label: 'Aceito', 
+                        variant: 'default' as const, 
+                        icon: <CheckCircle2 className="w-3 h-3" />,
+                        className: 'bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20'
+                      },
+                      declined: { 
+                        label: 'Recusado', 
+                        variant: 'destructive' as const, 
+                        icon: <AlertCircle className="w-3 h-3" />,
+                        className: 'bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20'
+                      },
+                    };
+                    
+                    const status = statusConfig[invitation.status as keyof typeof statusConfig] || statusConfig.pending;
+                    const isRevoked = invitation.status === 'revoked';
+                    
+                    return (
+                      <div key={invitation.id} className="flex items-center justify-between p-3 hover:bg-muted/50 rounded-lg transition-colors">
+                        <div className="flex-1 space-y-1">
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium text-sm">{invitation.invited_email}</p>
+                            <Badge variant={status.variant} className={`text-xs px-1.5 py-0 flex items-center gap-1 ${status.className}`}>
+                              {status.icon}
+                              {status.label}
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-muted-foreground">{formatDistanceToNow(new Date(invitation.created_at!), { addSuffix: true, locale: ptBR })}</p>
+                        </div>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => revokeInvitation(invitation.id)} 
+                          disabled={isRevoked}
+                          className={`h-8 w-8 p-0 ${isRevoked ? 'opacity-50 cursor-not-allowed' : 'text-destructive hover:text-destructive hover:bg-destructive/10'}`}
+                          title={isRevoked ? 'Convite já revogado' : 'Revogar convite'}
+                        >
+                          {isRevoked ? <CheckCircle2 className="w-4 h-4 text-muted-foreground" /> : <X className="w-4 h-4" />}
+                        </Button>
                       </div>
-                      <Button variant="ghost" size="sm" onClick={() => revokeInvitation(invitation.id)} className="text-destructive hover:text-destructive h-8 w-8 p-0"><X className="w-4 h-4" /></Button>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}
