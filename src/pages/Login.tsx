@@ -38,14 +38,28 @@ const Login = () => {
   const handleLogin = async (data: LoginFormData) => {
     const { error } = await signIn(data.email, data.password);
     if (!error) {
-      navigate("/");
+      // Check if there's a pending invitation token
+      const pendingToken = sessionStorage.getItem('pendingInvitationToken');
+      if (pendingToken) {
+        sessionStorage.removeItem('pendingInvitationToken');
+        navigate(`/accept-invitation?token=${pendingToken}`);
+      } else {
+        navigate("/");
+      }
     }
   };
 
   const handleSignup = async (data: SignupFormData) => {
     const { error } = await signUp(data.email, data.password, data.fullName);
     if (!error) {
-      navigate("/");
+      // Check if there's a pending invitation token
+      const pendingToken = sessionStorage.getItem('pendingInvitationToken');
+      if (pendingToken) {
+        sessionStorage.removeItem('pendingInvitationToken');
+        navigate(`/accept-invitation?token=${pendingToken}`);
+      } else {
+        navigate("/");
+      }
     }
   };
 
