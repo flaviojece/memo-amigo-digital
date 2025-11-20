@@ -17,11 +17,11 @@ const tabs = [
 export function Navigation({ activeTab, onTabChange }: NavigationProps) {
   return (
     <nav 
-      className="fixed bottom-0 left-0 right-0 bg-white backdrop-blur-sm border-t-4 border-primary shadow-lg z-[100] min-h-[80px]"
+      className="fixed bottom-0 left-0 right-0 w-full bg-white border-t-4 border-primary shadow-lg z-[9999] min-h-[80px] pb-[env(safe-area-inset-bottom,0px)]"
       role="navigation"
       aria-label="Navegação principal"
     >
-      <div className="flex justify-around items-center py-2 px-4 max-w-md mx-auto">
+      <div className="flex justify-between items-center py-2 px-4 w-full">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
