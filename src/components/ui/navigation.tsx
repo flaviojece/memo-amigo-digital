@@ -21,7 +21,7 @@ export function Navigation({ activeTab, onTabChange }: NavigationProps) {
       role="navigation"
       aria-label="Navegação principal"
     >
-      <div className="flex justify-between items-center py-2 px-4 w-full">
+      <div className="flex justify-around items-center py-2 px-2 sm:px-4 gap-2">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -32,8 +32,8 @@ export function Navigation({ activeTab, onTabChange }: NavigationProps) {
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
               className={cn(
-                "flex flex-col items-center p-3 rounded-senior transition-all duration-300",
-                "min-w-[68px] min-h-[68px] font-semibold touch-manipulation",
+                "flex flex-col items-center p-2 sm:p-3 rounded-senior transition-all duration-300",
+                "flex-1 max-w-[80px] min-h-[68px] font-semibold touch-manipulation",
                 isMoreTab && !isActive && "bg-accent text-accent-foreground shadow-button border-2 border-accent",
                 isActive 
                   ? "bg-primary text-primary-foreground shadow-button" 
