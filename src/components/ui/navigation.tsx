@@ -17,7 +17,7 @@ const tabs = [
 export function Navigation({ activeTab, onTabChange }: NavigationProps) {
   return (
     <nav 
-      className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-sm border-t-2 border-border shadow-card z-[100] min-h-[80px]"
+      className="fixed bottom-0 left-0 right-0 bg-white backdrop-blur-sm border-t-4 border-primary shadow-lg z-[100] min-h-[80px]"
       role="navigation"
       aria-label="Navegação principal"
     >
@@ -25,6 +25,7 @@ export function Navigation({ activeTab, onTabChange }: NavigationProps) {
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
+          const isMoreTab = tab.id === "more";
           
           return (
             <button
@@ -33,14 +34,15 @@ export function Navigation({ activeTab, onTabChange }: NavigationProps) {
               className={cn(
                 "flex flex-col items-center p-3 rounded-senior transition-all duration-300",
                 "min-w-[68px] min-h-[68px] font-semibold touch-manipulation",
+                isMoreTab && !isActive && "bg-accent text-accent-foreground shadow-button border-2 border-accent",
                 isActive 
                   ? "bg-primary text-primary-foreground shadow-button" 
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted/80"
+                  : !isMoreTab && "text-foreground hover:text-foreground hover:bg-muted active:bg-muted/80"
               )}
               aria-label={`${tab.label}${isActive ? ' (página atual)' : ''}`}
               aria-current={isActive ? 'page' : undefined}
             >
-              <Icon className="w-6 h-6 mb-3" />
+              <Icon className="w-7 h-7 mb-3" />
               <span className="text-xs">{tab.label}</span>
             </button>
           );
