@@ -3,7 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Navigation } from "@/components/ui/navigation";
 import { HomePage } from "@/components/home/HomePage";
 import { PatientsLocationList } from "@/components/location/PatientsLocationList";
-import { LogOut, MapPin } from "lucide-react";
+import { LogOut, MapPin, UserCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { InstallPrompt } from "@/components/mobile/InstallPrompt";
@@ -13,6 +13,7 @@ import { BackToHomeButton } from "@/components/ui/BackToHomeButton";
 import Medications from "./Medications";
 import Appointments from "./Appointments";
 import Contacts from "./Contacts";
+import Profile from "./Profile";
 
 const Index = () => {
   const { signOut } = useAuth();
@@ -30,6 +31,8 @@ const Index = () => {
         return <Contacts onTabChange={setActiveTab} />;
       case "location":
         return <PatientsLocationList onBackToMore={() => setActiveTab("more")} />;
+      case "profile":
+        return <Profile onBackToMore={() => setActiveTab("more")} />;
       case "more":
         return (
           <div className="flex flex-col min-h-[60vh] p-6 pb-32 space-y-6">
@@ -41,6 +44,21 @@ const Index = () => {
                 Acesse as opções de configuração através desta aba "Mais" no menu inferior
               </p>
             </div>
+            
+            {/* Meu Perfil */}
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setActiveTab("profile")}>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-3 text-senior-lg">
+                  <UserCircle className="w-6 h-6 text-primary" />
+                  Meu Perfil
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground text-senior-sm">
+                  Visualize e edite suas informações pessoais
+                </p>
+              </CardContent>
+            </Card>
             
             {/* Localização dos Pacientes */}
             <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setActiveTab("location")}>
