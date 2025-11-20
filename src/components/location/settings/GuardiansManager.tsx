@@ -10,9 +10,10 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Users, UserPlus, Mail, Check, X, Send, Clock, UserX, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import { Users, UserPlus, Mail, Check, X, Send, Clock, UserX, CheckCircle2, XCircle, AlertCircle, RefreshCw, Trash2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function GuardiansManager() {
   const { guardians, loading: relationshipsLoading, revokeGuardian } = useGuardianRelationships();
@@ -23,7 +24,9 @@ export function GuardiansManager() {
     sendInvitation,
     acceptInvitation,
     declineInvitation,
-    revokeInvitation
+    revokeInvitation,
+    deleteInvitation,
+    resendInvitationEmail
   } = useGuardianInvitations();
 
   const [inviteEmail, setInviteEmail] = useState("");
