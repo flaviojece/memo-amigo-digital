@@ -4,6 +4,7 @@ import { QuickActionCard } from "./QuickActionCard";
 import { EmergencyButton } from "./EmergencyButton";
 import { FavoriteContactsModal } from "./FavoriteContactsModal";
 import { LocationSharingModal } from "@/components/location/LocationSharingModal";
+import { FloatingActionButton } from "./FloatingActionButton";
 import { 
   Pill, 
   Calendar, 
@@ -259,6 +260,8 @@ export function HomePage({ onTabChange }: HomePageProps) {
         open={showLocationModal}
         onOpenChange={setShowLocationModal}
       />
+
+      <FloatingActionButton onTabChange={onTabChange} />
     </div>
   );
 }
