@@ -17,7 +17,7 @@ const tabs = [
 export function Navigation({ activeTab, onTabChange }: NavigationProps) {
   return (
     <nav 
-      className="fixed bottom-0 left-0 right-0 bg-card border-t-2 border-border shadow-card z-50"
+      className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-sm border-t-2 border-border shadow-card z-[100] min-h-[80px]"
       role="navigation"
       aria-label="Navegação principal"
     >

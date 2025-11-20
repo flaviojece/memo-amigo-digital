@@ -124,7 +124,7 @@ export function HomePage({ onTabChange }: HomePageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pb-28">
       <WelcomeHeader />
       
       <main className="p-4 space-y-6">
