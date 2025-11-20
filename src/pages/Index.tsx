@@ -35,7 +35,7 @@ const Index = () => {
         return <Profile onBackToMore={() => setActiveTab("more")} />;
       case "more":
         return (
-          <div className="flex flex-col min-h-[60vh] p-6 pb-32 space-y-6">
+          <div className="flex flex-col min-h-[60vh] p-6 pb-36 space-y-6">
             <BackToHomeButton onBackToHome={() => setActiveTab("home")} />
             
             <div className="space-y-2">
@@ -99,7 +99,7 @@ const Index = () => {
   };
 
   return (
-    <div className="bg-background min-h-screen pattern-checkered pb-24">
+    <div className="bg-background min-h-screen pattern-checkered pb-32">
       {renderContent()}
       <InstallPrompt />
       <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
