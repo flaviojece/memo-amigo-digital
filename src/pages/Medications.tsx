@@ -69,16 +69,14 @@ export default function Medications({ onTabChange }: MedicationsProps) {
           <h1 className="text-senior-3xl font-bold text-foreground">
             💊 {selectedPatientId ? 'Medicamentos' : 'Meus Medicamentos'}
           </h1>
-          {!selectedPatientId && (
-            <Button
-              onClick={() => setIsFormOpen(true)}
-              size="lg"
-              className="text-senior-base"
-            >
-              <Plus className="w-6 h-6 mr-2" />
-              Adicionar
-            </Button>
-          )}
+          <Button
+            onClick={() => setIsFormOpen(true)}
+            size="lg"
+            className="text-senior-base"
+          >
+            <Plus className="w-6 h-6 mr-2" />
+            Adicionar
+          </Button>
         </div>
 
         <MedicationList

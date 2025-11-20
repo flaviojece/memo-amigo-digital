@@ -65,16 +65,14 @@ export default function Appointments({ onTabChange }: AppointmentsProps) {
           <h1 className="text-senior-3xl font-bold text-foreground">
             📅 {selectedPatientId ? 'Consultas' : 'Minhas Consultas'}
           </h1>
-          {!selectedPatientId && (
-            <Button
-              onClick={() => setIsFormOpen(true)}
-              size="lg"
-              className="text-senior-base"
-            >
-              <Plus className="w-6 h-6 mr-2" />
-              Agendar
-            </Button>
-          )}
+          <Button
+            onClick={() => setIsFormOpen(true)}
+            size="lg"
+            className="text-senior-base"
+          >
+            <Plus className="w-6 h-6 mr-2" />
+            Agendar
+          </Button>
         </div>
 
         <AppointmentList
