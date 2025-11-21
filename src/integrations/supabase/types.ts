@@ -558,6 +558,66 @@ export type Database = {
         }
         Relationships: []
       }
+      suggestions: {
+        Row: {
+          angel_id: string
+          created_at: string | null
+          id: string
+          patient_id: string
+          patient_response: string | null
+          responded_at: string | null
+          status: Database["public"]["Enums"]["suggestion_status"] | null
+          suggestion_data: Json
+          target_appointment_id: string | null
+          target_medication_id: string | null
+          type: Database["public"]["Enums"]["suggestion_type"]
+          updated_at: string | null
+        }
+        Insert: {
+          angel_id: string
+          created_at?: string | null
+          id?: string
+          patient_id: string
+          patient_response?: string | null
+          responded_at?: string | null
+          status?: Database["public"]["Enums"]["suggestion_status"] | null
+          suggestion_data: Json
+          target_appointment_id?: string | null
+          target_medication_id?: string | null
+          type: Database["public"]["Enums"]["suggestion_type"]
+          updated_at?: string | null
+        }
+        Update: {
+          angel_id?: string
+          created_at?: string | null
+          id?: string
+          patient_id?: string
+          patient_response?: string | null
+          responded_at?: string | null
+          status?: Database["public"]["Enums"]["suggestion_status"] | null
+          suggestion_data?: Json
+          target_appointment_id?: string | null
+          target_medication_id?: string | null
+          type?: Database["public"]["Enums"]["suggestion_type"]
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "suggestions_target_appointment_id_fkey"
+            columns: ["target_appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "suggestions_target_medication_id_fkey"
+            columns: ["target_medication_id"]
+            isOneToOne: false
+            referencedRelation: "medications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -617,6 +677,14 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user" | "angel"
+      suggestion_status: "pending" | "approved" | "rejected"
+      suggestion_type:
+        | "medication_create"
+        | "medication_update"
+        | "medication_delete"
+        | "appointment_create"
+        | "appointment_update"
+        | "appointment_delete"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -745,6 +813,15 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user", "angel"],
+      suggestion_status: ["pending", "approved", "rejected"],
+      suggestion_type: [
+        "medication_create",
+        "medication_update",
+        "medication_delete",
+        "appointment_create",
+        "appointment_update",
+        "appointment_delete",
+      ],
     },
   },
 } as const
