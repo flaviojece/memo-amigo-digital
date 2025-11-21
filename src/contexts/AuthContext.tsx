@@ -91,13 +91,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         if (!isMounted) return;
 
-        if (session?.user) {
-          console.log('[AuthContext] Processing initial session for user:', session.user.email);
-          setUser(session.user);
-          setSession(session);
-          await checkAdminRole(session.user.id);
-          await checkAngelRole(session.user.id);
-          console.log('[AuthContext] Initial session processed successfully');
+      if (session?.user) {
+        console.log('[AuthContext] Processing initial session for user:', session.user.email);
+        setUser(session.user);
+        setSession(session);
+        
+        // Run role checks in background without blocking loading state
+        setTimeout(() => {
+          console.log('[AuthContext] Running initial role checks in background...');
+          checkAdminRole(session.user!.id);
+          checkAngelRole(session.user!.id);
+        }, 0);
+        
+        console.log('[AuthContext] Initial session processed (user set, role checks scheduled)');
         } else {
           console.log('[AuthContext] No initial session, clearing state');
           setUser(null);
@@ -126,19 +132,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     console.log('[AuthContext] Setting up auth listener...');
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         console.log('[AuthContext] Auth event:', event, 'User:', session?.user?.email);
 
-        try {
-          if (!isMounted) return;
+        if (!isMounted) {
+          console.log('[AuthContext] Component unmounted, ignoring auth event');
+          return;
+        }
 
+        try {
           if (event === 'SIGNED_IN' && session?.user) {
-            console.log('[AuthContext] SIGNED_IN event, processing user:', session.user.email);
+            console.log('[AuthContext] SIGNED_IN event, setting user and session');
             setUser(session.user);
             setSession(session);
-            await checkAdminRole(session.user.id);
-            await checkAngelRole(session.user.id);
-            console.log('[AuthContext] SIGNED_IN processed successfully');
+            
+            // Run role checks in background without blocking loading state
+            setTimeout(() => {
+              console.log('[AuthContext] Running SIGNED_IN role checks in background...');
+              checkAdminRole(session.user!.id);
+              checkAngelRole(session.user!.id);
+            }, 0);
           } else if (event === 'SIGNED_OUT') {
             console.log('[AuthContext] SIGNED_OUT event, clearing state');
             setUser(null);
@@ -152,7 +165,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         } finally {
           if (isMounted) {
             setLoading(false);
-            console.log('[AuthContext] Loading set to false (event finished)');
+            console.log('[AuthContext] Loading set to false (event finished after auth event)');
           }
         }
       }
