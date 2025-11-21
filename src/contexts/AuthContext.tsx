@@ -7,6 +7,8 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   isAdmin: boolean;
+  isAngel: boolean;
+  hasPatients: boolean;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: any }>;
@@ -19,39 +21,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isAngel, setIsAngel] = useState(false);
+  const [hasPatients, setHasPatients] = useState(false);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
-
-  useEffect(() => {
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        // Defer role check with setTimeout to prevent deadlock
-        if (session?.user) {
-          setTimeout(() => {
-            checkAdminRole(session.user.id);
-          }, 0);
-        } else {
-          setIsAdmin(false);
-        }
-      }
-    );
-
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        checkAdminRole(session.user.id);
-      }
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
 
   const checkAdminRole = async (userId: string) => {
     try {
@@ -59,15 +32,85 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         _user_id: userId,
         _role: 'admin'
       });
-      
-      if (!error) {
-        setIsAdmin(data || false);
+
+      if (error) {
+        console.error('Error checking admin role:', error);
+        setIsAdmin(false);
+        return;
       }
+
+      setIsAdmin(!!data);
     } catch (error) {
       console.error('Error checking admin role:', error);
       setIsAdmin(false);
     }
   };
+
+  const checkAngelRole = async (userId: string) => {
+    try {
+      // Check if has 'angel' role
+      const { data: roleData, error: roleError } = await supabase.rpc('has_role', {
+        _user_id: userId,
+        _role: 'angel'
+      });
+
+      if (roleError) {
+        console.error('Error checking angel role:', roleError);
+        setIsAngel(false);
+      } else {
+        setIsAngel(!!roleData);
+      }
+
+      // Check if has patients linked (is a guardian)
+      const { data: patientsData, error: patientsError } = await supabase.rpc('get_patients_for_guardian', {
+        _guardian_id: userId
+      });
+
+      if (patientsError) {
+        console.error('Error checking patients:', patientsError);
+        setHasPatients(false);
+      } else {
+        setHasPatients((patientsData?.length || 0) > 0);
+      }
+    } catch (error) {
+      console.error('Error checking angel role:', error);
+      setIsAngel(false);
+      setHasPatients(false);
+    }
+  };
+
+  useEffect(() => {
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === 'SIGNED_IN' && session?.user) {
+          setUser(session.user);
+          setSession(session);
+          await checkAdminRole(session.user.id);
+          await checkAngelRole(session.user.id);
+        } else if (event === 'SIGNED_OUT') {
+          setUser(null);
+          setSession(null);
+          setIsAdmin(false);
+          setIsAngel(false);
+          setHasPatients(false);
+        }
+      }
+    );
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (session?.user) {
+        setUser(session.user);
+        setSession(session);
+        await checkAdminRole(session.user.id);
+        await checkAngelRole(session.user.id);
+      }
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const signIn = async (email: string, password: string) => {
     try {
@@ -143,6 +186,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signOut = async () => {
     await supabase.auth.signOut();
     setIsAdmin(false);
+    setIsAngel(false);
+    setHasPatients(false);
     toast({
       title: "Até logo!",
       description: "Você saiu do Dr. Memo",
@@ -155,6 +200,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         user,
         session,
         isAdmin,
+        isAngel,
+        hasPatients,
         loading,
         signIn,
         signUp,

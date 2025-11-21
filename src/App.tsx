@@ -13,6 +13,10 @@ const Login = lazy(() => import("./pages/Login"));
 const AcceptInvitation = lazy(() => import("./pages/AcceptInvitation"));
 const LocationSharingSettings = lazy(() => import("./pages/LocationSharingSettings"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const AngelDashboard = lazy(() => import("./pages/AngelDashboard"));
+const PatientHome = lazy(() => import("./pages/PatientHome"));
+
+import { SmartRouter } from "@/components/SmartRouter";
 
 const queryClient = new QueryClient();
 
@@ -34,14 +38,37 @@ const App = () => (
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/accept-invitation" element={<AcceptInvitation />} />
+              
+              {/* Smart routing - detects if user is angel or patient */}
               <Route
                 path="/"
                 element={
                   <ProtectedRoute>
-                    <Index />
+                    <SmartRouter />
                   </ProtectedRoute>
                 }
               />
+              
+              {/* Patient interface */}
+              <Route
+                path="/patient"
+                element={
+                  <ProtectedRoute>
+                    <PatientHome />
+                  </ProtectedRoute>
+                }
+              />
+              
+              {/* Angel interface */}
+              <Route
+                path="/angel"
+                element={
+                  <ProtectedRoute>
+                    <AngelDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              
               <Route
                 path="/location-sharing-settings"
                 element={
