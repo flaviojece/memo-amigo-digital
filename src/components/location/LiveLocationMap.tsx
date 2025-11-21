@@ -90,6 +90,10 @@ export function LiveLocationMap({ patientId, onClose }: LiveLocationMapProps) {
       setMapReady(true);
     });
 
+    map.current.on('error', (event) => {
+      console.error("Erro no Mapbox:", event.error || event);
+    });
+
     return () => {
       setMapReady(false);
       map.current?.remove();
