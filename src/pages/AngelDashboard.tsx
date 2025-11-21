@@ -18,7 +18,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export default function AngelDashboard() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { patients, loading: loadingPatients } = useGuardianRelationships();
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
@@ -69,7 +69,8 @@ export default function AngelDashboard() {
     setShowSuggestionDialog(true);
   };
 
-  if (loadingPatients) {
+  // Show loading screen while auth is initializing
+  if (authLoading || loadingPatients) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-secondary/10 to-accent/10">
         <div className="text-center space-y-4">

@@ -14,10 +14,22 @@ import { SuggestionCard } from "@/components/angel/SuggestionCard";
 import { Bell, Shield, Lightbulb } from "lucide-react";
 
 export default function PatientHome() {
-  const { user, isAngel, hasPatients } = useAuth();
+  const { user, isAngel, hasPatients, loading } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("home");
   const { suggestions, approveSuggestion, rejectSuggestion } = useSuggestions();
+
+  // Show loading screen while auth is initializing
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center space-y-4">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-senior-lg text-muted-foreground">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
 
   const pendingSuggestions = suggestions.filter(s => s.status === 'pending');
 
