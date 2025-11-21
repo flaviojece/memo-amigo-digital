@@ -24,6 +24,7 @@ export function LiveLocationMap({ patientId, onClose }: LiveLocationMapProps) {
   const markerRef = useRef<mapboxgl.Marker | null>(null);
   const [location, setLocation] = useState<any>(null);
   const [history, setHistory] = useState<any[]>([]);
+  const [mapReady, setMapReady] = useState(false);
 
   // Buscar dados do paciente
   const { data: patient } = useQuery({
@@ -83,14 +84,21 @@ export function LiveLocationMap({ patientId, onClose }: LiveLocationMapProps) {
 
     map.current.addControl(new mapboxgl.NavigationControl(), "top-right");
 
+    // Aguardar o estilo carregar completamente
+    map.current.on('load', () => {
+      console.log("✅ Mapa Mapbox carregado com sucesso");
+      setMapReady(true);
+    });
+
     return () => {
+      setMapReady(false);
       map.current?.remove();
     };
   }, []);
 
   // Atualizar marker e linha de histórico
   useEffect(() => {
-    if (!map.current || !location) return;
+    if (!map.current || !location || !mapReady) return;
 
     // Atualizar ou criar marker
     if (markerRef.current) {
@@ -119,47 +127,51 @@ export function LiveLocationMap({ patientId, onClose }: LiveLocationMapProps) {
 
     // Adicionar linha de histórico
     if (history.length > 1) {
-      const coordinates = history.map((h) => [h.longitude, h.latitude]);
+      try {
+        const coordinates = history.map((h) => [h.longitude, h.latitude]);
 
-      if (map.current.getSource("route")) {
-        (map.current.getSource("route") as mapboxgl.GeoJSONSource).setData({
-          type: "Feature",
-          properties: {},
-          geometry: {
-            type: "LineString",
-            coordinates,
-          },
-        });
-      } else {
-        map.current.addSource("route", {
-          type: "geojson",
-          data: {
+        if (map.current.getSource("route")) {
+          (map.current.getSource("route") as mapboxgl.GeoJSONSource).setData({
             type: "Feature",
             properties: {},
             geometry: {
               type: "LineString",
               coordinates,
             },
-          },
-        });
+          });
+        } else {
+          map.current.addSource("route", {
+            type: "geojson",
+            data: {
+              type: "Feature",
+              properties: {},
+              geometry: {
+                type: "LineString",
+                coordinates,
+              },
+            },
+          });
 
-        map.current.addLayer({
-          id: "route",
-          type: "line",
-          source: "route",
-          layout: {
-            "line-join": "round",
-            "line-cap": "round",
-          },
-          paint: {
-            "line-color": "#3b82f6",
-            "line-width": 4,
-            "line-opacity": 0.7,
-          },
-        });
+          map.current.addLayer({
+            id: "route",
+            type: "line",
+            source: "route",
+            layout: {
+              "line-join": "round",
+              "line-cap": "round",
+            },
+            paint: {
+              "line-color": "#3b82f6",
+              "line-width": 4,
+              "line-opacity": 0.7,
+            },
+          });
+        }
+      } catch (error) {
+        console.error("Erro ao adicionar rota ao mapa:", error);
       }
     }
-  }, [location, history]);
+  }, [location, history, mapReady]);
 
   // Subscribe em atualizações em tempo real
   useEffect(() => {
