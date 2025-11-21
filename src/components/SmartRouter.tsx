@@ -7,25 +7,35 @@ export function SmartRouter() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (loading) return;
+    console.log('[SmartRouter] State:', { loading, isAngel, hasPatients });
+    
+    if (loading) {
+      console.log('[SmartRouter] Still loading, waiting...');
+      return;
+    }
 
     // Check localStorage for user preference
     const preference = localStorage.getItem('interface-preference');
+    console.log('[SmartRouter] User preference:', preference);
     
     if (preference === '/angel' && isAngel && hasPatients) {
+      console.log('[SmartRouter] Navigating to /angel (preference)');
       navigate('/angel');
       return;
     }
 
     if (preference === '/patient') {
+      console.log('[SmartRouter] Navigating to /patient (preference)');
       navigate('/patient');
       return;
     }
 
     // Auto-detect based on roles
     if (isAngel && hasPatients) {
+      console.log('[SmartRouter] Navigating to /angel (auto-detect)');
       navigate('/angel');
     } else {
+      console.log('[SmartRouter] Navigating to /patient (default)');
       navigate('/patient');
     }
   }, [isAngel, hasPatients, loading, navigate]);

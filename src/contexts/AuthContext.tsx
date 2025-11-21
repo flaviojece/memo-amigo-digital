@@ -83,23 +83,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('[AuthContext] Auth event:', event, 'User:', session?.user?.email);
+        
         if (event === 'SIGNED_IN' && session?.user) {
           setUser(session.user);
           setSession(session);
           await checkAdminRole(session.user.id);
           await checkAngelRole(session.user.id);
+          setLoading(false); // ✅ FIX: Reset loading after sign in
+          console.log('[AuthContext] Sign in complete, loading=false');
         } else if (event === 'SIGNED_OUT') {
           setUser(null);
           setSession(null);
           setIsAdmin(false);
           setIsAngel(false);
           setHasPatients(false);
+          setLoading(false); // ✅ FIX: Reset loading after sign out
+          console.log('[AuthContext] Sign out complete, loading=false');
         }
       }
     );
 
     // THEN check for existing session
     supabase.auth.getSession().then(async ({ data: { session } }) => {
+      console.log('[AuthContext] Initial session check:', session?.user?.email);
       if (session?.user) {
         setUser(session.user);
         setSession(session);
@@ -107,6 +114,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await checkAngelRole(session.user.id);
       }
       setLoading(false);
+      console.log('[AuthContext] Initial load complete, loading=false');
     });
 
     return () => subscription.unsubscribe();
