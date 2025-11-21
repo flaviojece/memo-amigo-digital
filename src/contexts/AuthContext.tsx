@@ -80,44 +80,52 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    // Set up auth state listener FIRST
+    console.log('[AuthContext] Setting up auth listener...');
+    
+    // Use ONLY onAuthStateChange - it handles INITIAL_SESSION automatically
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('[AuthContext] Auth event:', event, 'User:', session?.user?.email);
         
-        if (event === 'SIGNED_IN' && session?.user) {
-          setUser(session.user);
-          setSession(session);
-          await checkAdminRole(session.user.id);
-          await checkAngelRole(session.user.id);
-          setLoading(false); // ✅ FIX: Reset loading after sign in
-          console.log('[AuthContext] Sign in complete, loading=false');
-        } else if (event === 'SIGNED_OUT') {
-          setUser(null);
-          setSession(null);
-          setIsAdmin(false);
-          setIsAngel(false);
-          setHasPatients(false);
-          setLoading(false); // ✅ FIX: Reset loading after sign out
-          console.log('[AuthContext] Sign out complete, loading=false');
+        try {
+          if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
+            if (session?.user) {
+              console.log('[AuthContext] Processing session for user:', session.user.email);
+              setUser(session.user);
+              setSession(session);
+              await checkAdminRole(session.user.id);
+              await checkAngelRole(session.user.id);
+              console.log('[AuthContext] Session processed successfully');
+            } else {
+              console.log('[AuthContext] No user in session, clearing state');
+              setUser(null);
+              setSession(null);
+              setIsAdmin(false);
+              setIsAngel(false);
+              setHasPatients(false);
+            }
+          } else if (event === 'SIGNED_OUT') {
+            console.log('[AuthContext] User signed out, clearing state');
+            setUser(null);
+            setSession(null);
+            setIsAdmin(false);
+            setIsAngel(false);
+            setHasPatients(false);
+          }
+        } catch (error) {
+          console.error('[AuthContext] Error processing auth event:', error);
+        } finally {
+          // ALWAYS set loading to false, no matter what happens
+          setLoading(false);
+          console.log('[AuthContext] Loading set to false (event finished)');
         }
       }
     );
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      console.log('[AuthContext] Initial session check:', session?.user?.email);
-      if (session?.user) {
-        setUser(session.user);
-        setSession(session);
-        await checkAdminRole(session.user.id);
-        await checkAngelRole(session.user.id);
-      }
-      setLoading(false);
-      console.log('[AuthContext] Initial load complete, loading=false');
-    });
-
-    return () => subscription.unsubscribe();
+    return () => {
+      console.log('[AuthContext] Cleaning up auth listener');
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {
