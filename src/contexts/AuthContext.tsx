@@ -80,32 +80,67 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
+    console.log('[AuthContext] Initializing auth...');
+    let isMounted = true;
+
+    const initAuth = async () => {
+      console.log('[AuthContext] Starting initial session check...');
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        console.log('[AuthContext] Initial session:', session?.user?.email);
+
+        if (!isMounted) return;
+
+        if (session?.user) {
+          console.log('[AuthContext] Processing initial session for user:', session.user.email);
+          setUser(session.user);
+          setSession(session);
+          await checkAdminRole(session.user.id);
+          await checkAngelRole(session.user.id);
+          console.log('[AuthContext] Initial session processed successfully');
+        } else {
+          console.log('[AuthContext] No initial session, clearing state');
+          setUser(null);
+          setSession(null);
+          setIsAdmin(false);
+          setIsAngel(false);
+          setHasPatients(false);
+        }
+      } catch (error) {
+        console.error('[AuthContext] Error during initial session check:', error);
+        if (!isMounted) return;
+        setUser(null);
+        setSession(null);
+        setIsAdmin(false);
+        setIsAngel(false);
+        setHasPatients(false);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+          console.log('[AuthContext] Initial auth init finished, loading=false');
+        }
+      }
+    };
+
+    initAuth();
+
     console.log('[AuthContext] Setting up auth listener...');
-    
-    // Use ONLY onAuthStateChange - it handles INITIAL_SESSION automatically
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('[AuthContext] Auth event:', event, 'User:', session?.user?.email);
-        
+
         try {
-          if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
-            if (session?.user) {
-              console.log('[AuthContext] Processing session for user:', session.user.email);
-              setUser(session.user);
-              setSession(session);
-              await checkAdminRole(session.user.id);
-              await checkAngelRole(session.user.id);
-              console.log('[AuthContext] Session processed successfully');
-            } else {
-              console.log('[AuthContext] No user in session, clearing state');
-              setUser(null);
-              setSession(null);
-              setIsAdmin(false);
-              setIsAngel(false);
-              setHasPatients(false);
-            }
+          if (!isMounted) return;
+
+          if (event === 'SIGNED_IN' && session?.user) {
+            console.log('[AuthContext] SIGNED_IN event, processing user:', session.user.email);
+            setUser(session.user);
+            setSession(session);
+            await checkAdminRole(session.user.id);
+            await checkAngelRole(session.user.id);
+            console.log('[AuthContext] SIGNED_IN processed successfully');
           } else if (event === 'SIGNED_OUT') {
-            console.log('[AuthContext] User signed out, clearing state');
+            console.log('[AuthContext] SIGNED_OUT event, clearing state');
             setUser(null);
             setSession(null);
             setIsAdmin(false);
@@ -115,15 +150,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         } catch (error) {
           console.error('[AuthContext] Error processing auth event:', error);
         } finally {
-          // ALWAYS set loading to false, no matter what happens
-          setLoading(false);
-          console.log('[AuthContext] Loading set to false (event finished)');
+          if (isMounted) {
+            setLoading(false);
+            console.log('[AuthContext] Loading set to false (event finished)');
+          }
         }
       }
     );
 
     return () => {
       console.log('[AuthContext] Cleaning up auth listener');
+      isMounted = false;
       subscription.unsubscribe();
     };
   }, []);
