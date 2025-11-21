@@ -12,6 +12,7 @@ import { AppointmentList } from '@/components/appointments/AppointmentList';
 import { LiveLocationMap } from '@/components/location/LiveLocationMap';
 import { useSuggestions } from '@/hooks/useSuggestions';
 import { SuggestionCard } from '@/components/angel/SuggestionCard';
+import { MedicationSuggestionDialog } from '@/components/angel/MedicationSuggestionDialog';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -22,8 +23,9 @@ export default function AngelDashboard() {
   const { patients, loading: loadingPatients } = useGuardianRelationships();
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'location' | 'medications' | 'appointments' | 'suggestions'>('overview');
+  const [showSuggestionDialog, setShowSuggestionDialog] = useState(false);
 
-  const { suggestions, loading: loadingSuggestions } = useSuggestions(selectedPatientId || undefined);
+  const { suggestions, approveSuggestion, rejectSuggestion, loading: loadingSuggestions } = useSuggestions(selectedPatientId || undefined);
 
   const { data: medications, isLoading: loadingMeds, refetch: refetchMeds } = useQuery({
     queryKey: ['medications', selectedPatientId],
@@ -64,9 +66,7 @@ export default function AngelDashboard() {
   const pendingSuggestions = suggestions.filter(s => s.status === 'pending');
 
   const handleSuggestMedication = () => {
-    toast.info('Funcionalidade em desenvolvimento', {
-      description: 'Em breve você poderá sugerir novos medicamentos!',
-    });
+    setShowSuggestionDialog(true);
   };
 
   if (loadingPatients) {
@@ -272,6 +272,8 @@ export default function AngelDashboard() {
                           key={suggestion.id}
                           suggestion={suggestion}
                           isPatientView={false}
+                          onApprove={approveSuggestion}
+                          onReject={rejectSuggestion}
                         />
                       ))}
                     </div>
@@ -282,6 +284,14 @@ export default function AngelDashboard() {
           </Tabs>
         )}
       </div>
+
+      {selectedPatientId && (
+        <MedicationSuggestionDialog
+          patientId={selectedPatientId}
+          open={showSuggestionDialog}
+          onOpenChange={setShowSuggestionDialog}
+        />
+      )}
     </div>
   );
 }

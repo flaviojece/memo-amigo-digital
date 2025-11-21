@@ -9,8 +9,9 @@ import Contacts from "./Contacts";
 import Profile from "./Profile";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { SuggestionCard } from "@/components/angel/SuggestionCard";
-import { Bell, Shield } from "lucide-react";
+import { Bell, Shield, Lightbulb } from "lucide-react";
 
 export default function PatientHome() {
   const { user, isAngel, hasPatients } = useAuth();
@@ -107,29 +108,45 @@ export default function PatientHome() {
 
             {/* Pending Suggestions Alert */}
             {pendingSuggestions.length > 0 && (
-              <Card className="border-2 border-accent bg-accent/5">
+              <Card className="bg-accent/50 border-primary/20">
                 <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <Bell className="w-6 h-6 text-accent animate-bounce" />
-                    <div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Lightbulb className="w-6 h-6 text-primary" />
                       <CardTitle className="text-senior-xl">
-                        Sugestões Pendentes
+                        Sugestões dos seus Anjos
                       </CardTitle>
-                      <CardDescription>
-                        Você tem {pendingSuggestions.length} sugestão(ões) dos seus anjos aguardando aprovação
-                      </CardDescription>
+                      <Badge variant="secondary" className="text-senior-sm">
+                        {pendingSuggestions.length}
+                      </Badge>
                     </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => navigate('/suggestions')}
+                    >
+                      Ver todas
+                    </Button>
                   </div>
+                  <CardDescription>
+                    Revise as sugestões enviadas pelos seus cuidadores
+                  </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <Button
-                    onClick={() => setActiveTab('suggestions')}
-                    size="lg"
-                    className="w-full gap-2"
-                  >
-                    <Bell className="w-5 h-5" />
-                    Revisar Agora
-                  </Button>
+                <CardContent className="space-y-4">
+                  {pendingSuggestions.slice(0, 2).map(suggestion => (
+                    <SuggestionCard
+                      key={suggestion.id}
+                      suggestion={suggestion}
+                      isPatientView={true}
+                      onApprove={approveSuggestion}
+                      onReject={rejectSuggestion}
+                    />
+                  ))}
+                  {pendingSuggestions.length > 2 && (
+                    <p className="text-senior-sm text-muted-foreground text-center">
+                      E mais {pendingSuggestions.length - 2} sugestões...
+                    </p>
+                  )}
                 </CardContent>
               </Card>
             )}

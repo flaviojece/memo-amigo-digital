@@ -15,6 +15,7 @@ const LocationSharingSettings = lazy(() => import("./pages/LocationSharingSettin
 const NotFound = lazy(() => import("./pages/NotFound"));
 const AngelDashboard = lazy(() => import("./pages/AngelDashboard"));
 const PatientHome = lazy(() => import("./pages/PatientHome"));
+const PatientSuggestions = lazy(() => import("./pages/PatientSuggestions"));
 
 import { SmartRouter } from "@/components/SmartRouter";
 
@@ -65,6 +66,16 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <AngelDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              
+              {/* Patient suggestions */}
+              <Route
+                path="/suggestions"
+                element={
+                  <ProtectedRoute>
+                    <PatientSuggestions />
                   </ProtectedRoute>
                 }
               />
