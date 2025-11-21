@@ -25,6 +25,7 @@ export function LiveLocationMap({ patientId, onClose }: LiveLocationMapProps) {
   const [location, setLocation] = useState<any>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [mapReady, setMapReady] = useState(false);
+  const [mapError, setMapError] = useState<string | null>(null);
 
   // Buscar dados do paciente
   const { data: patient } = useQuery({
@@ -73,6 +74,7 @@ export function LiveLocationMap({ patientId, onClose }: LiveLocationMapProps) {
       return;
     }
 
+    console.log("🔑 MAPBOX_TOKEN definido:", !!MAPBOX_TOKEN);
     mapboxgl.accessToken = MAPBOX_TOKEN;
 
     map.current = new mapboxgl.Map({
@@ -86,12 +88,14 @@ export function LiveLocationMap({ patientId, onClose }: LiveLocationMapProps) {
 
     // Aguardar o estilo carregar completamente
     map.current.on('load', () => {
-      console.log("✅ Mapa Mapbox carregado com sucesso");
+      console.log("✅ Mapa Mapbox carregado com sucesso (mapReady = true)");
       setMapReady(true);
     });
 
     map.current.on('error', (event) => {
-      console.error("Erro no Mapbox:", event.error || event);
+      console.error("❌ Erro no Mapbox:", event.error || event);
+      const errorMsg = event.error?.message || "Erro desconhecido ao carregar o mapa";
+      setMapError(errorMsg);
     });
 
     return () => {
@@ -279,6 +283,38 @@ export function LiveLocationMap({ patientId, onClose }: LiveLocationMapProps) {
     <div className="relative h-screen w-full">
       {/* Container do Mapa */}
       <div ref={mapContainer} className="absolute inset-0" />
+
+      {/* Loading State */}
+      {!mapReady && !mapError && (
+        <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+          <Card className="max-w-sm">
+            <CardContent className="p-6 text-center">
+              <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-3"></div>
+              <p className="text-muted-foreground">Carregando mapa do paciente...</p>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Error State */}
+      {mapError && (
+        <div className="absolute top-20 left-4 right-4 z-10">
+          <Card className="border-destructive bg-destructive/10">
+            <CardContent className="p-4">
+              <p className="font-bold text-destructive mb-2">❌ Erro ao carregar o mapa</p>
+              <p className="text-sm text-muted-foreground mb-2">
+                Possíveis causas: token inválido, domínio não autorizado, ou problema de conexão.
+              </p>
+              <p className="text-xs font-mono bg-background/50 p-2 rounded border">
+                {mapError}
+              </p>
+              <p className="text-xs text-muted-foreground mt-3">
+                💡 Verifique o console do navegador e configure o token em mapbox.com → Dashboard → Tokens
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* Botão Voltar */}
       <Button
