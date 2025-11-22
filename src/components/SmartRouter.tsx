@@ -62,7 +62,7 @@ export function SmartRouter() {
       console.log('[SmartRouter] Navigating to /patient (default)');
       navigate('/patient');
     }
-  }, [isAngel, isAdmin, hasPatients, loading, navigate]);
+  }, [isAngel, isAdmin, hasPatients, loading, dbLoading, isEmpty, navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
