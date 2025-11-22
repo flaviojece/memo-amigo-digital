@@ -644,6 +644,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_admin_stats: { Args: never; Returns: Json }
       get_guardians_to_notify: {
         Args: { _notification_type: string; _patient_id: string }
         Returns: {

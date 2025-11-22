@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { AdminRoute } from "@/components/auth/AdminRoute";
 
 // Lazy load pages for better mobile performance
 const Index = lazy(() => import("./pages/Index"));
@@ -14,6 +15,7 @@ const AcceptInvitation = lazy(() => import("./pages/AcceptInvitation"));
 const LocationSharingSettings = lazy(() => import("./pages/LocationSharingSettings"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const AngelDashboard = lazy(() => import("./pages/AngelDashboard"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const PatientHome = lazy(() => import("./pages/PatientHome"));
 const PatientSuggestions = lazy(() => import("./pages/PatientSuggestions"));
 
@@ -67,6 +69,14 @@ const App = () => (
                   <ProtectedRoute>
                     <AngelDashboard />
                   </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin"
+                element={
+                  <AdminRoute>
+                    <AdminDashboard />
+                  </AdminRoute>
                 }
               />
               

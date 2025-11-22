@@ -3,14 +3,27 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
 export function SmartRouter() {
-  const { isAngel, hasPatients, loading } = useAuth();
+  const { isAngel, isAdmin, hasPatients, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log('[SmartRouter] State:', { loading, isAngel, hasPatients });
+    console.log('[SmartRouter] State:', { loading, isAngel, isAdmin, hasPatients });
     
     if (loading) {
       console.log('[SmartRouter] Still loading, waiting...');
+      return;
+    }
+
+    // Admins always go to admin dashboard first
+    if (isAdmin) {
+      const adminPreference = localStorage.getItem('admin-last-view');
+      console.log('[SmartRouter] Admin user, preference:', adminPreference);
+      
+      if (adminPreference) {
+        navigate(adminPreference);
+      } else {
+        navigate('/admin');
+      }
       return;
     }
 
@@ -39,7 +52,7 @@ export function SmartRouter() {
       console.log('[SmartRouter] Navigating to /patient (default)');
       navigate('/patient');
     }
-  }, [isAngel, hasPatients, loading, navigate]);
+  }, [isAngel, isAdmin, hasPatients, loading, navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
