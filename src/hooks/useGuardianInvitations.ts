@@ -143,55 +143,134 @@ export const useGuardianInvitations = () => {
   };
 
   const acceptInvitation = async (invitationId: string) => {
-    if (!user) return false;
-
-    const { data: invitation, error: updateError } = await supabase
-      .from('guardian_invitations')
-      .update({
-        status: 'accepted',
-        guardian_id: user.id,
-        responded_at: new Date().toISOString(),
-      })
-      .eq('id', invitationId)
-      .select()
-      .single();
-
-    if (updateError) {
-      toast.error('Erro ao aceitar convite');
+    if (!user) {
+      toast.error('Você precisa estar logado para aceitar convites');
       return false;
     }
 
-    const { error: relationshipError } = await supabase
-      .from('guardian_relationships')
-      .insert({
-        patient_id: invitation.patient_id,
-        guardian_id: user.id,
-        access_level: invitation.access_level,
-        relationship_type: invitation.relationship_type,
+    try {
+      console.log('[Guardian] Aceitando convite:', invitationId);
+
+      // 1. Verificar se o convite existe e é válido
+      const { data: existingInvitation, error: checkError } = await supabase
+        .from('guardian_invitations')
+        .select('*, patient:profiles!patient_id(full_name)')
+        .eq('id', invitationId)
+        .eq('status', 'pending')
+        .maybeSingle();
+
+      if (checkError || !existingInvitation) {
+        console.error('[Guardian] Convite não encontrado:', checkError);
+        toast.error('Convite não encontrado ou já foi processado');
+        return false;
+      }
+
+      // Verificar expiração
+      if (existingInvitation.expires_at && new Date(existingInvitation.expires_at) < new Date()) {
+        toast.error('Este convite expirou');
+        return false;
+      }
+
+      console.log('[Guardian] Convite válido, atualizando status...');
+
+      // 2. Atualizar convite para aceito
+      const { data: invitation, error: updateError } = await supabase
+        .from('guardian_invitations')
+        .update({
+          status: 'accepted',
+          guardian_id: user.id,
+          responded_at: new Date().toISOString(),
+        })
+        .eq('id', invitationId)
+        .select()
+        .single();
+
+      if (updateError || !invitation) {
+        console.error('[Guardian] Erro ao atualizar convite:', updateError);
+        toast.error('Erro ao aceitar convite');
+        return false;
+      }
+
+      console.log('[Guardian] Convite atualizado, verificando relacionamento existente...');
+
+      // 3. Verificar se já existe relacionamento (prevenir duplicatas)
+      const { data: existingRelationship } = await supabase
+        .from('guardian_relationships')
+        .select('id')
+        .eq('patient_id', invitation.patient_id)
+        .eq('guardian_id', user.id)
+        .maybeSingle();
+
+      if (existingRelationship) {
+        console.log('[Guardian] Relacionamento já existe, pulando criação');
+        toast.success('Convite aceito! Você já está vinculado a este paciente.');
+      } else {
+        console.log('[Guardian] Criando novo relacionamento...');
+
+        // 4. Criar relacionamento
+        const { error: relationshipError } = await supabase
+          .from('guardian_relationships')
+          .insert({
+            patient_id: invitation.patient_id,
+            guardian_id: user.id,
+            access_level: invitation.access_level,
+            relationship_type: invitation.relationship_type,
+          });
+
+        if (relationshipError) {
+          console.error('[Guardian] Erro ao criar relacionamento:', relationshipError);
+          
+          // Verificar se é erro de duplicata (apesar da verificação anterior)
+          if (relationshipError.code === '23505') {
+            toast.success('Convite aceito! Você já está vinculado a este paciente.');
+          } else {
+            toast.error('Erro ao criar relacionamento com o paciente');
+            return false;
+          }
+        } else {
+          console.log('[Guardian] Relacionamento criado com sucesso');
+        }
+      }
+
+      // 5. Adicionar role 'angel' se não tiver
+      console.log('[Guardian] Verificando role angel...');
+      const { data: roles } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .eq('role', 'angel')
+        .maybeSingle();
+
+      if (!roles) {
+        console.log('[Guardian] Adicionando role angel...');
+        const { error: roleError } = await supabase
+          .from('user_roles')
+          .insert({
+            user_id: user.id,
+            role: 'angel',
+          });
+
+        if (roleError) {
+          console.error('[Guardian] Erro ao adicionar role:', roleError);
+          // Não falhamos por isso, apenas logamos
+        }
+      }
+
+      const patientName = (existingInvitation.patient as any)?.full_name || 'este paciente';
+      toast.success(`Convite aceito! Você agora é cuidador de ${patientName}.`, {
+        description: 'Redirecionando para o painel...',
+        duration: 3000,
       });
 
-    if (relationshipError) {
-      toast.error('Erro ao criar relacionamento');
+      console.log('[Guardian] Convite aceito com sucesso!');
+      await loadReceivedInvitations();
+      return true;
+
+    } catch (error) {
+      console.error('[Guardian] Erro inesperado ao aceitar convite:', error);
+      toast.error('Erro inesperado ao aceitar convite');
       return false;
     }
-
-    const { data: roles } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', user.id)
-      .eq('role', 'angel')
-      .maybeSingle();
-
-    if (!roles) {
-      await supabase.from('user_roles').insert({
-        user_id: user.id,
-        role: 'angel',
-      });
-    }
-
-    toast.success('Convite aceito! Você agora é um cuidador.');
-    await loadReceivedInvitations();
-    return true;
   };
 
   const declineInvitation = async (invitationId: string) => {
