@@ -73,31 +73,46 @@ export default function AcceptInvitation() {
   };
 
   const handleAccept = async () => {
+    console.log('[AcceptInvitation] Botão Aceitar clicado', { user, invitation });
+
     if (!user) {
       toast.error('Você precisa fazer login primeiro');
       navigate('/login');
       return;
     }
 
+    if (!invitation || !invitation.id) {
+      console.error('[AcceptInvitation] Convite não carregado corretamente', invitation);
+      toast.error('Convite não carregado. Recarregue a página e tente novamente.');
+      return;
+    }
+
     setProcessing(true);
 
     try {
-      console.log('[AcceptInvitation] Calling edge function to accept invitation...');
+      console.log('[AcceptInvitation] Chamando função accept-invitation...', {
+        invitationId: invitation.id,
+      });
       
       const { data, error } = await supabase.functions.invoke('accept-invitation', {
         body: { invitation_id: invitation.id }
       });
 
-      if (error) {
-        console.error('[AcceptInvitation] Edge function error:', error);
-        toast.error(error.message || 'Erro ao aceitar convite');
-        setProcessing(false);
+      console.log('[AcceptInvitation] Resposta da função:', { data, error });
+
+      if (error || (data && (data as any).error)) {
+        const message =
+          (data as any)?.error ||
+          (error as any)?.message ||
+          'Erro ao aceitar convite';
+
+        console.error('[AcceptInvitation] Erro na função:', { data, error });
+        toast.error(message);
         return;
       }
 
-      console.log('[AcceptInvitation] Success:', data);
-      toast.success(data.message || 'Convite aceito com sucesso!', {
-        description: "Redirecionando para o painel...",
+      toast.success((data as any)?.message || 'Convite aceito com sucesso!', {
+        description: 'Redirecionando para o painel...',
         duration: 3000,
       });
       
@@ -105,9 +120,10 @@ export default function AcceptInvitation() {
         navigate('/angel', { replace: true });
       }, 1500);
 
-    } catch (error) {
-      console.error('[AcceptInvitation] Erro inesperado:', error);
+    } catch (err) {
+      console.error('[AcceptInvitation] Erro inesperado:', err);
       toast.error('Erro inesperado ao aceitar convite');
+    } finally {
       setProcessing(false);
     }
   };
