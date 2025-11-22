@@ -24,11 +24,19 @@ export function PatientSelectorCompact({ selectedPatientId, onSelect }: PatientS
 
   if (patients.length === 0) {
     return (
-      <Card className="p-4 mb-4 border-2 border-dashed">
-        <div className="text-center space-y-2">
-          <Users className="w-8 h-8 text-muted-foreground mx-auto" />
-          <p className="text-senior-sm text-muted-foreground">
-            Você ainda não tem pacientes vinculados
+      <Card className="p-6 mb-4 border-2 border-dashed border-accent/30 bg-accent/5">
+        <div className="text-center space-y-3">
+          <Users className="w-12 h-12 text-accent/50 mx-auto" />
+          <div>
+            <p className="text-senior-base font-semibold text-foreground mb-1">
+              Nenhum paciente vinculado
+            </p>
+            <p className="text-senior-sm text-muted-foreground">
+              Você ainda não aceitou nenhum convite de paciente.
+            </p>
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            Aguarde um convite por email ou peça ao paciente para te adicionar como cuidador.
           </p>
         </div>
       </Card>

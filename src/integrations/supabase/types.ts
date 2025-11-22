@@ -675,6 +675,7 @@ export type Database = {
         Args: { _guardian_id: string; _patient_id: string }
         Returns: boolean
       }
+      is_invitation_valid: { Args: { invitation_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "user" | "angel"
