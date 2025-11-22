@@ -6,7 +6,7 @@ import { PatientSelectorCompact } from '@/components/angel/PatientSelectorCompac
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shield, MapPin, Pill, Calendar, Home, ArrowLeft } from 'lucide-react';
+import { Shield, MapPin, Pill, Calendar, Home, ArrowLeft, LogOut } from 'lucide-react';
 import { MedicationList } from '@/components/medications/MedicationList';
 import { AppointmentList } from '@/components/appointments/AppointmentList';
 import { LiveLocationMap } from '@/components/location/LiveLocationMap';
@@ -18,7 +18,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export default function AngelDashboard() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, signOut } = useAuth();
   const navigate = useNavigate();
   const { patients, loading: loadingPatients } = useGuardianRelationships();
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
@@ -98,15 +98,26 @@ export default function AngelDashboard() {
                 </p>
               </div>
             </div>
-            <Button
-              onClick={() => navigate('/')}
-              variant="outline"
-              size="lg"
-              className="gap-2"
-            >
-              <Home className="w-5 h-5" />
-              Minha Área
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={() => navigate('/')}
+                variant="outline"
+                size="lg"
+                className="gap-2"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                Voltar ao Início
+              </Button>
+              <Button
+                onClick={signOut}
+                variant="destructive"
+                size="lg"
+                className="gap-2"
+              >
+                <LogOut className="w-5 h-5" />
+                Sair
+              </Button>
+            </div>
           </div>
         </div>
       </header>

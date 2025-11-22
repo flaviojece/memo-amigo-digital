@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Crosshair, ZoomIn, ZoomOut, Navigation as NavigationIcon } from "lucide-react";
+import { ArrowLeft, Crosshair, ZoomIn, ZoomOut, Navigation as NavigationIcon, MapPin } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -255,27 +255,39 @@ export function LiveLocationMap({ patientId, onClose }: LiveLocationMapProps) {
 
   if (!MAPBOX_TOKEN) {
     return (
-      <div className="min-h-screen bg-background p-4 flex items-center justify-center">
-        <Card className="max-w-md">
-          <CardContent className="p-6 text-center">
-            <p className="text-destructive font-bold mb-2">
-              ⚠️ Token do Mapbox não configurado
-            </p>
-            <p className="text-sm text-muted-foreground mb-4">
-              Para usar o rastreamento ao vivo, você precisa:
-              <br />
-              1. Criar uma conta em mapbox.com
-              <br />
-              2. Obter um token de acesso
-              <br />
-              3. Adicionar como secret: VITE_MAPBOX_ACCESS_TOKEN
-            </p>
-            <Button onClick={onClose} className="mt-4">
-              Voltar
+      <Card className="border-2 border-dashed border-muted-foreground/30">
+        <CardContent className="p-8">
+          <div className="text-center space-y-4">
+            <div className="w-16 h-16 mx-auto bg-muted rounded-full flex items-center justify-center">
+              <MapPin className="w-8 h-8 text-muted-foreground" />
+            </div>
+            <div>
+              <h3 className="text-senior-lg font-bold mb-2">Token do Mapbox não configurado</h3>
+              <p className="text-muted-foreground text-senior-sm mb-4">
+                Para visualizar a localização em tempo real, você precisa configurar um token do Mapbox.
+              </p>
+            </div>
+            <div className="bg-muted/50 p-4 rounded-lg text-left space-y-3 max-w-md mx-auto">
+              <p className="text-senior-sm font-semibold">📋 Como obter o token:</p>
+              <ol className="text-senior-xs text-muted-foreground space-y-2 ml-4 list-decimal">
+                <li>Acesse <a href="https://mapbox.com" target="_blank" rel="noopener noreferrer" className="text-primary underline">mapbox.com</a> e crie uma conta gratuita</li>
+                <li>Vá em Dashboard → Tokens</li>
+                <li>Copie seu token público (começa com <code className="bg-background px-1 rounded">pk.ey...</code>)</li>
+                <li>Em "Allowed URLs", adicione:<br/><code className="bg-background px-1 rounded text-xs">https://*.lovableproject.com</code></li>
+                <li>Salve as alterações e aguarde alguns minutos</li>
+              </ol>
+            </div>
+            <Button 
+              onClick={() => window.location.reload()} 
+              variant="outline" 
+              size="lg"
+              className="mt-4"
+            >
+              🔄 Recarregar Página
             </Button>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
