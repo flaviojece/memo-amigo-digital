@@ -12,6 +12,7 @@ import { Eye, EyeOff, Heart, Shield, Sparkles, Users, User } from "lucide-react"
 import { PasswordStrengthMeter } from "@/components/auth/PasswordStrengthMeter";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ForgotPasswordModal } from "@/components/auth/ForgotPasswordModal";
+import { toast } from "sonner";
 
 const Login = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -40,15 +41,25 @@ const Login = () => {
 
   const handleLogin = async (data: LoginFormData) => {
     const { error } = await signIn(data.email, data.password);
-    if (!error) {
-      // Check if there's a pending invitation token
-      const pendingToken = sessionStorage.getItem('pendingInvitationToken');
-      if (pendingToken) {
-        sessionStorage.removeItem('pendingInvitationToken');
-        navigate(`/accept-invitation?token=${pendingToken}`);
+    
+    if (error) {
+      if (error.message?.includes('Invalid login credentials') || error.message?.includes('invalid_credentials')) {
+        toast.error("Email ou senha incorretos. Verifique suas credenciais.");
+      } else if (error.message?.includes('Email not confirmed')) {
+        toast.error("Email não confirmado. Verifique sua caixa de entrada.");
       } else {
-        navigate("/");
+        toast.error(error.message || "Erro ao fazer login");
       }
+      return;
+    }
+
+    // Check if there's a pending invitation token
+    const pendingToken = sessionStorage.getItem('pendingInvitationToken');
+    if (pendingToken) {
+      sessionStorage.removeItem('pendingInvitationToken');
+      navigate(`/accept-invitation?token=${pendingToken}`);
+    } else {
+      navigate("/");
     }
   };
 
