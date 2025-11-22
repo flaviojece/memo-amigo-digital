@@ -71,16 +71,19 @@ export function UsersManagement() {
 
   const deleteUserMutation = useMutation({
     mutationFn: async (userId: string) => {
-      const { error } = await supabase.auth.admin.deleteUser(userId);
+      const { data, error } = await supabase.functions.invoke('admin-delete-user', {
+        body: { userId },
+      });
       if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
       toast.success("Usuário deletado com sucesso");
       setUserToDelete(null);
     },
-    onError: (error) => {
-      toast.error("Erro ao deletar usuário: " + error.message);
+    onError: (error: any) => {
+      toast.error(error.message || "Erro ao deletar usuário");
     },
   });
 
@@ -93,11 +96,11 @@ export function UsersManagement() {
       return data;
     },
     onSuccess: () => {
-      toast.success(`Email de recuperação enviado para ${userToResetPassword?.email}`);
+      toast.success("Email de redefinição de senha enviado com sucesso");
       setUserToResetPassword(null);
     },
     onError: (error: any) => {
-      toast.error(error.message || "Erro ao enviar email de recuperação");
+      toast.error(error.message || "Erro ao enviar email de redefinição");
     },
   });
 
@@ -300,15 +303,18 @@ export function UsersManagement() {
           <AlertDialogHeader>
             <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja deletar este usuário? Esta ação não pode ser desfeita.
+              Tem certeza que deseja deletar o usuário <strong>{users?.find(u => u.id === userToDelete)?.full_name || users?.find(u => u.id === userToDelete)?.email}</strong>? 
+              Esta ação não pode ser desfeita e todos os dados relacionados serão removidos.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel disabled={deleteUserMutation.isPending}>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => userToDelete && deleteUserMutation.mutate(userToDelete)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={deleteUserMutation.isPending}
             >
-              Deletar
+              {deleteUserMutation.isPending ? "Deletando..." : "Deletar"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -317,17 +323,18 @@ export function UsersManagement() {
       <AlertDialog open={!!userToResetPassword} onOpenChange={() => setUserToResetPassword(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Resetar Senha</AlertDialogTitle>
+            <AlertDialogTitle>Resetar senha</AlertDialogTitle>
             <AlertDialogDescription>
-              Será enviado um email de recuperação de senha para {userToResetPassword?.email}. O usuário poderá redefinir sua senha através do link recebido.
+              Um email de redefinição de senha será enviado para <strong>{userToResetPassword?.email}</strong>.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel disabled={resetPasswordMutation.isPending}>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => userToResetPassword && resetPasswordMutation.mutate(userToResetPassword.id)}
+              disabled={resetPasswordMutation.isPending}
             >
-              Enviar Email
+              {resetPasswordMutation.isPending ? "Enviando..." : "Enviar email"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
