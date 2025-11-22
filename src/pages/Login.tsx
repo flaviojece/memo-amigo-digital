@@ -11,11 +11,13 @@ import { Card } from "@/components/ui/card";
 import { Eye, EyeOff, Heart, Shield, Sparkles, Users, User } from "lucide-react";
 import { PasswordStrengthMeter } from "@/components/auth/PasswordStrengthMeter";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ForgotPasswordModal } from "@/components/auth/ForgotPasswordModal";
 
 const Login = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [passwordValue, setPasswordValue] = useState("");
   const { user, signIn, signUp } = useAuth();
   const navigate = useNavigate();
@@ -169,6 +171,16 @@ const Login = () => {
             >
               {loginForm.formState.isSubmitting ? "Entrando..." : "Entrar"}
             </Button>
+
+            <div className="text-center mt-4">
+              <button
+                type="button"
+                onClick={() => setShowForgotPassword(true)}
+                className="text-sm text-white hover:text-primary-foreground underline transition-colors"
+              >
+                Esqueceu sua senha?
+              </button>
+            </div>
           </form>
         ) : (
           // Formulário de Cadastro
@@ -309,6 +321,8 @@ const Login = () => {
           </form>
         )}
       </Card>
+
+      <ForgotPasswordModal open={showForgotPassword} onOpenChange={setShowForgotPassword} />
     </div>
   );
 };

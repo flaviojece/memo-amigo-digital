@@ -11,6 +11,7 @@ import { AdminRoute } from "@/components/auth/AdminRoute";
 // Lazy load pages for better mobile performance
 const Index = lazy(() => import("./pages/Index"));
 const Login = lazy(() => import("./pages/Login"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const AcceptInvitation = lazy(() => import("./pages/AcceptInvitation"));
 const LocationSharingSettings = lazy(() => import("./pages/LocationSharingSettings"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -40,6 +41,7 @@ const App = () => (
           }>
             <Routes>
               <Route path="/login" element={<Login />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/accept-invitation" element={<AcceptInvitation />} />
               
               {/* Smart routing - detects if user is angel or patient */}

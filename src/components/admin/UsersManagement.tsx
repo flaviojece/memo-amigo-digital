@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Shield, Search, Trash2, Edit, Eye } from "lucide-react";
+import { Shield, Search, Trash2, Edit, Eye, KeyRound } from "lucide-react";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -22,6 +22,7 @@ import {
 export function UsersManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   const [userToDelete, setUserToDelete] = useState<string | null>(null);
+  const [userToResetPassword, setUserToResetPassword] = useState<{ id: string; email: string } | null>(null);
   const queryClient = useQueryClient();
 
   const { data: users, isLoading } = useQuery({
@@ -59,6 +60,23 @@ export function UsersManagement() {
     },
     onError: (error) => {
       toast.error("Erro ao deletar usuário: " + error.message);
+    },
+  });
+
+  const resetPasswordMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      const { data, error } = await supabase.functions.invoke('admin-reset-password', {
+        body: { userId },
+      });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      toast.success(`Email de recuperação enviado para ${userToResetPassword?.email}`);
+      setUserToResetPassword(null);
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Erro ao enviar email de recuperação");
     },
   });
 
@@ -151,6 +169,14 @@ export function UsersManagement() {
                         <Button
                           size="sm"
                           variant="ghost"
+                          title="Resetar Senha"
+                          onClick={() => setUserToResetPassword({ id: user.id, email: user.email || '' })}
+                        >
+                          <KeyRound className="h-4 w-4 text-primary" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
                           onClick={() => setUserToDelete(user.id)}
                         >
                           <Trash2 className="h-4 w-4 text-destructive" />
@@ -179,6 +205,25 @@ export function UsersManagement() {
               onClick={() => userToDelete && deleteUserMutation.mutate(userToDelete)}
             >
               Deletar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={!!userToResetPassword} onOpenChange={() => setUserToResetPassword(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Resetar Senha</AlertDialogTitle>
+            <AlertDialogDescription>
+              Será enviado um email de recuperação de senha para {userToResetPassword?.email}. O usuário poderá redefinir sua senha através do link recebido.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => userToResetPassword && resetPasswordMutation.mutate(userToResetPassword.id)}
+            >
+              Enviar Email
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
