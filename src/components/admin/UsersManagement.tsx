@@ -8,6 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Shield, Search, Trash2, Edit, Eye, KeyRound } from "lucide-react";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,10 +23,27 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
+type UserWithRoles = {
+  id: string;
+  email: string | null;
+  full_name: string | null;
+  notifications_enabled: boolean | null;
+  created_at: string | null;
+  updated_at: string | null;
+  roles: Array<{ id: string; user_id: string; role: string; created_at: string | null }>;
+};
+
 export function UsersManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   const [userToDelete, setUserToDelete] = useState<string | null>(null);
   const [userToResetPassword, setUserToResetPassword] = useState<{ id: string; email: string } | null>(null);
+  const [selectedUser, setSelectedUser] = useState<UserWithRoles | null>(null);
+  const [userToEdit, setUserToEdit] = useState<UserWithRoles | null>(null);
+  const [editForm, setEditForm] = useState({
+    full_name: "",
+    notifications_enabled: true,
+    roles: [] as string[]
+  });
   const queryClient = useQueryClient();
 
   const { data: users, isLoading } = useQuery({
@@ -79,6 +100,78 @@ export function UsersManagement() {
       toast.error(error.message || "Erro ao enviar email de recuperação");
     },
   });
+
+  const updateUserMutation = useMutation({
+    mutationFn: async ({ userId, updates, rolesToAdd, rolesToRemove }: {
+      userId: string;
+      updates: { full_name?: string; notifications_enabled?: boolean };
+      rolesToAdd: string[];
+      rolesToRemove: string[];
+    }) => {
+      // Atualizar perfil
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update(updates)
+        .eq('id', userId);
+
+      if (profileError) throw profileError;
+
+      // Gerenciar roles via edge function
+      if (rolesToAdd.length > 0 || rolesToRemove.length > 0) {
+        const { data, error } = await supabase.functions.invoke('admin-manage-user-roles', {
+          body: { userId, rolesToAdd, rolesToRemove },
+        });
+        if (error) throw error;
+        return data;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+      toast.success("Usuário atualizado com sucesso");
+      setUserToEdit(null);
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Erro ao atualizar usuário");
+    },
+  });
+
+  const handleEditUser = (user: UserWithRoles) => {
+    setUserToEdit(user);
+    setEditForm({
+      full_name: user.full_name || "",
+      notifications_enabled: user.notifications_enabled ?? true,
+      roles: user.roles.map(r => r.role)
+    });
+  };
+
+  const handleSaveEdit = () => {
+    if (!userToEdit) return;
+
+    const currentRoles = userToEdit.roles.map(r => r.role);
+    const newRoles = editForm.roles;
+
+    const rolesToAdd = newRoles.filter(r => !currentRoles.includes(r));
+    const rolesToRemove = currentRoles.filter(r => !newRoles.includes(r));
+
+    updateUserMutation.mutate({
+      userId: userToEdit.id,
+      updates: {
+        full_name: editForm.full_name,
+        notifications_enabled: editForm.notifications_enabled
+      },
+      rolesToAdd,
+      rolesToRemove
+    });
+  };
+
+  const toggleRole = (role: string) => {
+    setEditForm(prev => ({
+      ...prev,
+      roles: prev.roles.includes(role)
+        ? prev.roles.filter(r => r !== role)
+        : [...prev.roles, role]
+    }));
+  };
 
   const filteredUsers = users?.filter(
     (user) =>
@@ -160,10 +253,20 @@ export function UsersManagement() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        <Button size="sm" variant="ghost">
+                        <Button 
+                          size="sm" 
+                          variant="ghost"
+                          onClick={() => setSelectedUser(user)}
+                          title="Visualizar detalhes"
+                        >
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button size="sm" variant="ghost">
+                        <Button 
+                          size="sm" 
+                          variant="ghost"
+                          onClick={() => handleEditUser(user)}
+                          title="Editar usuário"
+                        >
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button
@@ -178,6 +281,7 @@ export function UsersManagement() {
                           size="sm"
                           variant="ghost"
                           onClick={() => setUserToDelete(user.id)}
+                          title="Deletar usuário"
                         >
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
@@ -228,6 +332,162 @@ export function UsersManagement() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Dialog de Visualização */}
+      <Dialog open={!!selectedUser} onOpenChange={() => setSelectedUser(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Detalhes do Usuário</DialogTitle>
+            <DialogDescription>
+              Informações completas do usuário
+            </DialogDescription>
+          </DialogHeader>
+          {selectedUser && (
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <Label className="text-muted-foreground">ID</Label>
+                  <p className="text-sm font-mono">{selectedUser.id}</p>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-muted-foreground">Nome Completo</Label>
+                  <p className="text-sm">{selectedUser.full_name || "Não informado"}</p>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-muted-foreground">Email</Label>
+                  <p className="text-sm">{selectedUser.email}</p>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-muted-foreground">Notificações</Label>
+                  <p className="text-sm">{selectedUser.notifications_enabled ? "Habilitadas" : "Desabilitadas"}</p>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-muted-foreground">Cadastrado em</Label>
+                  <p className="text-sm">{new Date(selectedUser.created_at!).toLocaleString("pt-BR")}</p>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-muted-foreground">Última atualização</Label>
+                  <p className="text-sm">{new Date(selectedUser.updated_at!).toLocaleString("pt-BR")}</p>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <Label className="text-muted-foreground">Roles do Sistema</Label>
+                <div className="flex gap-2 flex-wrap">
+                  {selectedUser.roles.length > 0 ? (
+                    selectedUser.roles.map((role) => (
+                      <Badge
+                        key={role.id}
+                        variant={
+                          role.role === "admin"
+                            ? "destructive"
+                            : role.role === "angel"
+                            ? "default"
+                            : "secondary"
+                        }
+                      >
+                        {role.role}
+                      </Badge>
+                    ))
+                  ) : (
+                    <p className="text-sm text-muted-foreground">Nenhuma role atribuída</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog de Edição */}
+      <Dialog open={!!userToEdit} onOpenChange={() => setUserToEdit(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Editar Usuário</DialogTitle>
+            <DialogDescription>
+              Altere as informações do usuário
+            </DialogDescription>
+          </DialogHeader>
+          {userToEdit && (
+            <div className="grid gap-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="full_name">Nome Completo</Label>
+                <Input
+                  id="full_name"
+                  value={editForm.full_name}
+                  onChange={(e) => setEditForm({ ...editForm, full_name: e.target.value })}
+                  placeholder="Digite o nome completo"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  value={userToEdit.email || ""}
+                  disabled
+                  className="bg-muted"
+                />
+                <p className="text-xs text-muted-foreground">
+                  O email não pode ser alterado por questões de segurança
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <Label htmlFor="notifications">Notificações Habilitadas</Label>
+                <Switch
+                  id="notifications"
+                  checked={editForm.notifications_enabled}
+                  onCheckedChange={(checked) => setEditForm({ ...editForm, notifications_enabled: checked })}
+                />
+              </div>
+
+              <div className="space-y-3">
+                <Label>Roles do Usuário</Label>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="role-user"
+                      checked={editForm.roles.includes('user')}
+                      onCheckedChange={() => toggleRole('user')}
+                    />
+                    <Label htmlFor="role-user" className="font-normal cursor-pointer">
+                      User (Usuário comum)
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="role-angel"
+                      checked={editForm.roles.includes('angel')}
+                      onCheckedChange={() => toggleRole('angel')}
+                    />
+                    <Label htmlFor="role-angel" className="font-normal cursor-pointer">
+                      Angel (Guardião/Cuidador)
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="role-admin"
+                      checked={editForm.roles.includes('admin')}
+                      onCheckedChange={() => toggleRole('admin')}
+                    />
+                    <Label htmlFor="role-admin" className="font-normal cursor-pointer">
+                      Admin (Administrador)
+                    </Label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setUserToEdit(null)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleSaveEdit} disabled={updateUserMutation.isPending}>
+              {updateUserMutation.isPending ? "Salvando..." : "Salvar Alterações"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
