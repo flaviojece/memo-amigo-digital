@@ -69,87 +69,25 @@ export default function AcceptInvitation() {
     setProcessing(true);
 
     try {
-      console.log('[AcceptInvitation] Verificando convite...');
+      console.log('[AcceptInvitation] Calling edge function to accept invitation...');
       
-      // Verificar se já existe relacionamento
-      const { data: existingRelationship } = await supabase
-        .from('guardian_relationships')
-        .select('id')
-        .eq('patient_id', invitation.patient_id)
-        .eq('guardian_id', user.id)
-        .maybeSingle();
+      const { data, error } = await supabase.functions.invoke('accept-invitation', {
+        body: { invitation_id: invitation.id }
+      });
 
-      if (existingRelationship) {
-        toast.success('Você já está vinculado a este paciente!');
-        setTimeout(() => navigate('/angel', { replace: true }), 1500);
-        return;
-      }
-
-      console.log('[AcceptInvitation] Atualizando convite...');
-      const { error: updateError } = await supabase
-        .from('guardian_invitations')
-        .update({
-          status: 'accepted',
-          guardian_id: user.id,
-          responded_at: new Date().toISOString(),
-        })
-        .eq('id', invitation.id);
-
-      if (updateError) {
-        console.error('[AcceptInvitation] Erro ao atualizar convite:', updateError);
-        toast.error('Erro ao aceitar convite');
+      if (error) {
+        console.error('[AcceptInvitation] Edge function error:', error);
+        toast.error(error.message || 'Erro ao aceitar convite');
         setProcessing(false);
         return;
       }
 
-      console.log('[AcceptInvitation] Criando relacionamento...');
-      const { error: relationshipError } = await supabase
-        .from('guardian_relationships')
-        .insert({
-          patient_id: invitation.patient_id,
-          guardian_id: user.id,
-          access_level: invitation.access_level,
-          relationship_type: invitation.relationship_type,
-        });
-
-      if (relationshipError) {
-        console.error('[AcceptInvitation] Erro ao criar relacionamento:', relationshipError);
-        
-        // Verificar se é erro de duplicata
-        if (relationshipError.code === '23505') {
-          toast.success('Você já está vinculado a este paciente!');
-          setTimeout(() => navigate('/angel', { replace: true }), 1500);
-          return;
-        }
-        
-        toast.error('Erro ao criar relacionamento');
-        setProcessing(false);
-        return;
-      }
-
-      console.log('[AcceptInvitation] Verificando role angel...');
-      const { data: existingRole } = await supabase
-        .from('user_roles')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('role', 'angel')
-        .maybeSingle();
-
-      if (!existingRole) {
-        console.log('[AcceptInvitation] Adicionando role angel...');
-        await supabase.from('user_roles').insert({
-          user_id: user.id,
-          role: 'angel',
-        });
-      }
-
-      const patientName = invitation.patient?.full_name || 'este paciente';
-      toast.success(`Convite aceito! Você agora é cuidador de ${patientName}.`, {
+      console.log('[AcceptInvitation] Success:', data);
+      toast.success(data.message || 'Convite aceito com sucesso!', {
         description: "Redirecionando para o painel...",
         duration: 3000,
       });
       
-      console.log('[AcceptInvitation] Sucesso! Redirecionando...');
       setTimeout(() => {
         navigate('/angel', { replace: true });
       }, 1500);
