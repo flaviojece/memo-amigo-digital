@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { Eye, EyeOff, Heart, Shield, Sparkles, Users } from "lucide-react";
+import { Eye, EyeOff, Heart, Shield, Sparkles, Users, User } from "lucide-react";
 import { PasswordStrengthMeter } from "@/components/auth/PasswordStrengthMeter";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const Login = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -26,7 +27,7 @@ const Login = () => {
 
   const signupForm = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
-    defaultValues: { email: "", password: "", fullName: "", confirmPassword: "" },
+    defaultValues: { email: "", password: "", fullName: "", confirmPassword: "", userType: "patient" },
   });
 
   useEffect(() => {
@@ -50,7 +51,7 @@ const Login = () => {
   };
 
   const handleSignup = async (data: SignupFormData) => {
-    const { error } = await signUp(data.email, data.password, data.fullName);
+    const { error } = await signUp(data.email, data.password, data.fullName, data.userType);
     if (!error) {
       // Check if there's a pending invitation token
       const pendingToken = sessionStorage.getItem('pendingInvitationToken');
@@ -188,6 +189,39 @@ const Login = () => {
                     {signupForm.formState.errors.fullName.message}
                   </p>
                 )}
+            </div>
+
+            <div>
+              <Label htmlFor="userType" className="text-lg text-white font-semibold">Eu sou:</Label>
+              <div className="relative mt-2">
+                <Select 
+                  onValueChange={(value) => signupForm.setValue('userType', value as 'patient' | 'angel')}
+                  defaultValue="patient"
+                >
+                  <SelectTrigger className="h-14 text-lg bg-white border-2">
+                    <SelectValue placeholder="Selecione..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="patient">
+                      <div className="flex items-center gap-2">
+                        <User className="w-4 h-4" />
+                        <span>Paciente (preciso de cuidados)</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="angel">
+                      <div className="flex items-center gap-2">
+                        <Heart className="w-4 h-4" />
+                        <span>Anjo/Cuidador (vou cuidar de alguém)</span>
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {signupForm.formState.errors.userType && (
+                <p className="text-red-600 bg-white/90 px-2 py-1 rounded text-sm mt-1 font-semibold">
+                  {signupForm.formState.errors.userType.message}
+                </p>
+              )}
             </div>
 
             <div>

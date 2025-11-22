@@ -11,7 +11,7 @@ interface AuthContextType {
   hasPatients: boolean;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, fullName: string) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, fullName: string, userType: 'patient' | 'angel') => Promise<{ error: any }>;
   signOut: () => Promise<void>;
 }
 
@@ -208,7 +208,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signUp = async (email: string, password: string, fullName: string) => {
+  const signUp = async (email: string, password: string, fullName: string, userType: 'patient' | 'angel') => {
     try {
       const { error } = await supabase.auth.signUp({
         email,
@@ -217,6 +217,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           emailRedirectTo: `${window.location.origin}/`,
           data: {
             full_name: fullName,
+            user_type: userType,
           },
         },
       });

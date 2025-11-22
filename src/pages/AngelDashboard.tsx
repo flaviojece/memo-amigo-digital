@@ -6,7 +6,7 @@ import { PatientSelectorCompact } from '@/components/angel/PatientSelectorCompac
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shield, MapPin, Pill, Calendar, Home, ArrowLeft, LogOut } from 'lucide-react';
+import { Shield, MapPin, Pill, Calendar, Home, ArrowLeft, LogOut, UserPlus } from 'lucide-react';
 import { MedicationList } from '@/components/medications/MedicationList';
 import { AppointmentList } from '@/components/appointments/AppointmentList';
 import { LiveLocationMap } from '@/components/location/LiveLocationMap';
@@ -123,13 +123,29 @@ export default function AngelDashboard() {
       </header>
 
       <div className="max-w-6xl mx-auto p-4 space-y-4">
-        {/* Patient Selector */}
-        <PatientSelectorCompact
-          selectedPatientId={selectedPatientId}
-          onSelect={setSelectedPatientId}
-        />
+        {patients.length === 0 ? (
+          <Card className="p-8 text-center">
+            <UserPlus className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
+            <h3 className="text-xl font-semibold mb-2">
+              Bem-vindo ao Painel do Anjo!
+            </h3>
+            <p className="text-muted-foreground mb-4">
+              Você ainda não está cuidando de nenhum paciente.
+            </p>
+            <p className="text-sm text-muted-foreground mb-6">
+              Peça para um paciente te enviar um convite através do app,
+              ou compartilhe seu email: <strong>{user?.email}</strong>
+            </p>
+          </Card>
+        ) : (
+          <>
+            {/* Patient Selector */}
+            <PatientSelectorCompact
+              selectedPatientId={selectedPatientId}
+              onSelect={setSelectedPatientId}
+            />
 
-        {selectedPatientId && (
+            {selectedPatientId && (
           <Tabs value={activeTab} onValueChange={(v: any) => setActiveTab(v)}>
             <TabsList className="grid w-full grid-cols-5 h-auto">
               <TabsTrigger value="overview" className="text-senior-sm py-3 flex flex-col gap-1">
@@ -294,6 +310,8 @@ export default function AngelDashboard() {
               </Card>
             </TabsContent>
           </Tabs>
+            )}
+          </>
         )}
       </div>
 

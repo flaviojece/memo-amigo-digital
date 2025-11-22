@@ -31,7 +31,8 @@ export function SmartRouter() {
     }
 
     // Auto-detect based on roles
-    if (isAngel && hasPatients) {
+    if (isAngel) {
+      // Se é anjo, vai pro dashboard do anjo (mesmo sem pacientes ainda)
       console.log('[SmartRouter] Navigating to /angel (auto-detect)');
       navigate('/angel');
     } else {

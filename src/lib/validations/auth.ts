@@ -33,6 +33,9 @@ export const signupSchema = z.object({
     .max(255, { message: "Email deve ter menos de 255 caracteres" }),
   password: passwordValidation,
   confirmPassword: z.string().min(1, { message: "Confirme sua senha" }),
+  userType: z.enum(['patient', 'angel'], {
+    errorMap: () => ({ message: "Selecione se você é paciente ou anjo" })
+  }),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "As senhas não coincidem",
   path: ["confirmPassword"],
