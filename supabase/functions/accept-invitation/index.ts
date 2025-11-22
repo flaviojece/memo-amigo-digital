@@ -55,10 +55,10 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // 1. Get and validate invitation
+    // 1. Get and validate invitation (without auto-join)
     const { data: invitation, error: invitationError } = await supabaseAdmin
       .from('guardian_invitations')
-      .select('*, patient:profiles!patient_id(full_name, email)')
+      .select('*')
       .eq('id', invitation_id)
       .eq('status', 'pending')
       .single();
@@ -177,7 +177,14 @@ serve(async (req) => {
       }
     }
 
-    const patientName = (invitation.patient as any)?.full_name || 'este paciente';
+    // Fetch patient name separately
+    const { data: patientProfile } = await supabaseAdmin
+      .from('profiles')
+      .select('full_name, email')
+      .eq('id', invitation.patient_id)
+      .maybeSingle();
+
+    const patientName = patientProfile?.full_name || 'este paciente';
     
     console.log('[AcceptInvitation] Success! User is now guardian of', patientName);
 

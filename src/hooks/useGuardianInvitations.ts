@@ -40,16 +40,33 @@ export const useGuardianInvitations = () => {
   const loadReceivedInvitations = async () => {
     if (!user) return;
 
+    // First get invitations without auto-join
     const { data, error } = await supabase
       .from('guardian_invitations')
-      .select('*, patient:profiles!patient_id(full_name, email)')
+      .select('*')
       .or(`invited_email.eq.${user.email},guardian_id.eq.${user.id}`)
       .eq('status', 'pending')
       .order('created_at', { ascending: false });
 
-    if (!error && data) {
-      setReceivedInvitations(data as any);
+    if (error || !data) {
+      console.error('[useGuardianInvitations] Error loading received invitations:', error);
+      return;
     }
+
+    // Fetch patient data for each invitation
+    const invitationsWithPatients = await Promise.all(
+      data.map(async (invitation) => {
+        const { data: patient } = await supabase
+          .from('profiles')
+          .select('full_name, email')
+          .eq('id', invitation.patient_id)
+          .maybeSingle();
+
+        return { ...invitation, patient };
+      })
+    );
+
+    setReceivedInvitations(invitationsWithPatients);
   };
 
   useEffect(() => {

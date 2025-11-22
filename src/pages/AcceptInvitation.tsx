@@ -36,14 +36,16 @@ export default function AcceptInvitation() {
       return;
     }
 
+    // First get the invitation without auto-join
     const { data, error } = await supabase
       .from('guardian_invitations')
-      .select('*, patient:profiles!patient_id(full_name, email)')
+      .select('*')
       .eq('invitation_token', token)
       .eq('status', 'pending')
       .maybeSingle();
 
     if (error || !data) {
+      console.error('[AcceptInvitation] Error loading invitation:', error);
       toast.error('Convite não encontrado ou já foi usado');
       navigate('/');
       return;
@@ -55,7 +57,18 @@ export default function AcceptInvitation() {
       return;
     }
 
-    setInvitation(data);
+    // Separately fetch patient data
+    const { data: patient, error: patientError } = await supabase
+      .from('profiles')
+      .select('full_name, email')
+      .eq('id', data.patient_id)
+      .maybeSingle();
+
+    if (patientError) {
+      console.error('[AcceptInvitation] Error loading patient:', patientError);
+    }
+
+    setInvitation({ ...data, patient });
     setLoading(false);
   };
 
