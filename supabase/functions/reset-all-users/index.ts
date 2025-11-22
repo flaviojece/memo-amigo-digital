@@ -7,9 +7,10 @@ const corsHeaders = {
 };
 
 interface ResetUsersRequest {
-  newAdminEmail: string;
-  newAdminPassword: string;
+  newAdminEmail?: string;
+  newAdminPassword?: string;
   newAdminFullName?: string;
+  deleteAllOnly?: boolean;
 }
 
 serve(async (req) => {
@@ -54,10 +55,10 @@ serve(async (req) => {
       throw new Error('Apenas administradores podem executar esta ação');
     }
 
-    const { newAdminEmail, newAdminPassword, newAdminFullName }: ResetUsersRequest = await req.json();
+    const { newAdminEmail, newAdminPassword, newAdminFullName, deleteAllOnly }: ResetUsersRequest = await req.json();
 
-    if (!newAdminEmail || !newAdminPassword) {
-      throw new Error('Email e senha são obrigatórios');
+    if (!deleteAllOnly && (!newAdminEmail || !newAdminPassword)) {
+      throw new Error('Email e senha são obrigatórios (a menos que deleteAllOnly seja true)');
     }
 
     console.log('=== INICIANDO RESET COMPLETO DO BANCO ===');
@@ -80,6 +81,22 @@ serve(async (req) => {
     }
 
     console.log('=== TODOS OS USUÁRIOS DELETADOS ===');
+
+    // Se deleteAllOnly é true, retorna aqui sem criar novo admin
+    if (deleteAllOnly) {
+      console.log('=== MODO DELETE ALL ONLY - NÃO CRIANDO NOVO ADMIN ===');
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: `Todos os ${users.length} usuários foram deletados. Banco limpo.`,
+          usersDeleted: users.length
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200,
+        }
+      );
+    }
 
     // PASSO 3: Criar novo usuário admin
     const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
