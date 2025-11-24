@@ -123,7 +123,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("Enviando email via Resend para:", invited_email);
 
     const { data: emailResponse, error: emailError } = await resend.emails.send({
-      from: "Dr. Memo <onboarding@resend.dev>",
+      from: "Dr. Memo <flaviojece@gmail.com>",
       to: [invited_email],
       subject: `${patient_name} convidou você para ser um Anjo no Dr. Memo`,
       html: emailHtml,

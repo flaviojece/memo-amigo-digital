@@ -132,7 +132,7 @@ Dr. Memo - Cuidado Sênior`;
           `;
 
           const { error: emailError } = await resend.emails.send({
-            from: "Dr. Memo Emergência <onboarding@resend.dev>",
+            from: "Dr. Memo Emergência <flaviojece@gmail.com>",
             to: [contact.email],
             subject: `🚨 EMERGÊNCIA: ${profile.full_name} precisa de ajuda!`,
             html: emailHtml,
