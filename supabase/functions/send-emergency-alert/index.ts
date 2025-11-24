@@ -1,8 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from 'jsr:@supabase/supabase-js@2';
-import { Resend } from "npm:resend@2.0.0";
-
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -131,18 +129,33 @@ Dr. Memo - Cuidado Sênior`;
             </div>
           `;
 
-          const { error: emailError } = await resend.emails.send({
-            from: "Dr. Memo Emergência <onboarding@resend.dev>",
-            to: [contact.email],
-            subject: `🚨 EMERGÊNCIA: ${profile.full_name} precisa de ajuda!`,
-            html: emailHtml,
+          const smtpClient = new SMTPClient({
+            connection: {
+              hostname: "smtp.hostinger.com",
+              port: 465,
+              tls: true,
+              auth: {
+                username: "noreply@mouramente.com.br",
+                password: Deno.env.get("HOSTINGER_EMAIL_PASSWORD") || "",
+              },
+            },
           });
 
-          if (emailError) {
-            console.error(`❌ Error sending email to ${contact.email}:`, emailError);
-          } else {
-            console.log(`✅ Email sent to ${contact.email}`);
+          try {
+            await smtpClient.send({
+              from: "Dr. Memo Emergência <noreply@mouramente.com.br>",
+              to: contact.email,
+              subject: `🚨 EMERGÊNCIA: ${profile.full_name} precisa de ajuda!`,
+              content: "auto",
+              html: emailHtml,
+            });
+
+            await smtpClient.close();
+            console.log(`✅ Email sent via Hostinger SMTP to ${contact.email}`);
             notified.push(contact.id);
+          } catch (emailError: any) {
+            await smtpClient.close();
+            console.error(`❌ Error sending email to ${contact.email}:`, emailError);
           }
         } catch (emailError) {
           console.error(`❌ Exception sending email to ${contact.email}:`, emailError);
