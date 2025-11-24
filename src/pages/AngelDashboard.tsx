@@ -221,8 +221,8 @@ export default function AngelDashboard() {
                     Acompanhe onde o paciente está agora
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <LiveLocationMap patientId={selectedPatientId} onClose={() => {}} />
+                <CardContent className="p-0">
+                  <LiveLocationMap patientId={selectedPatientId} onClose={() => {}} variant="inline" />
                 </CardContent>
               </Card>
             </TabsContent>
