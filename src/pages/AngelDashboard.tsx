@@ -13,6 +13,7 @@ import { LiveLocationMap } from '@/components/location/LiveLocationMap';
 import { useSuggestions } from '@/hooks/useSuggestions';
 import { SuggestionCard } from '@/components/angel/SuggestionCard';
 import { MedicationSuggestionDialog } from '@/components/angel/MedicationSuggestionDialog';
+import { MedicationEditSuggestionDialog } from '@/components/angel/MedicationEditSuggestionDialog';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -24,6 +25,8 @@ export default function AngelDashboard() {
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'location' | 'medications' | 'appointments' | 'suggestions'>('overview');
   const [showSuggestionDialog, setShowSuggestionDialog] = useState(false);
+  const [editingSuggestionDialogOpen, setEditingSuggestionDialogOpen] = useState(false);
+  const [medicationToEdit, setMedicationToEdit] = useState<any>(null);
 
   const { suggestions, approveSuggestion, rejectSuggestion, loading: loadingSuggestions } = useSuggestions(selectedPatientId || undefined);
 
@@ -67,6 +70,14 @@ export default function AngelDashboard() {
 
   const handleSuggestMedication = () => {
     setShowSuggestionDialog(true);
+  };
+
+  const handleEditMedication = (medicationId: string) => {
+    const medication = medications?.find(m => m.id === medicationId);
+    if (medication) {
+      setMedicationToEdit(medication);
+      setEditingSuggestionDialogOpen(true);
+    }
   };
 
   // Show loading screen while auth is initializing
@@ -250,7 +261,7 @@ export default function AngelDashboard() {
                   <MedicationList
                     medications={medications || []}
                     isLoading={loadingMeds}
-                    onEdit={() => toast.info('Como anjo, você pode apenas visualizar. Use "Sugerir" para propor mudanças.')}
+                    onEdit={handleEditMedication}
                     onRefetch={refetchMeds}
                   />
                 </CardContent>
@@ -321,11 +332,19 @@ export default function AngelDashboard() {
       </div>
 
       {selectedPatientId && (
-        <MedicationSuggestionDialog
-          patientId={selectedPatientId}
-          open={showSuggestionDialog}
-          onOpenChange={setShowSuggestionDialog}
-        />
+        <>
+          <MedicationSuggestionDialog
+            patientId={selectedPatientId}
+            open={showSuggestionDialog}
+            onOpenChange={setShowSuggestionDialog}
+          />
+          <MedicationEditSuggestionDialog
+            patientId={selectedPatientId}
+            medication={medicationToEdit}
+            open={editingSuggestionDialogOpen}
+            onOpenChange={setEditingSuggestionDialogOpen}
+          />
+        </>
       )}
     </div>
   );
