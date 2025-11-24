@@ -126,7 +126,7 @@ const handler = async (req: Request): Promise<Response> => {
         port: 465,
         tls: true,
         auth: {
-          username: "noreply@mouramente.com.br",
+          username: "contato@mouramente.com.br",
           password: Deno.env.get("HOSTINGER_EMAIL_PASSWORD") || "",
         },
       },
@@ -134,7 +134,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     try {
       await client.send({
-        from: "Dr. Memo <noreply@mouramente.com.br>",
+        from: "Dr. Memo <contato@mouramente.com.br>",
         to: invited_email,
         subject: `${patient_name} convidou você para ser um Anjo no Dr. Memo`,
         content: "auto",

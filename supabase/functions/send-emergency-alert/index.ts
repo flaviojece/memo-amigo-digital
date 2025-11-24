@@ -135,7 +135,7 @@ Dr. Memo - Cuidado Sênior`;
               port: 465,
               tls: true,
               auth: {
-                username: "noreply@mouramente.com.br",
+                username: "contato@mouramente.com.br",
                 password: Deno.env.get("HOSTINGER_EMAIL_PASSWORD") || "",
               },
             },
@@ -143,7 +143,7 @@ Dr. Memo - Cuidado Sênior`;
 
           try {
             await smtpClient.send({
-              from: "Dr. Memo Emergência <noreply@mouramente.com.br>",
+              from: "Dr. Memo Emergência <contato@mouramente.com.br>",
               to: contact.email,
               subject: `🚨 EMERGÊNCIA: ${profile.full_name} precisa de ajuda!`,
               content: "auto",
