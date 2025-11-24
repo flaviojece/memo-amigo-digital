@@ -1,8 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { Resend } from "npm:resend@2.0.0";
-
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -77,18 +75,33 @@ serve(async (req) => {
       </div>
     `;
 
-    const { error: emailError } = await resend.emails.send({
-      from: "Dr. Memo <onboarding@resend.dev>",
-      to: [patient.email],
-      subject: `${angelName} sugeriu: ${typeLabel}`,
-      html: emailHtml,
+    const client = new SMTPClient({
+      connection: {
+        hostname: "smtp.hostinger.com",
+        port: 465,
+        tls: true,
+        auth: {
+          username: "noreply@mouramente.com.br",
+          password: Deno.env.get("HOSTINGER_EMAIL_PASSWORD") || "",
+        },
+      },
     });
 
-    if (emailError) {
+    try {
+      await client.send({
+        from: "Dr. Memo <noreply@mouramente.com.br>",
+        to: patient.email,
+        subject: `${angelName} sugeriu: ${typeLabel}`,
+        content: "auto",
+        html: emailHtml,
+      });
+
+      await client.close();
+      console.log("Email sent successfully via Hostinger SMTP to:", patient.email);
+    } catch (emailError: any) {
+      await client.close();
       throw emailError;
     }
-
-    console.log("Email sent successfully to:", patient.email);
 
     return new Response(
       JSON.stringify({ success: true, message: "Notification sent" }),
