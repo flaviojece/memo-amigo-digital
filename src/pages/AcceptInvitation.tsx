@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Check, X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 export default function AcceptInvitation() {
   const [searchParams] = useSearchParams();
@@ -45,7 +46,7 @@ export default function AcceptInvitation() {
       .maybeSingle();
 
     if (error || !data) {
-      console.error('[AcceptInvitation] Error loading invitation:', error);
+      logger.error('[AcceptInvitation] Error loading invitation:', error);
       toast.error('Convite não encontrado ou já foi usado');
       navigate('/');
       return;
@@ -65,7 +66,7 @@ export default function AcceptInvitation() {
       .maybeSingle();
 
     if (patientError) {
-      console.error('[AcceptInvitation] Error loading patient:', patientError);
+      logger.error('[AcceptInvitation] Error loading patient:', patientError);
     }
 
     setInvitation({ ...data, patient });
@@ -73,7 +74,7 @@ export default function AcceptInvitation() {
   };
 
   const handleAccept = async () => {
-    console.log('[AcceptInvitation] Botão Aceitar clicado', { user, invitation });
+    logger.log('[AcceptInvitation] Botão Aceitar clicado', { user, invitation });
 
     if (!user) {
       toast.error('Você precisa fazer login primeiro');
@@ -82,7 +83,7 @@ export default function AcceptInvitation() {
     }
 
     if (!invitation || !invitation.id) {
-      console.error('[AcceptInvitation] Convite não carregado corretamente', invitation);
+      logger.error('[AcceptInvitation] Convite não carregado corretamente', invitation);
       toast.error('Convite não carregado. Recarregue a página e tente novamente.');
       return;
     }
@@ -90,7 +91,7 @@ export default function AcceptInvitation() {
     setProcessing(true);
 
     try {
-      console.log('[AcceptInvitation] Chamando função accept-invitation...', {
+      logger.log('[AcceptInvitation] Chamando função accept-invitation...', {
         invitationId: invitation.id,
       });
       
@@ -98,7 +99,7 @@ export default function AcceptInvitation() {
         body: { invitation_id: invitation.id }
       });
 
-      console.log('[AcceptInvitation] Resposta da função:', { data, error });
+      logger.log('[AcceptInvitation] Resposta da função:', { data, error });
 
       if (error || (data && (data as any).error)) {
         const message =
@@ -106,7 +107,7 @@ export default function AcceptInvitation() {
           (error as any)?.message ||
           'Erro ao aceitar convite';
 
-        console.error('[AcceptInvitation] Erro na função:', { data, error });
+        logger.error('[AcceptInvitation] Erro na função:', { data, error });
         toast.error(message);
         return;
       }
@@ -121,7 +122,7 @@ export default function AcceptInvitation() {
       }, 1500);
 
     } catch (err) {
-      console.error('[AcceptInvitation] Erro inesperado:', err);
+      logger.error('[AcceptInvitation] Erro inesperado:', err);
       toast.error('Erro inesperado ao aceitar convite');
     } finally {
       setProcessing(false);

@@ -10,6 +10,7 @@ import { ArrowLeft, Crosshair, ZoomIn, ZoomOut, Navigation as NavigationIcon, Ma
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { logger } from "@/lib/logger";
 
 interface LiveLocationMapProps {
   patientId: string;
@@ -58,7 +59,7 @@ export function LiveLocationMap({ patientId, onClose }: LiveLocationMapProps) {
       .order("recorded_at", { ascending: true });
 
     if (error) {
-      console.error("Erro ao carregar histórico:", error);
+      logger.error("Erro ao carregar histórico:", error);
       return;
     }
 
@@ -70,11 +71,11 @@ export function LiveLocationMap({ patientId, onClose }: LiveLocationMapProps) {
     if (!mapContainer.current || map.current) return;
 
     if (!MAPBOX_TOKEN) {
-      console.error("VITE_MAPBOX_ACCESS_TOKEN não configurado");
+      logger.error("VITE_MAPBOX_ACCESS_TOKEN não configurado");
       return;
     }
 
-    console.log("🔑 MAPBOX_TOKEN definido:", !!MAPBOX_TOKEN);
+    logger.log("🔑 MAPBOX_TOKEN definido:", !!MAPBOX_TOKEN);
     mapboxgl.accessToken = MAPBOX_TOKEN;
 
     map.current = new mapboxgl.Map({
@@ -88,12 +89,12 @@ export function LiveLocationMap({ patientId, onClose }: LiveLocationMapProps) {
 
     // Aguardar o estilo carregar completamente
     map.current.on('load', () => {
-      console.log("✅ Mapa Mapbox carregado com sucesso (mapReady = true)");
+      logger.log("✅ Mapa Mapbox carregado com sucesso (mapReady = true)");
       setMapReady(true);
     });
 
     map.current.on('error', (event) => {
-      console.error("❌ Erro no Mapbox:", event.error || event);
+      logger.error("❌ Erro no Mapbox:", event.error || event);
       const errorMsg = event.error?.message || "Erro desconhecido ao carregar o mapa";
       setMapError(errorMsg);
     });
@@ -176,7 +177,7 @@ export function LiveLocationMap({ patientId, onClose }: LiveLocationMapProps) {
           });
         }
       } catch (error) {
-        console.error("Erro ao adicionar rota ao mapa:", error);
+        logger.error("Erro ao adicionar rota ao mapa:", error);
       }
     }
   }, [location, history, mapReady]);
@@ -210,7 +211,7 @@ export function LiveLocationMap({ patientId, onClose }: LiveLocationMapProps) {
           filter: `user_id=eq.${patientId}`,
         },
         (payload) => {
-          console.log("📍 Nova localização recebida:", payload.new);
+          logger.log("📍 Nova localização recebida:", payload.new);
           const newLocation = payload.new as any;
           setLocation(newLocation);
 

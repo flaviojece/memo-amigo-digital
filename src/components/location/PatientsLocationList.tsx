@@ -10,6 +10,7 @@ import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useEffect, useState } from "react";
 import { LiveLocationMap } from "./LiveLocationMap";
+import { logger } from "@/lib/logger";
 
 interface PatientsLocationListProps {
   onBackToMore?: () => void;
@@ -63,7 +64,7 @@ export function PatientsLocationList({ onBackToMore }: PatientsLocationListProps
           filter: `user_id=in.(${patientIds.join(",")})`,
         },
         (payload) => {
-          console.log("Settings changed:", payload);
+          logger.log("Settings changed:", payload);
           loadLocationStatuses();
         }
       )
@@ -81,7 +82,7 @@ export function PatientsLocationList({ onBackToMore }: PatientsLocationListProps
           filter: `user_id=in.(${patientIds.join(",")})`,
         },
         (payload) => {
-          console.log("Location changed:", payload);
+          logger.log("Location changed:", payload);
           loadLocationStatuses();
         }
       )

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 interface Invitation {
   id: string;
@@ -49,7 +50,7 @@ export const useGuardianInvitations = () => {
       .order('created_at', { ascending: false });
 
     if (error || !data) {
-      console.error('[useGuardianInvitations] Error loading received invitations:', error);
+      logger.error('[useGuardianInvitations] Error loading received invitations:', error);
       return;
     }
 
@@ -166,19 +167,19 @@ export const useGuardianInvitations = () => {
     }
 
     try {
-      console.log('[Guardian] Calling edge function to accept invitation:', invitationId);
+      logger.log('[Guardian] Calling edge function to accept invitation:', invitationId);
 
       const { data, error } = await supabase.functions.invoke('accept-invitation', {
         body: { invitation_id: invitationId }
       });
 
       if (error) {
-        console.error('[Guardian] Edge function error:', error);
+        logger.error('[Guardian] Edge function error:', error);
         toast.error(error.message || 'Erro ao aceitar convite');
         return false;
       }
 
-      console.log('[Guardian] Success:', data);
+      logger.log('[Guardian] Success:', data);
       toast.success(data.message || 'Convite aceito com sucesso!', {
         description: 'Redirecionando para o painel...',
         duration: 3000,
@@ -188,7 +189,7 @@ export const useGuardianInvitations = () => {
       return true;
 
     } catch (error) {
-      console.error('[Guardian] Erro inesperado ao aceitar convite:', error);
+      logger.error('[Guardian] Erro inesperado ao aceitar convite:', error);
       toast.error('Erro inesperado ao aceitar convite');
       return false;
     }
