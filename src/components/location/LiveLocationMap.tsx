@@ -16,11 +16,12 @@ interface LiveLocationMapProps {
   patientId: string;
   onClose: () => void;
   variant?: 'fullscreen' | 'inline';
+  isVisible?: boolean;
 }
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
-export function LiveLocationMap({ patientId, onClose, variant = 'fullscreen' }: LiveLocationMapProps) {
+export function LiveLocationMap({ patientId, onClose, variant = 'fullscreen', isVisible = true }: LiveLocationMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const markerRef = useRef<mapboxgl.Marker | null>(null);
@@ -74,6 +75,12 @@ export function LiveLocationMap({ patientId, onClose, variant = 'fullscreen' }: 
   // Inicializar mapa
   useEffect(() => {
     if (!mapContainer.current) return;
+    
+    // Só inicializar se for visível (importante para tabs)
+    if (!isVisible && variant === 'inline') {
+      logger.log('[LiveLocationMap] Aba não visível, aguardando...');
+      return;
+    }
     
     // Prevenir múltiplas instâncias
     if (map.current) {
@@ -166,7 +173,19 @@ export function LiveLocationMap({ patientId, onClose, variant = 'fullscreen' }: 
         }
       }
     };
-  }, []);
+  }, [isVisible, variant]);
+
+  // Forçar resize quando a aba se torna visível
+  useEffect(() => {
+    if (map.current && isVisible && mapReady) {
+      setTimeout(() => {
+        if (map.current) {
+          map.current.resize();
+          logger.log('[LiveLocationMap] Mapa redimensionado após visibilidade');
+        }
+      }, 100);
+    }
+  }, [isVisible, mapReady]);
 
   // Atualizar marker e linha de histórico
   useEffect(() => {

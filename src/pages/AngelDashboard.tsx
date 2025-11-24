@@ -222,7 +222,12 @@ export default function AngelDashboard() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="p-0">
-                  <LiveLocationMap patientId={selectedPatientId} onClose={() => {}} variant="inline" />
+                  <LiveLocationMap 
+                    patientId={selectedPatientId} 
+                    onClose={() => {}} 
+                    variant="inline"
+                    isVisible={activeTab === "location"}
+                  />
                 </CardContent>
               </Card>
             </TabsContent>
