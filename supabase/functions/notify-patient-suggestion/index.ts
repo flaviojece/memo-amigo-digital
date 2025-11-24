@@ -78,7 +78,7 @@ serve(async (req) => {
     `;
 
     const { error: emailError } = await resend.emails.send({
-      from: "Dr. Memo <flaviojece@gmail.com>",
+      from: "Dr. Memo <onboarding@resend.dev>",
       to: [patient.email],
       subject: `${angelName} sugeriu: ${typeLabel}`,
       html: emailHtml,
