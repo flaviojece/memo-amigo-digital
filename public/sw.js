@@ -39,19 +39,30 @@ self.addEventListener('notificationclick', function(event) {
   console.log('Notification clicked:', event);
   
   event.notification.close();
-  
-  const clickAction = event.notification.data?.clickAction || '/';
-  
+
+  const data = event.notification.data || {};
+  const clickAction = data.clickAction || '/';
+
+  // Tratar ações específicas (ex: "Marcar como tomado")
+  if (event.action === 'mark_taken' && data.medicationId) {
+    console.log('Marcando medicação como tomada:', data.medicationId);
+    // TODO: Chamar API para marcar medicação
+  } else if (event.action === 'snooze' && data.medicationId) {
+    console.log('Adiando notificação:', data.medicationId);
+    // TODO: Adiar notificação por 10 minutos
+  }
+
+  // Abrir ou focar no app
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true })
       .then((clientList) => {
-        // Se já tiver uma janela aberta, focar nela
+        // Procurar janela já aberta com a rota específica
         for (const client of clientList) {
-          if (client.url.includes(self.location.origin) && 'focus' in client) {
+          if (client.url.includes(clickAction) && 'focus' in client) {
             return client.focus();
           }
         }
-        // Senão, abrir nova janela
+        // Se não encontrou, abrir nova janela
         if (clients.openWindow) {
           return clients.openWindow(clickAction);
         }

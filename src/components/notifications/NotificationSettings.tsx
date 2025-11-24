@@ -12,7 +12,7 @@ import { ptBR } from 'date-fns/locale';
 
 export const NotificationSettings = () => {
   const { user } = useAuth();
-  const { permission, isSupported, isGranted, requestPermission, showTestNotification } = useNotifications();
+  const { permission, isSupported, isGranted, requestPermission, subscribeToPush, showTestNotification } = useNotifications();
   const [enabled, setEnabled] = useState(false);
   const [upcomingNotifications, setUpcomingNotifications] = useState<any[]>([]);
 
@@ -69,6 +69,15 @@ export const NotificationSettings = () => {
     }
 
     setEnabled(checked);
+    
+    // Se ativou, subscrever ao Web Push
+    if (checked && isGranted) {
+      const subscribed = await subscribeToPush();
+      if (!subscribed) {
+        console.warn('⚠️ Falha ao subscrever push');
+      }
+    }
+    
     toast.success(checked ? 'Notificações ativadas' : 'Notificações desativadas');
   };
 
