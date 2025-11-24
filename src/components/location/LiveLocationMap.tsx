@@ -98,15 +98,20 @@ export function LiveLocationMap({ patientId, onClose, variant = 'fullscreen', is
       
       mapboxgl.accessToken = MAPBOX_TOKEN;
 
+      // Se já temos localização, centralizar nela; senão usar estado salvo
       const initialCenter = location 
         ? [location.longitude, location.latitude] as [number, number]
         : mapState.center;
+      
+      const initialZoom = location ? 16 : mapState.zoom;
+      
+      logger.log(`[LiveLocationMap] Centro inicial do mapa: [${initialCenter[0]}, ${initialCenter[1]}], zoom: ${initialZoom}`);
 
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
         style: "mapbox://styles/mapbox/streets-v12",
         center: initialCenter,
-        zoom: mapState.zoom,
+        zoom: initialZoom,
         preserveDrawingBuffer: true, // Ajuda a prevenir perda de contexto WebGL
       });
 
@@ -206,7 +211,13 @@ export function LiveLocationMap({ patientId, onClose, variant = 'fullscreen', is
 
   // Atualizar marker e linha de histórico
   useEffect(() => {
-    if (!map.current || !location || !mapReady) return;
+    logger.log(`[LiveLocationMap] Estado do marcador: mapReady=${mapReady}, hasLocation=${!!location}, hasMap=${!!map.current}`);
+    if (!map.current || !location || !mapReady) {
+      logger.log('[LiveLocationMap] Aguardando mapa e localização ficarem prontos...');
+      return;
+    }
+    
+    logger.log(`[LiveLocationMap] ✅ Criando marcador em: [${location.longitude}, ${location.latitude}]`);
 
     // Atualizar ou criar marker
     if (markerRef.current) {
@@ -446,22 +457,37 @@ export function LiveLocationMap({ patientId, onClose, variant = 'fullscreen', is
       )}
 
       {/* Card de informações do paciente */}
-      <Card className={variant === 'inline' 
-        ? "absolute top-4 left-4 shadow-lg max-w-xs" 
-        : "absolute top-4 left-1/2 -translate-x-1/2 shadow-2xl max-w-sm w-full mx-4"
-      }>
-        <CardContent className="p-4">
-          <div className="flex items-center gap-3">
-            <Avatar className="w-12 h-12">
-              <AvatarFallback className="bg-primary text-primary-foreground">
-                {patient?.full_name?.[0] || patient?.email?.[0] || "?"}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <h3 className="font-bold text-lg truncate">
-                {patient?.full_name || patient?.email}
-              </h3>
-              {location && (
+      {!location && mapReady && (
+        <Card className={variant === 'inline' 
+          ? "absolute top-4 left-4 shadow-lg max-w-xs" 
+          : "absolute top-4 left-1/2 -translate-x-1/2 shadow-2xl max-w-sm w-full mx-4"
+        }>
+          <CardContent className="p-6 text-center">
+            <MapPin className="w-12 h-12 mx-auto mb-3 text-muted-foreground" />
+            <p className="font-semibold text-lg mb-2">Sem localização recente</p>
+            <p className="text-sm text-muted-foreground">
+              Nenhuma localização disponível para este paciente no momento.
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
+      {location && (
+        <Card className={variant === 'inline' 
+          ? "absolute top-4 left-4 shadow-lg max-w-xs" 
+          : "absolute top-4 left-1/2 -translate-x-1/2 shadow-2xl max-w-sm w-full mx-4"
+        }>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <Avatar className="w-12 h-12">
+                <AvatarFallback className="bg-primary text-primary-foreground">
+                  {patient?.full_name?.[0] || patient?.email?.[0] || "?"}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-bold text-lg truncate">
+                  {patient?.full_name || patient?.email}
+                </h3>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Badge variant="outline" className="bg-green-50">
                     🟢 Ao vivo
@@ -473,12 +499,16 @@ export function LiveLocationMap({ patientId, onClose, variant = 'fullscreen', is
                     })}
                   </span>
                 </div>
-              )}
+              </div>
             </div>
-          </div>
 
-          {location && (
             <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
+              {location.accuracy && (
+                <div className="flex items-center gap-1 text-muted-foreground">
+                  <Crosshair className="w-4 h-4" />
+                  ±{Math.round(location.accuracy)}m
+                </div>
+              )}
               {location.speed !== null && location.speed > 0 && (
                 <div className="flex items-center gap-1">
                   <NavigationIcon className="w-4 h-4" />
@@ -491,9 +521,9 @@ export function LiveLocationMap({ patientId, onClose, variant = 'fullscreen', is
                 </div>
               )}
             </div>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Controles de zoom e centralização */}
       <div className={variant === 'inline' 
