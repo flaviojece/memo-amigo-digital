@@ -144,7 +144,7 @@ export function HomePage({ onTabChange }: HomePageProps) {
                   : "Nenhum medicamento cadastrado"
               }
               icon={<Pill className="text-primary" />}
-              onClick={() => onTabChange("meds")}
+            onClick={() => onTabChange("medications")}
             />
 
             <QuickActionCard
@@ -178,7 +178,7 @@ export function HomePage({ onTabChange }: HomePageProps) {
             <QuickActionCard
               title="Remédios"
               icon={<Pill className="text-primary" />}
-              onClick={() => onTabChange("meds")}
+          onClick={() => onTabChange("medications")}
             />
 
             <QuickActionCard
@@ -196,7 +196,7 @@ export function HomePage({ onTabChange }: HomePageProps) {
             <QuickActionCard
               title={"Horário das\nMedicações"}
               icon={<Clock className="text-muted-foreground" />}
-              onClick={() => onTabChange("meds")}
+              onClick={() => onTabChange("medications")}
             />
           </div>
         </section>
