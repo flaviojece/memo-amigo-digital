@@ -15,11 +15,12 @@ import { logger } from "@/lib/logger";
 interface LiveLocationMapProps {
   patientId: string;
   onClose: () => void;
+  variant?: 'fullscreen' | 'inline';
 }
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
-export function LiveLocationMap({ patientId, onClose }: LiveLocationMapProps) {
+export function LiveLocationMap({ patientId, onClose, variant = 'fullscreen' }: LiveLocationMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const markerRef = useRef<mapboxgl.Marker | null>(null);
@@ -293,7 +294,7 @@ export function LiveLocationMap({ patientId, onClose }: LiveLocationMapProps) {
   }
 
   return (
-    <div className="relative h-screen w-full">
+    <div className={variant === 'inline' ? "relative h-[500px] w-full" : "relative h-screen w-full"}>
       {/* Container do Mapa */}
       <div ref={mapContainer} className="absolute inset-0" />
 
@@ -329,19 +330,24 @@ export function LiveLocationMap({ patientId, onClose }: LiveLocationMapProps) {
         </div>
       )}
 
-      {/* Botão Voltar */}
-      <Button
-        onClick={onClose}
-        variant="outline"
-        size="lg"
-        className="absolute top-4 left-4 shadow-lg bg-white"
-      >
-        <ArrowLeft className="w-5 h-5 mr-2" />
-        Voltar
-      </Button>
+      {/* Botão Voltar - apenas em fullscreen */}
+      {variant === 'fullscreen' && (
+        <Button
+          onClick={onClose}
+          variant="outline"
+          size="lg"
+          className="absolute top-4 left-4 shadow-lg bg-white"
+        >
+          <ArrowLeft className="w-5 h-5 mr-2" />
+          Voltar
+        </Button>
+      )}
 
       {/* Card de informações do paciente */}
-      <Card className="absolute top-4 left-1/2 -translate-x-1/2 shadow-2xl max-w-sm w-full mx-4">
+      <Card className={variant === 'inline' 
+        ? "absolute top-4 left-4 shadow-lg max-w-xs" 
+        : "absolute top-4 left-1/2 -translate-x-1/2 shadow-2xl max-w-sm w-full mx-4"
+      }>
         <CardContent className="p-4">
           <div className="flex items-center gap-3">
             <Avatar className="w-12 h-12">
@@ -388,7 +394,10 @@ export function LiveLocationMap({ patientId, onClose }: LiveLocationMapProps) {
       </Card>
 
       {/* Controles de zoom e centralização */}
-      <div className="absolute bottom-8 right-4 flex flex-col gap-2">
+      <div className={variant === 'inline' 
+        ? "absolute bottom-4 right-4 flex flex-col gap-2" 
+        : "absolute bottom-8 right-4 flex flex-col gap-2"
+      }>
         <Button
           onClick={handleZoomIn}
           size="icon"
@@ -418,7 +427,10 @@ export function LiveLocationMap({ patientId, onClose }: LiveLocationMapProps) {
 
       {/* Indicador de histórico */}
       {history.length > 0 && (
-        <Badge className="absolute bottom-8 left-4 shadow-lg bg-white text-foreground">
+        <Badge className={variant === 'inline'
+          ? "absolute bottom-4 left-4 shadow-lg bg-white text-foreground"
+          : "absolute bottom-8 left-4 shadow-lg bg-white text-foreground"
+        }>
           📍 {history.length} pontos nas últimas 2h
         </Badge>
       )}
