@@ -19,7 +19,16 @@ export default function AcceptInvitation() {
   const token = searchParams.get('token');
 
   useEffect(() => {
-    loadInvitation();
+    // Check for token in sessionStorage first (user just logged in)
+    const pendingToken = sessionStorage.getItem('pendingInvitationToken');
+    if (pendingToken) {
+      logger.log('[AcceptInvitation] Found pending token in sessionStorage:', pendingToken);
+      sessionStorage.removeItem('pendingInvitationToken');
+      // Update URL with the token and load invitation
+      navigate(`/accept-invitation?token=${pendingToken}`, { replace: true });
+    } else {
+      loadInvitation();
+    }
   }, [token]);
 
   const loadInvitation = async () => {
