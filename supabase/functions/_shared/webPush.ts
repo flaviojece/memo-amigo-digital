@@ -1,4 +1,5 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2';
+import webpush from 'npm:web-push@3.6.7';
 
 interface PushSubscription {
   id: string;
@@ -20,7 +21,7 @@ interface PushPayload {
 }
 
 /**
- * Envia notificação Web Push usando a API nativa do navegador
+ * Envia notificação Web Push usando a biblioteca web-push
  */
 export async function sendWebPush(
   subscription: PushSubscription,
@@ -36,109 +37,44 @@ export async function sendWebPush(
       return false;
     }
 
-    // Preparar headers VAPID (JWT)
-    const vapidHeaders = generateVAPIDHeaders(
-      subscription.endpoint,
+    // Configurar VAPID details
+    webpush.setVapidDetails(
       vapidSubject,
       vapidPublicKey,
       vapidPrivateKey
     );
 
-    // Encriptar payload
-    const encryptedPayload = await encryptPayload(
+    // Preparar subscription object para web-push
+    const pushSubscription = {
+      endpoint: subscription.endpoint,
+      keys: {
+        p256dh: subscription.p256dh,
+        auth: subscription.auth,
+      },
+    };
+
+    // Enviar notificação
+    await webpush.sendNotification(
+      pushSubscription,
       JSON.stringify(payload),
-      subscription.p256dh,
-      subscription.auth
+      {
+        TTL: 86400, // 24 horas
+      }
     );
 
-    // Enviar para o endpoint de push
-    const response = await fetch(subscription.endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/octet-stream',
-        'Content-Encoding': 'aes128gcm',
-        'TTL': '86400', // 24 horas
-        ...vapidHeaders,
-      },
-      body: encryptedPayload,
-    });
-
-    if (response.status === 410 || response.status === 404) {
-      // Subscrição expirou ou foi removida
+    console.log('✅ Push enviado:', subscription.endpoint.substring(0, 50) + '...');
+    return true;
+  } catch (error: any) {
+    // Verificar se é erro de subscrição inválida
+    if (error.statusCode === 410 || error.statusCode === 404) {
       console.log('⚠️ Subscrição inválida (410/404), marcando para remoção');
       await removeExpiredSubscription(subscription.id);
       return false;
     }
 
-    if (!response.ok) {
-      console.error('❌ Erro ao enviar push:', response.status, await response.text());
-      return false;
-    }
-
-    console.log('✅ Push enviado:', subscription.endpoint.substring(0, 50) + '...');
-    return true;
-  } catch (error) {
     console.error('❌ Erro ao enviar push:', error);
     return false;
   }
-}
-
-/**
- * Gera headers VAPID (JWT) para autenticação
- */
-function generateVAPIDHeaders(
-  endpoint: string,
-  subject: string,
-  publicKey: string,
-  privateKey: string
-): Record<string, string> {
-  // Simplificado: em produção, usar biblioteca VAPID completa
-  // Por ora, retornamos headers básicos
-  const url = new URL(endpoint);
-  return {
-    'Authorization': `vapid t=${generateJWT(subject, url.origin, publicKey, privateKey)}, k=${publicKey}`,
-  };
-}
-
-/**
- * Gera JWT simples para VAPID
- */
-function generateJWT(
-  subject: string,
-  audience: string,
-  publicKey: string,
-  privateKey: string
-): string {
-  // NOTA: Implementação simplificada
-  // Em produção, usar biblioteca como jose ou similar
-  const header = btoa(JSON.stringify({ typ: 'JWT', alg: 'ES256' }));
-  const payload = btoa(JSON.stringify({
-    aud: audience,
-    exp: Math.floor(Date.now() / 1000) + 43200, // 12 horas
-    sub: subject,
-  }));
-  
-  // Simplificado: retornar token mock (substituir por assinatura real)
-  return `${header}.${payload}.mock-signature`;
-}
-
-/**
- * Encripta payload usando Web Crypto API
- */
-async function encryptPayload(
-  payload: string,
-  userPublicKey: string,
-  userAuthSecret: string
-): Promise<Uint8Array> {
-  // NOTA: Implementação simplificada
-  // Em produção, usar especificação completa de Web Push encryption (RFC 8291)
-  
-  const encoder = new TextEncoder();
-  const data = encoder.encode(payload);
-  
-  // Por ora, retornar dados sem encriptação (apenas para desenvolvimento)
-  // TODO: Implementar encriptação AES-GCM completa
-  return data;
 }
 
 /**

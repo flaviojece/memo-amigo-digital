@@ -43,13 +43,64 @@ self.addEventListener('notificationclick', function(event) {
   const data = event.notification.data || {};
   const clickAction = data.clickAction || '/';
 
-  // Tratar ações específicas (ex: "Marcar como tomado")
-  if (event.action === 'mark_taken' && data.medicationId) {
-    console.log('Marcando medicação como tomada:', data.medicationId);
-    // TODO: Chamar API para marcar medicação
+  // Tratar ação "Marcar como tomado"
+  if (event.action === 'mark_taken' && data.medicationId && data.userId) {
+    console.log('📝 Marcando medicação como tomada:', data.medicationId);
+    
+    event.waitUntil(
+      fetch('https://qxuiymmzjptpczodbvmm.supabase.co/functions/v1/mark-medication-taken', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          medication_id: data.medicationId,
+          scheduled_time: data.scheduledTime,
+          user_id: data.userId,
+        }),
+      })
+      .then(response => {
+        if (response.ok) {
+          console.log('✅ Medicação marcada como tomada com sucesso');
+          // Mostrar notificação de confirmação
+          return self.registration.showNotification('Dr. Memo ✅', {
+            body: 'Medicação registrada com sucesso!',
+            icon: '/icon-192.png',
+            badge: '/icon-192.png',
+            tag: 'medication-success',
+            requireInteraction: false,
+          });
+        } else {
+          console.error('❌ Erro ao marcar medicação:', response.status);
+          return self.registration.showNotification('Dr. Memo ❌', {
+            body: 'Erro ao registrar medicação. Tente novamente.',
+            icon: '/icon-192.png',
+            badge: '/icon-192.png',
+            tag: 'medication-error',
+          });
+        }
+      })
+      .catch(error => {
+        console.error('❌ Erro na requisição:', error);
+        return self.registration.showNotification('Dr. Memo ❌', {
+          body: 'Erro de conexão. Verifique sua internet.',
+          icon: '/icon-192.png',
+          badge: '/icon-192.png',
+          tag: 'medication-error',
+        });
+      })
+    );
   } else if (event.action === 'snooze' && data.medicationId) {
-    console.log('Adiando notificação:', data.medicationId);
-    // TODO: Adiar notificação por 10 minutos
+    console.log('⏰ Adiando notificação:', data.medicationId);
+    // TODO: Implementar lógica de adiar notificação
+    event.waitUntil(
+      self.registration.showNotification('Dr. Memo ⏰', {
+        body: 'Notificação adiada por 10 minutos',
+        icon: '/icon-192.png',
+        badge: '/icon-192.png',
+        tag: 'medication-snoozed',
+      })
+    );
   }
 
   // Abrir ou focar no app
