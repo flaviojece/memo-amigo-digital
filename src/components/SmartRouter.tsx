@@ -18,6 +18,13 @@ export function SmartRouter() {
       return;
     }
 
+    // If there's a pending invitation, don't auto-redirect
+    const pendingToken = sessionStorage.getItem('pendingInvitationToken');
+    if (pendingToken) {
+      logger.log('[SmartRouter] Pending invitation found, skipping auto-redirect');
+      return;
+    }
+
     // Se o banco está vazio, redirecionar para setup inicial
     if (isEmpty === true) {
       logger.log('[SmartRouter] Database is empty, redirecting to setup...');
