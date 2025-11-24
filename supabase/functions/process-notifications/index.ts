@@ -78,6 +78,8 @@ Deno.serve(async (req) => {
             type: notification.type,
             medicationId: notification.medication_id,
             appointmentId: notification.appointment_id,
+            scheduledTime: notification.scheduled_for,
+            userId: notification.user_id,
             clickAction: notification.click_action || (isMedication ? '/medications' : '/appointments'),
           },
           vibrate: [200, 100, 200],
@@ -88,25 +90,27 @@ Deno.serve(async (req) => {
           ] : undefined,
         };
         
-        // 3. Enviar para todas as subscrições do usuário
+        // 3. Importar e usar função real de envio de Web Push
+        const { sendWebPush } = await import('../_shared/webPush.ts');
+        
+        // 4. Enviar para todas as subscrições do usuário
         let sentCount = 0;
         for (const sub of subscriptions) {
-          // Usar Web Push API nativa (simplificado por ora)
-          // TODO: Implementar envio real via web-push library
           console.log(`📨 Enviando para dispositivo: ${sub.endpoint.substring(0, 50)}...`);
           
-          // Por ora, apenas simular envio bem-sucedido
-          // Em produção, chamar sendWebPush(sub, payload)
-          sentCount++;
+          const sent = await sendWebPush(sub, payload);
           
-          // Atualizar last_used_at
-          await supabase
-            .from('push_subscriptions')
-            .update({ last_used_at: new Date().toISOString() })
-            .eq('id', sub.id);
+          if (sent) {
+            sentCount++;
+            // Atualizar last_used_at
+            await supabase
+              .from('push_subscriptions')
+              .update({ last_used_at: new Date().toISOString() })
+              .eq('id', sub.id);
+          }
         }
         
-        console.log(`📨 Sent to ${sentCount}/${subscriptions.length} devices`);
+        console.log(`✅ Enviado para ${sentCount}/${subscriptions.length} dispositivos`);
         
         // 4. Marcar notificação como enviada
         const { error: updateError } = await supabase
