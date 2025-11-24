@@ -81,6 +81,11 @@ export function MedicationEditSuggestionDialog({
     }
   }, [medication, open, reset]);
 
+  // Sync times with form for validation
+  useEffect(() => {
+    setValue('times', times, { shouldValidate: true });
+  }, [times, setValue]);
+
   const addTime = () => {
     setTimes([...times, "08:00"]);
   };
