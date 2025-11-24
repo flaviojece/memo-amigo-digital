@@ -219,30 +219,34 @@ export function LiveLocationMap({ patientId, onClose, variant = 'fullscreen', is
     
     logger.log(`[LiveLocationMap] ✅ Criando marcador em: [${location.longitude}, ${location.latitude}]`);
 
-    // Atualizar ou criar marker
+    // Atualizar ou criar marker com estilo padrão do Mapbox
     if (markerRef.current) {
       markerRef.current.setLngLat([location.longitude, location.latitude]);
+      logger.log(`[LiveLocationMap] Marcador atualizado para novas coordenadas`);
     } else {
-      const el = document.createElement('div');
-      el.className = 'relative';
-      el.innerHTML = `
-        <div class="absolute -top-4 -left-4 w-8 h-8 bg-blue-500 rounded-full animate-ping opacity-75"></div>
-        <div class="relative bg-blue-600 rounded-full p-2 shadow-lg border-2 border-white">
-          <svg class="w-8 h-8 text-white" fill="white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-          </svg>
-        </div>
-      `;
-      markerRef.current = new mapboxgl.Marker({ element: el })
+      // Usar marcador padrão do Mapbox (mais confiável)
+      markerRef.current = new mapboxgl.Marker({ 
+        color: '#3b82f6',
+        scale: 1.5
+      })
         .setLngLat([location.longitude, location.latitude])
         .addTo(map.current);
+      
+      logger.log(`[LiveLocationMap] ✅ Marcador criado e adicionado ao mapa`);
+      logger.log(`[LiveLocationMap] Elemento do marcador:`, markerRef.current.getElement());
     }
 
-    // Centralizar mapa
-    map.current.flyTo({
-      center: [location.longitude, location.latitude],
-      zoom: 15,
-    });
+    // Aguardar render do marcador antes de flyTo
+    setTimeout(() => {
+      if (map.current && location) {
+        logger.log(`[LiveLocationMap] Centralizando mapa no marcador`);
+        map.current.flyTo({
+          center: [location.longitude, location.latitude],
+          zoom: 16,
+          essential: true
+        });
+      }
+    }, 150);
 
     // Adicionar linha de histórico
     if (history.length > 1) {
