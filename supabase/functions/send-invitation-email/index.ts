@@ -1,5 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import nodemailer from "npm:nodemailer@6.9.8";
+import { Resend } from "npm:resend@2.0.0";
+
+const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -117,33 +119,25 @@ const handler = async (req: Request): Promise<Response> => {
       </html>
     `;
 
+    // Enviar email usando Resend
+    console.log("Enviando email via Resend para:", invited_email);
 
-    // Configurar transporte SMTP do Hostinger
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.hostinger.com',
-      port: 465,
-      secure: true, // SSL
-      auth: {
-        user: 'contato@mouramente.com.br',
-        pass: Deno.env.get('HOSTINGER_EMAIL_PASSWORD')
-      }
-    });
-
-    console.log("Enviando email via SMTP Hostinger para:", invited_email);
-
-    // Enviar email usando nodemailer
-    const emailResponse = await transporter.sendMail({
-      from: '"Dr. Memo" <contato@mouramente.com.br>',
-      to: invited_email,
+    const { data: emailResponse, error: emailError } = await resend.emails.send({
+      from: "Dr. Memo <onboarding@resend.dev>",
+      to: [invited_email],
       subject: `${patient_name} convidou você para ser um Anjo no Dr. Memo`,
       html: emailHtml,
     });
 
-    console.log("Email enviado com sucesso via Hostinger:", emailResponse.messageId);
+    if (emailError) {
+      throw emailError;
+    }
+
+    console.log("Email enviado com sucesso via Resend:", emailResponse?.id);
 
     return new Response(JSON.stringify({ 
       success: true, 
-      messageId: emailResponse.messageId 
+      messageId: emailResponse?.id
     }), {
       status: 200,
       headers: {
