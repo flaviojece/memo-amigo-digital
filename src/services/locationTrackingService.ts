@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { logger } from "@/lib/logger";
 
 interface Position {
   latitude: number;
@@ -16,6 +17,11 @@ class LocationTrackingService {
   private accuracyThreshold = 50; // 50 metros
   private intervalId: NodeJS.Timeout | null = null;
   private lastHistoryInsert: number = 0;
+  
+  // Buffer para coletar múltiplas leituras de GPS
+  private gpsReadings: GeolocationPosition[] = [];
+  private maxReadings = 5; // Coletar 5 leituras antes de processar
+  private minAccuracy = 100; // Aceitar apenas leituras com accuracy < 100m
 
   /**
    * Inicia o rastreamento de localização
@@ -39,8 +45,8 @@ class LocationTrackingService {
       (error) => this.handleError(error),
       {
         enableHighAccuracy: true,
-        maximumAge: 5000,
-        timeout: 10000,
+        maximumAge: 0,        // Nunca usar cache
+        timeout: 15000,       // Aguardar até 15s por posição precisa
       }
     );
 
@@ -53,7 +59,7 @@ class LocationTrackingService {
       );
     }, this.updateInterval);
 
-    console.log("✅ Rastreamento iniciado");
+    logger.log("✅ Rastreamento iniciado");
   }
 
   /**
@@ -72,8 +78,9 @@ class LocationTrackingService {
 
     this.userId = null;
     this.lastPosition = null;
+    this.gpsReadings = [];
 
-    console.log("⏸️ Rastreamento pausado");
+    logger.log("⏸️ Rastreamento pausado");
   }
 
   /**
@@ -82,10 +89,33 @@ class LocationTrackingService {
   private async handlePosition(geoPosition: GeolocationPosition) {
     if (!this.userId) return;
 
-    const { latitude, longitude, accuracy, heading, speed } = geoPosition.coords;
+    const { accuracy } = geoPosition.coords;
+
+    // 🔍 VALIDAÇÃO DE PRECISÃO (Opção 1)
+    if (accuracy > this.minAccuracy) {
+      logger.warn(
+        `[GPS] Precisão insuficiente: ±${accuracy.toFixed(0)}m (mínimo: ${this.minAccuracy}m) - aguardando...`
+      );
+      return; // Rejeitar leitura imprecisa
+    }
+
+    // 📊 BUFFER DE LEITURAS (Opção 4)
+    this.gpsReadings.push(geoPosition);
+    logger.log(
+      `[GPS] Leitura coletada: ±${accuracy.toFixed(0)}m (${this.gpsReadings.length}/${this.maxReadings})`
+    );
+
+    // Aguardar coletar leituras suficientes
+    if (this.gpsReadings.length < this.maxReadings) {
+      return; // Ainda coletando
+    }
+
+    // Processar média das melhores leituras
+    const bestPosition = this.calculateBestPosition();
+    const { latitude, longitude, accuracy: finalAccuracy, heading, speed } = bestPosition.coords;
 
     // Verificar se houve movimento significativo
-    if (this.lastPosition && accuracy < 100) {
+    if (this.lastPosition && finalAccuracy < 100) {
       const distance = this.calculateDistance(
         this.lastPosition.latitude,
         this.lastPosition.longitude,
@@ -95,7 +125,8 @@ class LocationTrackingService {
 
       // Se movimento for menor que threshold, pular atualização
       if (distance < this.accuracyThreshold) {
-        console.log(`Movimento insignificante (${distance.toFixed(0)}m), pulando`);
+        logger.log(`Movimento insignificante (${distance.toFixed(0)}m), pulando`);
+        this.gpsReadings = []; // Limpar buffer
         return;
       }
     }
@@ -108,7 +139,7 @@ class LocationTrackingService {
         batteryLevel = Math.round(battery.level * 100);
       }
     } catch (error) {
-      console.warn("Battery API não disponível:", error);
+      logger.warn("Battery API não disponível:", error);
     }
 
     // Atualizar live_locations (UPSERT)
@@ -117,7 +148,7 @@ class LocationTrackingService {
       user_id: this.userId,
       latitude,
       longitude,
-      accuracy,
+      accuracy: finalAccuracy,
       heading,
       speed,
       battery_level: batteryLevel,
@@ -127,11 +158,12 @@ class LocationTrackingService {
     });
 
     if (error) {
-      console.error("❌ Erro ao atualizar localização:", error);
+      logger.error("❌ Erro ao atualizar localização:", error);
+      this.gpsReadings = []; // Limpar buffer em caso de erro
       return;
     }
 
-    console.log("📍 Localização atualizada:", { latitude, longitude, accuracy });
+    logger.log(`📍 Localização atualizada: [${latitude.toFixed(6)}, ${longitude.toFixed(6)}] ±${finalAccuracy.toFixed(0)}m`);
 
     // Inserir em location_history (a cada 1 minuto OU movimento >100m)
     const shouldSaveHistory = this.shouldSaveToHistory(latitude, longitude);
@@ -140,16 +172,79 @@ class LocationTrackingService {
         user_id: this.userId,
         latitude,
         longitude,
-        accuracy,
+        accuracy: finalAccuracy,
         heading,
         speed,
       });
       this.lastHistoryInsert = Date.now();
-      console.log("📝 Histórico salvo");
+      logger.log("📝 Histórico salvo");
     }
 
     // Atualizar última posição
-    this.lastPosition = { latitude, longitude, accuracy, heading, speed };
+    this.lastPosition = { latitude, longitude, accuracy: finalAccuracy, heading, speed };
+    
+    // Limpar buffer após processar com sucesso
+    this.gpsReadings = [];
+  }
+
+  /**
+   * Calcula a melhor posição a partir de múltiplas leituras
+   * Usa média das 3 leituras mais precisas
+   */
+  private calculateBestPosition(): GeolocationPosition {
+    // Ordenar por precisão (menor accuracy = melhor)
+    const sorted = [...this.gpsReadings].sort(
+      (a, b) => a.coords.accuracy - b.coords.accuracy
+    );
+
+    // Pegar as 3 melhores
+    const best3 = sorted.slice(0, 3);
+
+    logger.log(
+      `[GPS] Melhores 3 leituras: ${best3.map(p => `±${p.coords.accuracy.toFixed(0)}m`).join(', ')}`
+    );
+
+    // Calcular média das coordenadas
+    const avgLat = best3.reduce((sum, p) => sum + p.coords.latitude, 0) / 3;
+    const avgLon = best3.reduce((sum, p) => sum + p.coords.longitude, 0) / 3;
+    const avgAccuracy = best3.reduce((sum, p) => sum + p.coords.accuracy, 0) / 3;
+    const avgHeading = best3[0].coords.heading; // Usar mais recente
+    const avgSpeed = best3[0].coords.speed; // Usar mais recente
+
+    logger.log(
+      `[GPS] ✅ Posição final calculada: [${avgLat.toFixed(6)}, ${avgLon.toFixed(6)}] ±${avgAccuracy.toFixed(0)}m`
+    );
+
+    // Retornar objeto no formato GeolocationPosition
+    return {
+      coords: {
+        latitude: avgLat,
+        longitude: avgLon,
+        accuracy: avgAccuracy,
+        heading: avgHeading,
+        speed: avgSpeed,
+        altitude: null,
+        altitudeAccuracy: null,
+        toJSON() {
+          return {
+            latitude: this.latitude,
+            longitude: this.longitude,
+            accuracy: this.accuracy,
+            altitude: this.altitude,
+            altitudeAccuracy: this.altitudeAccuracy,
+            heading: this.heading,
+            speed: this.speed,
+          };
+        },
+      },
+      timestamp: Date.now(),
+      toJSON() {
+        return {
+          coords: this.coords,
+          timestamp: this.timestamp,
+        };
+      },
+    } as GeolocationPosition;
   }
 
   /**
@@ -207,16 +302,16 @@ class LocationTrackingService {
   private handleError(error: GeolocationPositionError) {
     switch (error.code) {
       case error.PERMISSION_DENIED:
-        console.error("❌ Permissão de localização negada pelo usuário");
+        logger.error("❌ Permissão de localização negada pelo usuário");
         break;
       case error.POSITION_UNAVAILABLE:
-        console.error("❌ Localização não disponível");
+        logger.error("❌ Localização não disponível");
         break;
       case error.TIMEOUT:
-        console.error("⏱️ Timeout ao obter localização");
+        logger.error("⏱️ Timeout ao obter localização");
         break;
       default:
-        console.error("❌ Erro desconhecido:", error.message);
+        logger.error("❌ Erro desconhecido:", error.message);
     }
   }
 }
