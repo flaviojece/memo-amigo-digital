@@ -131,6 +131,14 @@ export function LiveLocationMap({ patientId, onClose, variant = 'fullscreen', is
       map.current.on('load', () => {
         logger.log("✅ Mapa Mapbox carregado com sucesso");
         setMapReady(true);
+        
+        // Etapa 3: Resize imediato após load
+        setTimeout(() => {
+          if (map.current) {
+            map.current.resize();
+            logger.log('[LiveLocationMap] Resize executado após load');
+          }
+        }, 100);
       });
 
       map.current.on('error', (event) => {
@@ -175,15 +183,24 @@ export function LiveLocationMap({ patientId, onClose, variant = 'fullscreen', is
     };
   }, [isVisible, variant]);
 
-  // Forçar resize quando a aba se torna visível
+  // Forçar resize quando a aba se torna visível (Etapa 2: múltiplas tentativas)
   useEffect(() => {
     if (map.current && isVisible && mapReady) {
+      // Primeiro resize
       setTimeout(() => {
         if (map.current) {
           map.current.resize();
-          logger.log('[LiveLocationMap] Mapa redimensionado após visibilidade');
+          logger.log('[LiveLocationMap] Mapa redimensionado após visibilidade (tentativa 1)');
         }
-      }, 100);
+      }, 150);
+      
+      // Segundo resize de segurança
+      setTimeout(() => {
+        if (map.current) {
+          map.current.resize();
+          logger.log('[LiveLocationMap] Mapa redimensionado após visibilidade (tentativa 2)');
+        }
+      }, 500);
     }
   }, [isVisible, mapReady]);
 
@@ -376,8 +393,12 @@ export function LiveLocationMap({ patientId, onClose, variant = 'fullscreen', is
 
   return (
     <div className={variant === 'inline' ? "relative h-[500px] w-full" : "relative h-screen w-full"}>
-      {/* Container do Mapa */}
-      <div ref={mapContainer} className="absolute inset-0" />
+      {/* Container do Mapa - Etapa 1: altura mínima garantida */}
+      <div 
+        ref={mapContainer} 
+        className="absolute inset-0" 
+        style={{ minHeight: variant === 'inline' ? '500px' : undefined }}
+      />
 
       {/* Loading State */}
       {!mapReady && !mapError && (
