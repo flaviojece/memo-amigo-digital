@@ -81,7 +81,7 @@ serve(async (req) => {
         port: 465,
         tls: true,
         auth: {
-          username: "noreply@mouramente.com.br",
+          username: "contato@mouramente.com.br",
           password: Deno.env.get("HOSTINGER_EMAIL_PASSWORD") || "",
         },
       },
@@ -89,7 +89,7 @@ serve(async (req) => {
 
     try {
       await client.send({
-        from: "Dr. Memo <noreply@mouramente.com.br>",
+        from: "Dr. Memo <contato@mouramente.com.br>",
         to: patient.email,
         subject: `${angelName} sugeriu: ${typeLabel}`,
         content: "auto",
