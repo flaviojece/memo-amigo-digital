@@ -28,6 +28,10 @@ export function LiveLocationMap({ patientId, onClose, variant = 'fullscreen' }: 
   const [history, setHistory] = useState<any[]>([]);
   const [mapReady, setMapReady] = useState(false);
   const [mapError, setMapError] = useState<string | null>(null);
+  const [mapState, setMapState] = useState<{ center: [number, number]; zoom: number }>({
+    center: [-46.6333, -23.5505],
+    zoom: 15
+  });
 
   // Buscar dados do paciente
   const { data: patient } = useQuery({
@@ -69,40 +73,98 @@ export function LiveLocationMap({ patientId, onClose, variant = 'fullscreen' }: 
 
   // Inicializar mapa
   useEffect(() => {
-    if (!mapContainer.current || map.current) return;
+    if (!mapContainer.current) return;
+    
+    // Prevenir múltiplas instâncias
+    if (map.current) {
+      logger.warn('[LiveLocationMap] Mapa já existe, pulando inicialização');
+      return;
+    }
 
     if (!MAPBOX_TOKEN) {
       logger.error("VITE_MAPBOX_ACCESS_TOKEN não configurado");
       return;
     }
 
-    logger.log("🔑 MAPBOX_TOKEN definido:", !!MAPBOX_TOKEN);
-    mapboxgl.accessToken = MAPBOX_TOKEN;
+    try {
+      logger.log('[LiveLocationMap] Inicializando mapa Mapbox...');
+      
+      mapboxgl.accessToken = MAPBOX_TOKEN;
 
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: "mapbox://styles/mapbox/streets-v12",
-      center: [-46.6333, -23.5505],
-      zoom: 15,
-    });
+      const initialCenter = location 
+        ? [location.longitude, location.latitude] as [number, number]
+        : mapState.center;
 
-    map.current.addControl(new mapboxgl.NavigationControl(), "top-right");
+      map.current = new mapboxgl.Map({
+        container: mapContainer.current,
+        style: "mapbox://styles/mapbox/streets-v12",
+        center: initialCenter,
+        zoom: mapState.zoom,
+        preserveDrawingBuffer: true, // Ajuda a prevenir perda de contexto WebGL
+      });
 
-    // Aguardar o estilo carregar completamente
-    map.current.on('load', () => {
-      logger.log("✅ Mapa Mapbox carregado com sucesso (mapReady = true)");
-      setMapReady(true);
-    });
+      map.current.addControl(new mapboxgl.NavigationControl(), "top-right");
 
-    map.current.on('error', (event) => {
-      logger.error("❌ Erro no Mapbox:", event.error || event);
-      const errorMsg = event.error?.message || "Erro desconhecido ao carregar o mapa";
-      setMapError(errorMsg);
-    });
+      // Handler para contexto WebGL perdido
+      map.current.on('webglcontextlost', (event: any) => {
+        event.preventDefault();
+        logger.warn('[LiveLocationMap] WebGL context perdido, tentando recuperar...');
+        setMapError('Recarregando mapa...');
+        setMapReady(false);
+      });
+
+      // Handler para contexto WebGL restaurado
+      map.current.on('webglcontextrestored', () => {
+        logger.log('[LiveLocationMap] WebGL context restaurado com sucesso');
+        setMapError(null);
+        setMapReady(true);
+      });
+
+      // Aguardar o estilo carregar completamente
+      map.current.on('load', () => {
+        logger.log("✅ Mapa Mapbox carregado com sucesso");
+        setMapReady(true);
+      });
+
+      map.current.on('error', (event) => {
+        logger.error("❌ Erro no Mapbox:", event.error || event);
+        const errorMsg = event.error?.message || "Erro desconhecido ao carregar o mapa";
+        setMapError(errorMsg);
+      });
+    } catch (error) {
+      logger.error('[LiveLocationMap] Erro ao inicializar mapa:', error);
+      setMapError('Erro ao inicializar o mapa');
+    }
 
     return () => {
-      setMapReady(false);
-      map.current?.remove();
+      if (map.current) {
+        try {
+          // Salvar estado do mapa antes de destruir
+          const center = map.current.getCenter();
+          const zoom = map.current.getZoom();
+          setMapState({ 
+            center: [center.lng, center.lat], 
+            zoom 
+          });
+
+          // Remover marker primeiro
+          if (markerRef.current) {
+            markerRef.current.remove();
+            markerRef.current = null;
+          }
+
+          // Remover event listeners (mapbox não usa .off, apenas remove o mapa)
+          // Os listeners são automaticamente removidos quando o mapa é destruído
+
+          // Destruir mapa
+          logger.log('[LiveLocationMap] Destruindo mapa...');
+          map.current.remove();
+          map.current = null;
+          setMapReady(false);
+        } catch (error) {
+          logger.error('[LiveLocationMap] Erro ao destruir mapa:', error);
+        }
+      }
     };
   }, []);
 
