@@ -79,7 +79,7 @@ export function MedicationForm({ medicationId, onSuccess, onCancel }: Medication
         dosage: data.dosage,
         frequency: data.frequency,
         start_date: data.start_date,
-        end_date: data.end_date,
+        end_date: data.end_date || null,
         notes: data.notes,
         active: data.active,
         times: times as any,
