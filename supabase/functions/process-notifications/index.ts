@@ -49,10 +49,66 @@ Deno.serve(async (req) => {
         console.log(`📤 Processing notification: ${notification.title}`);
         console.log(`Body: ${notification.body}`);
 
-        // TODO: Aqui enviaria via Web Push API quando implementado
-        // Por enquanto apenas marca como enviada
+        // 1. Buscar subscrições do usuário
+        const { data: subscriptions } = await supabase
+          .from('push_subscriptions')
+          .select('*')
+          .eq('user_id', notification.user_id);
         
-        // Marcar como enviada
+        if (!subscriptions || subscriptions.length === 0) {
+          console.log(`⚠️ No push subscriptions for user ${notification.user_id}`);
+          
+          // Marcar como enviada mesmo sem subscrições (evitar reprocessamento)
+          await supabase
+            .from('notification_schedules')
+            .update({ sent: true, sent_at: new Date().toISOString() })
+            .eq('id', notification.id);
+          
+          continue;
+        }
+        
+        // 2. Preparar payload da notificação
+        const isMedication = notification.type === 'medication';
+        const payload = {
+          title: notification.title,
+          body: notification.body,
+          icon: notification.icon || '/icon-192.png',
+          badge: '/icon-192.png',
+          data: {
+            type: notification.type,
+            medicationId: notification.medication_id,
+            appointmentId: notification.appointment_id,
+            clickAction: notification.click_action || (isMedication ? '/medications' : '/appointments'),
+          },
+          vibrate: [200, 100, 200],
+          requireInteraction: isMedication, // Medicamento requer ação
+          actions: isMedication ? [
+            { action: 'mark_taken', title: '✅ Tomei' },
+            { action: 'snooze', title: '⏰ Adiar 10min' }
+          ] : undefined,
+        };
+        
+        // 3. Enviar para todas as subscrições do usuário
+        let sentCount = 0;
+        for (const sub of subscriptions) {
+          // Usar Web Push API nativa (simplificado por ora)
+          // TODO: Implementar envio real via web-push library
+          console.log(`📨 Enviando para dispositivo: ${sub.endpoint.substring(0, 50)}...`);
+          
+          // Por ora, apenas simular envio bem-sucedido
+          // Em produção, chamar sendWebPush(sub, payload)
+          sentCount++;
+          
+          // Atualizar last_used_at
+          await supabase
+            .from('push_subscriptions')
+            .update({ last_used_at: new Date().toISOString() })
+            .eq('id', sub.id);
+        }
+        
+        console.log(`📨 Sent to ${sentCount}/${subscriptions.length} devices`);
+        
+        // 4. Marcar notificação como enviada
         const { error: updateError } = await supabase
           .from('notification_schedules')
           .update({
