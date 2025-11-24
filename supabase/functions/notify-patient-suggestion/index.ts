@@ -1,5 +1,8 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { Resend } from "npm:resend@2.0.0";
+
+const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -49,55 +52,40 @@ serve(async (req) => {
 
     const typeLabel = typeLabels[suggestionType] || suggestionType;
 
-    // Send email using Resend (if configured) or Hostinger
-    const emailPassword = Deno.env.get("HOSTINGER_EMAIL_PASSWORD");
-    
-    if (emailPassword) {
-      // Use Hostinger email
-      const emailData = {
-        from: "Dr. Memo <contato@andresoaresdev.com>",
-        to: patient.email,
-        subject: `${angelName} sugeriu: ${typeLabel}`,
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <h2 style="color: #DD4B1A;">Olá, ${patient.full_name}!</h2>
-            <p style="font-size: 16px; line-height: 1.6;">
-              <strong>${angelName}</strong> sugeriu uma mudança no seu Dr. Memo:
-            </p>
-            <div style="background: #F2EDC3; padding: 20px; border-radius: 12px; border-left: 4px solid #DD4B1A; margin: 20px 0;">
-              <p style="font-size: 18px; font-weight: bold; margin: 0; color: #4D3E2A;">
-                📝 ${typeLabel}
-              </p>
-            </div>
-            <p style="font-size: 16px; line-height: 1.6;">
-              Entre no aplicativo para revisar e aprovar ou recusar esta sugestão.
-            </p>
-            <a href="${Deno.env.get("SUPABASE_URL")?.replace('.supabase.co', '.lovable.app') || 'https://app.com'}" 
-               style="display: inline-block; background: #DD4B1A; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 20px;">
-              Abrir Dr. Memo
-            </a>
-            <p style="color: #8B6F47; font-size: 14px; margin-top: 30px; border-top: 1px solid #E8DCC4; padding-top: 20px;">
-              Dr. Memo - Cuidando de quem você ama ❤️
-            </p>
-          </div>
-        `,
-      };
+    // Send email using Resend
+    const emailHtml = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2 style="color: #DD4B1A;">Olá, ${patient.full_name}!</h2>
+        <p style="font-size: 16px; line-height: 1.6;">
+          <strong>${angelName}</strong> sugeriu uma mudança no seu Dr. Memo:
+        </p>
+        <div style="background: #F2EDC3; padding: 20px; border-radius: 12px; border-left: 4px solid #DD4B1A; margin: 20px 0;">
+          <p style="font-size: 18px; font-weight: bold; margin: 0; color: #4D3E2A;">
+            📝 ${typeLabel}
+          </p>
+        </div>
+        <p style="font-size: 16px; line-height: 1.6;">
+          Entre no aplicativo para revisar e aprovar ou recusar esta sugestão.
+        </p>
+        <a href="${Deno.env.get("SUPABASE_URL")?.replace('.supabase.co', '.lovable.app') || 'https://app.com'}" 
+           style="display: inline-block; background: #DD4B1A; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 20px;">
+          Abrir Dr. Memo
+        </a>
+        <p style="color: #8B6F47; font-size: 14px; margin-top: 30px; border-top: 1px solid #E8DCC4; padding-top: 20px;">
+          Dr. Memo - Cuidando de quem você ama ❤️
+        </p>
+      </div>
+    `;
 
-      // Use Hostinger SMTP
-      const response = await fetch("https://api.smtp2go.com/v3/email/send", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          api_key: emailPassword,
-          ...emailData,
-        }),
-      });
+    const { error: emailError } = await resend.emails.send({
+      from: "Dr. Memo <onboarding@resend.dev>",
+      to: [patient.email],
+      subject: `${angelName} sugeriu: ${typeLabel}`,
+      html: emailHtml,
+    });
 
-      if (!response.ok) {
-        throw new Error("Failed to send email via Hostinger");
-      }
+    if (emailError) {
+      throw emailError;
     }
 
     console.log("Email sent successfully to:", patient.email);
