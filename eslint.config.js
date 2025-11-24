@@ -23,7 +23,28 @@ export default tseslint.config(
         "warn",
         { allowConstantExport: true },
       ],
-      "@typescript-eslint/no-unused-vars": "off",
+      
+      // ✅ ATIVAR: Detectar variáveis não usadas
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",      // Ignora args que começam com _
+          varsIgnorePattern: "^_",      // Ignora vars que começam com _
+          caughtErrorsIgnorePattern: "^_", // Ignora erros em catch
+        },
+      ],
+      
+      // ✅ ADICIONAR: Avisar sobre uso de 'any'
+      "@typescript-eslint/no-explicit-any": "warn",
+      
+      // ✅ ADICIONAR: Avisar sobre dependências faltantes em useEffect
+      "react-hooks/exhaustive-deps": "warn",
+      
+      // ✅ ADICIONAR: Preferir const sobre let
+      "prefer-const": "error",
+      
+      // ✅ ADICIONAR: Evitar console.log em produção
+      "no-console": ["warn", { allow: ["error"] }],
     },
   }
 );

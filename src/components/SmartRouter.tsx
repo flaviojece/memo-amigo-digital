@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDatabaseStatus } from '@/hooks/useDatabaseStatus';
+import { logger } from '@/lib/logger';
 
 export function SmartRouter() {
   const { isAngel, isAdmin, hasPatients, loading } = useAuth();
@@ -9,17 +10,17 @@ export function SmartRouter() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log('[SmartRouter] State:', { loading, dbLoading, isEmpty, isAngel, isAdmin, hasPatients });
+    logger.log('[SmartRouter] State:', { loading, dbLoading, isEmpty, isAngel, isAdmin, hasPatients });
     
     // Aguardar ambas as verificações
     if (loading || dbLoading) {
-      console.log('[SmartRouter] Still loading, waiting...');
+      logger.log('[SmartRouter] Still loading, waiting...');
       return;
     }
 
     // Se o banco está vazio, redirecionar para setup inicial
     if (isEmpty === true) {
-      console.log('[SmartRouter] Database is empty, redirecting to setup...');
+      logger.log('[SmartRouter] Database is empty, redirecting to setup...');
       navigate('/setup-inicial', { replace: true });
       return;
     }
@@ -27,7 +28,7 @@ export function SmartRouter() {
     // Admins always go to admin dashboard first
     if (isAdmin) {
       const adminPreference = localStorage.getItem('admin-last-view');
-      console.log('[SmartRouter] Admin user, preference:', adminPreference);
+      logger.log('[SmartRouter] Admin user, preference:', adminPreference);
       
       if (adminPreference) {
         navigate(adminPreference);
@@ -39,16 +40,16 @@ export function SmartRouter() {
 
     // Check localStorage for user preference
     const preference = localStorage.getItem('interface-preference');
-    console.log('[SmartRouter] User preference:', preference);
+    logger.log('[SmartRouter] User preference:', preference);
     
     if (preference === '/angel' && isAngel && hasPatients) {
-      console.log('[SmartRouter] Navigating to /angel (preference)');
+      logger.log('[SmartRouter] Navigating to /angel (preference)');
       navigate('/angel');
       return;
     }
 
     if (preference === '/patient') {
-      console.log('[SmartRouter] Navigating to /patient (preference)');
+      logger.log('[SmartRouter] Navigating to /patient (preference)');
       navigate('/patient');
       return;
     }
@@ -56,10 +57,10 @@ export function SmartRouter() {
     // Auto-detect based on roles
     if (isAngel) {
       // Se é anjo, vai pro dashboard do anjo (mesmo sem pacientes ainda)
-      console.log('[SmartRouter] Navigating to /angel (auto-detect)');
+      logger.log('[SmartRouter] Navigating to /angel (auto-detect)');
       navigate('/angel');
     } else {
-      console.log('[SmartRouter] Navigating to /patient (default)');
+      logger.log('[SmartRouter] Navigating to /patient (default)');
       navigate('/patient');
     }
   }, [isAngel, isAdmin, hasPatients, loading, dbLoading, isEmpty, navigate]);

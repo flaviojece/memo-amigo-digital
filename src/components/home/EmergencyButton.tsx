@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { logger } from "@/lib/logger";
 
 export function EmergencyButton() {
   const [isActivating, setIsActivating] = useState(false);
@@ -63,7 +64,7 @@ export function EmergencyButton() {
             accuracy: position.coords.accuracy
           };
         } catch (error) {
-          console.log("Localização não disponível:", error);
+          logger.warn("Localização não disponível:", error);
         }
       }
 
@@ -95,12 +96,12 @@ export function EmergencyButton() {
         );
 
         if (alertError) {
-          console.error('Erro ao enviar alertas:', alertError);
+          logger.error('Erro ao enviar alertas:', alertError);
         } else {
-          console.log('Alertas enviados:', alertData);
+          logger.info('Alertas enviados:', alertData);
         }
       } catch (alertError) {
-        console.error('Erro ao chamar função de alerta:', alertError);
+        logger.error('Erro ao chamar função de alerta:', alertError);
       }
 
       toast({

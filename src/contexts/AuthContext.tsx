@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { logger } from "@/lib/logger";
 
 interface AuthContextType {
   user: User | null;
@@ -34,14 +35,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (error) {
-        console.error('Error checking admin role:', error);
+        logger.error('Error checking admin role:', error);
         setIsAdmin(false);
         return;
       }
 
       setIsAdmin(!!data);
     } catch (error) {
-      console.error('Error checking admin role:', error);
+      logger.error('Error checking admin role:', error);
       setIsAdmin(false);
     }
   };
@@ -55,7 +56,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (roleError) {
-        console.error('Error checking angel role:', roleError);
+        logger.error('Error checking angel role:', roleError);
         setIsAngel(false);
       } else {
         setIsAngel(!!roleData);
@@ -67,45 +68,45 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (patientsError) {
-        console.error('Error checking patients:', patientsError);
+        logger.error('Error checking patients:', patientsError);
         setHasPatients(false);
       } else {
         setHasPatients((patientsData?.length || 0) > 0);
       }
     } catch (error) {
-      console.error('Error checking angel role:', error);
+      logger.error('Error checking angel role:', error);
       setIsAngel(false);
       setHasPatients(false);
     }
   };
 
   useEffect(() => {
-    console.log('[AuthContext] Initializing auth...');
+    logger.log('[AuthContext] Initializing auth...');
     let isMounted = true;
 
     const initAuth = async () => {
-      console.log('[AuthContext] Starting initial session check...');
+      logger.log('[AuthContext] Starting initial session check...');
       try {
         const { data: { session } } = await supabase.auth.getSession();
-        console.log('[AuthContext] Initial session:', session?.user?.email);
+        logger.log('[AuthContext] Initial session:', session?.user?.email);
 
         if (!isMounted) return;
 
       if (session?.user) {
-        console.log('[AuthContext] Processing initial session for user:', session.user.email);
+        logger.log('[AuthContext] Processing initial session for user:', session.user.email);
         setUser(session.user);
         setSession(session);
         
         // Run role checks in background without blocking loading state
         setTimeout(() => {
-          console.log('[AuthContext] Running initial role checks in background...');
+          logger.log('[AuthContext] Running initial role checks in background...');
           checkAdminRole(session.user!.id);
           checkAngelRole(session.user!.id);
         }, 0);
         
-        console.log('[AuthContext] Initial session processed (user set, role checks scheduled)');
+        logger.log('[AuthContext] Initial session processed (user set, role checks scheduled)');
         } else {
-          console.log('[AuthContext] No initial session, clearing state');
+          logger.log('[AuthContext] No initial session, clearing state');
           setUser(null);
           setSession(null);
           setIsAdmin(false);
@@ -113,7 +114,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setHasPatients(false);
         }
       } catch (error) {
-        console.error('[AuthContext] Error during initial session check:', error);
+        logger.error('[AuthContext] Error during initial session check:', error);
         if (!isMounted) return;
         setUser(null);
         setSession(null);
@@ -123,37 +124,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } finally {
         if (isMounted) {
           setLoading(false);
-          console.log('[AuthContext] Initial auth init finished, loading=false');
+          logger.log('[AuthContext] Initial auth init finished, loading=false');
         }
       }
     };
 
     initAuth();
 
-    console.log('[AuthContext] Setting up auth listener...');
+    logger.log('[AuthContext] Setting up auth listener...');
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        console.log('[AuthContext] Auth event:', event, 'User:', session?.user?.email);
+        logger.log('[AuthContext] Auth event:', event, 'User:', session?.user?.email);
 
         if (!isMounted) {
-          console.log('[AuthContext] Component unmounted, ignoring auth event');
+          logger.log('[AuthContext] Component unmounted, ignoring auth event');
           return;
         }
 
         try {
           if (event === 'SIGNED_IN' && session?.user) {
-            console.log('[AuthContext] SIGNED_IN event, setting user and session');
+            logger.log('[AuthContext] SIGNED_IN event, setting user and session');
             setUser(session.user);
             setSession(session);
             
             // Run role checks in background without blocking loading state
             setTimeout(() => {
-              console.log('[AuthContext] Running SIGNED_IN role checks in background...');
+              logger.log('[AuthContext] Running SIGNED_IN role checks in background...');
               checkAdminRole(session.user!.id);
               checkAngelRole(session.user!.id);
             }, 0);
           } else if (event === 'SIGNED_OUT') {
-            console.log('[AuthContext] SIGNED_OUT event, clearing state');
+            logger.log('[AuthContext] SIGNED_OUT event, clearing state');
             setUser(null);
             setSession(null);
             setIsAdmin(false);
@@ -161,18 +162,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setHasPatients(false);
           }
         } catch (error) {
-          console.error('[AuthContext] Error processing auth event:', error);
+          logger.error('[AuthContext] Error processing auth event:', error);
         } finally {
           if (isMounted) {
             setLoading(false);
-            console.log('[AuthContext] Loading set to false (event finished after auth event)');
+            logger.log('[AuthContext] Loading set to false (event finished after auth event)');
           }
         }
       }
     );
 
     return () => {
-      console.log('[AuthContext] Cleaning up auth listener');
+      logger.log('[AuthContext] Cleaning up auth listener');
       isMounted = false;
       subscription.unsubscribe();
     };

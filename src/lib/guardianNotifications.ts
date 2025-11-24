@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/lib/logger';
 
 type EventType = 
   | 'medication_taken' 
@@ -33,10 +34,10 @@ export async function notifyGuardians(
 
     if (error) throw error;
     
-    console.log('Guardians notified:', data);
+    logger.info('Guardians notified:', data);
     return data;
   } catch (error) {
-    console.error('Error notifying guardians:', error);
+    logger.error('Error notifying guardians:', error);
     // Não fazer throw para não quebrar o fluxo principal
     return null;
   }

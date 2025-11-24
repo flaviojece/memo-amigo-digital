@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { addMinutes, subDays, isPast } from 'date-fns';
+import { logger } from '@/lib/logger';
 
 export type NotificationType = 'medication' | 'appointment';
 
@@ -18,7 +19,7 @@ export const scheduleNotification = async (params: ScheduleNotificationParams) =
 
   // Não agendar notificações no passado
   if (isPast(scheduledFor)) {
-    console.log('Horário no passado, pulando:', scheduledFor);
+    logger.warn('Horário no passado, pulando:', scheduledFor);
     return null;
   }
 
@@ -37,7 +38,7 @@ export const scheduleNotification = async (params: ScheduleNotificationParams) =
     .single();
 
   if (error) {
-    console.error('Erro ao agendar notificação:', error);
+    logger.error('Erro ao agendar notificação:', error);
     throw error;
   }
 
@@ -131,7 +132,7 @@ export const deleteNotifications = async (
     .eq(column, itemId);
 
   if (error) {
-    console.error('Erro ao deletar notificações:', error);
+    logger.error('Erro ao deletar notificações:', error);
   }
 };
 
@@ -164,13 +165,13 @@ const getGuardiansToNotify = async (
     });
 
     if (error) {
-      console.error('Erro ao buscar guardians:', error);
+      logger.error('Erro ao buscar guardians:', error);
       return [];
     }
 
     return data || [];
   } catch (error) {
-    console.error('Erro ao buscar guardians:', error);
+    logger.error('Erro ao buscar guardians:', error);
     return [];
   }
 };
