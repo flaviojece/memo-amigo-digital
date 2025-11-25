@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSuggestions } from "@/hooks/useSuggestions";
 import { HomePage } from "@/components/home/HomePage";
+import { MedicationScheduleView } from "@/components/medications/MedicationScheduleView";
 import Medications from "./Medications";
 import Appointments from "./Appointments";
 import Contacts from "./Contacts";
@@ -37,6 +38,8 @@ export default function PatientHome() {
     switch (activeTab) {
       case "meds":
         return <Medications onTabChange={setActiveTab} />;
+      case "medication-schedule":
+        return <MedicationScheduleView onBackToHome={() => setActiveTab("home")} />;
       case "appointments":
         return <Appointments onTabChange={setActiveTab} />;
       case "contacts":
