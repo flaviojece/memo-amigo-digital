@@ -54,8 +54,9 @@ export function WelcomeHeader() {
   return <header className="bg-gradient-warm text-primary-foreground p-6 rounded-b-memo shadow-card">
       <div className="grid grid-cols-[1fr_auto] items-center mb-3">
         <div className="text-center">
-          <h1 className="text-senior-xl font-bold text-white whitespace-nowrap text-center mx-[0px] px-[0px] py-[25px]">Dr. Memo</h1>
-          <p className="text-white/70 text-senior-xs whitespace-nowrap">Cuidando de você</p>
+          <h1 className="text-senior-xl font-bold text-white whitespace-nowrap text-center mx-[0px] px-[0px] py-[25px] my-[0px]">Dr. Memo
+Cuidando de você</h1>
+          
         </div>
         
         <div className="flex items-center gap-3 justify-end">
@@ -72,7 +73,7 @@ export function WelcomeHeader() {
         <p className="text-white/80 text-senior-sm capitalize">
           {formatDate()}
         </p>
-        <p className="text-white/95 text-senior-lg font-semibold">
+        <p className="text-white/95 text-senior-lg font-semibold my-[0px] mx-[110px] text-center px-[0px] pl-[0px] pr-[45px]">
           {formatTime()}
         </p>
       </div>
