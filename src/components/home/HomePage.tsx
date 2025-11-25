@@ -144,7 +144,7 @@ export function HomePage({ onTabChange }: HomePageProps) {
                   : "Nenhum medicamento cadastrado"
               }
               icon={<Pill className="text-primary" />}
-            onClick={() => onTabChange("medications")}
+              onClick={() => onTabChange("meds")}
             />
 
             <QuickActionCard
@@ -178,7 +178,7 @@ export function HomePage({ onTabChange }: HomePageProps) {
             <QuickActionCard
               title="Remédios"
               icon={<Pill className="text-primary" />}
-          onClick={() => onTabChange("medications")}
+              onClick={() => onTabChange("meds")}
             />
 
             <QuickActionCard
@@ -252,7 +252,8 @@ export function HomePage({ onTabChange }: HomePageProps) {
 
       <FavoriteContactsModal 
         open={showCallModal} 
-        onOpenChange={setShowCallModal} 
+        onOpenChange={setShowCallModal}
+        onNavigateToContacts={() => onTabChange("contacts")}
       />
 
       {/* Modal de compartilhamento de localização */}
