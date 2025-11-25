@@ -15,7 +15,7 @@ export function FavoriteContactsModal({ open, onOpenChange, onNavigateToContacts
   const { user } = useAuth();
   
   const { data: contacts, isLoading } = useQuery({
-    queryKey: ["favorite-contacts-modal", user?.id],
+    queryKey: ["favorite-contacts", user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("emergency_contacts")

@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface Contact {
   id: string;
@@ -26,6 +27,7 @@ interface ContactListProps {
 
 export function ContactList({ contacts, isLoading, onEdit, onRefetch }: ContactListProps) {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const handleDelete = async (id: string, name: string) => {
     if (!confirm(`Deseja realmente excluir o contato "${name}"?`)) return;
@@ -48,6 +50,11 @@ export function ContactList({ contacts, isLoading, onEdit, onRefetch }: ContactL
       title: "Sucesso",
       description: "Contato excluído com sucesso.",
     });
+    
+    // Invalidar cache para atualizar a lista de contatos e favoritos
+    queryClient.invalidateQueries({ queryKey: ["contacts"] });
+    queryClient.invalidateQueries({ queryKey: ["favorite-contacts"] });
+    
     onRefetch();
   };
 
@@ -66,6 +73,10 @@ export function ContactList({ contacts, isLoading, onEdit, onRefetch }: ContactL
       return;
     }
 
+    // Invalidar cache para atualizar a lista de contatos e favoritos
+    queryClient.invalidateQueries({ queryKey: ["contacts"] });
+    queryClient.invalidateQueries({ queryKey: ["favorite-contacts"] });
+    
     onRefetch();
   };
 
