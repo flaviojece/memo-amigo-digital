@@ -128,7 +128,7 @@ export function HomePage({
           </h2>
           
           <div className="grid gap-4 pl-[10px] pr-[10px]">
-            <QuickActionCard title="Próximo Remédio" subtitle={nextMedication ? `${nextMedication.name} - ${getNextMedicationTime(nextMedication) || 'Sem horários definidos'}` : "Nenhum medicamento cadastrado"} icon={<Pill className="text-primary" />} onClick={() => onTabChange("meds")} className="pl-[30px]" />
+            <QuickActionCard title="Próximo Remédio" subtitle={nextMedication ? `${nextMedication.name} - ${getNextMedicationTime(nextMedication) || 'Sem horários definidos'}` : "Nenhum medicamento cadastrado"} icon={<Pill className="text-primary" />} onClick={() => onTabChange("meds")} className="pl-[30px] px-[3px]" />
 
             <QuickActionCard title="Próxima Consulta" subtitle={nextAppointment ? `${nextAppointment.doctor_name} - ${nextAppointment.specialty}\n${formatAppointmentDate(nextAppointment.date)}` : "Nenhuma consulta agendada"} icon={<Stethoscope className="text-secondary" />} onClick={() => onTabChange("appointments")} className="pl-[30px]" />
 
