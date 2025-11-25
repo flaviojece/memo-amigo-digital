@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { AdminRoute } from "@/components/auth/AdminRoute";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 // Lazy load pages for better mobile performance
 const Index = lazy(() => import("./pages/Index"));
@@ -33,14 +34,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Suspense fallback={
-            <div className="flex items-center justify-center min-h-screen bg-background">
-              <div className="text-center space-y-4">
-                <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-                <p className="text-senior-lg text-muted-foreground">Carregando...</p>
-              </div>
-            </div>
-          }>
+          <Suspense fallback={<LoadingSpinner fullScreen />}>
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/setup-inicial" element={<SetupInicial />} />

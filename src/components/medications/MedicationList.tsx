@@ -7,6 +7,7 @@ import { ptBR } from "date-fns/locale";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { translateFrequency } from "@/lib/frequencyTranslations";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 interface Medication {
   id: string;
@@ -55,12 +56,7 @@ export function MedicationList({ medications, isLoading, onEdit, onRefetch }: Me
   };
 
   if (isLoading) {
-    return (
-      <div className="text-center py-12">
-        <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-        <p className="text-senior-base text-muted-foreground">Carregando medicamentos...</p>
-      </div>
-    );
+    return <LoadingSpinner message="Carregando medicamentos..." />;
   }
 
   if (!medications || medications.length === 0) {

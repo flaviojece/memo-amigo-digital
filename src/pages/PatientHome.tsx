@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SuggestionCard } from "@/components/angel/SuggestionCard";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Bell, Shield, Lightbulb } from "lucide-react";
 
 export default function PatientHome() {
@@ -22,14 +23,7 @@ export default function PatientHome() {
 
   // Show loading screen while auth is initializing
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center space-y-4">
-          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-senior-lg text-muted-foreground">Carregando...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner fullScreen />;
   }
 
   const pendingSuggestions = suggestions.filter(s => s.status === 'pending');

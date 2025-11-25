@@ -3,6 +3,7 @@ import { useSuggestions } from "@/hooks/useSuggestions";
 import { SuggestionCard } from "@/components/angel/SuggestionCard";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useNavigate } from "react-router-dom";
 
 export default function PatientSuggestions() {
@@ -13,14 +14,7 @@ export default function PatientSuggestions() {
   const respondedSuggestions = suggestions.filter(s => s.status !== 'pending');
   
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-foreground text-lg">Carregando sugestões...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner fullScreen message="Carregando sugestões..." />;
   }
 
   return (

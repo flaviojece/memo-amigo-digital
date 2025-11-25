@@ -2,6 +2,7 @@ import { User, Phone, Heart, Edit, Trash2, Mail } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -69,12 +70,7 @@ export function ContactList({ contacts, isLoading, onEdit, onRefetch }: ContactL
   };
 
   if (isLoading) {
-    return (
-      <div className="text-center py-12">
-        <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-        <p className="text-senior-base text-muted-foreground">Carregando contatos...</p>
-      </div>
-    );
+    return <LoadingSpinner message="Carregando contatos..." />;
   }
 
   if (!contacts || contacts.length === 0) {
