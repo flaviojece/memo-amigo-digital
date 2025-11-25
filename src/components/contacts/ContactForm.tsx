@@ -177,47 +177,43 @@ export function ContactForm({ contactId, onSuccess, onCancel }: ContactFormProps
       </div>
 
       <div className="space-y-3">
-        <div 
+        <label
+          htmlFor="is_favorite"
           className="flex items-center gap-3 p-3 bg-card border-2 border-border rounded-senior cursor-pointer min-h-[52px] touch-manipulation transition-colors hover:bg-accent/5"
-          onClick={() => {
-            setIsFavorite(!isFavorite);
-            setValue("is_favorite", !isFavorite);
-          }}
         >
           <Checkbox
             id="is_favorite"
             checked={isFavorite}
             onCheckedChange={(checked) => {
-              setIsFavorite(checked as boolean);
-              setValue("is_favorite", checked as boolean);
+              const newValue = checked === true;
+              setIsFavorite(newValue);
+              setValue("is_favorite", newValue);
             }}
             className="h-6 w-6"
           />
-          <Label htmlFor="is_favorite" className="text-senior-base cursor-pointer flex-1">
+          <span className="text-senior-base cursor-pointer flex-1">
             ⭐ Marcar como favorito
-          </Label>
-        </div>
+          </span>
+        </label>
 
-        <div 
+        <label
+          htmlFor="is_emergency"
           className="flex items-center gap-3 p-3 bg-card border-2 border-border rounded-senior cursor-pointer min-h-[52px] touch-manipulation transition-colors hover:bg-accent/5"
-          onClick={() => {
-            setIsEmergency(!isEmergency);
-            setValue("is_emergency", !isEmergency);
-          }}
         >
           <Checkbox
             id="is_emergency"
             checked={isEmergency}
             onCheckedChange={(checked) => {
-              setIsEmergency(checked as boolean);
-              setValue("is_emergency", checked as boolean);
+              const newValue = checked === true;
+              setIsEmergency(newValue);
+              setValue("is_emergency", newValue);
             }}
             className="h-6 w-6"
           />
-          <Label htmlFor="is_emergency" className="text-senior-base cursor-pointer flex-1">
+          <span className="text-senior-base cursor-pointer flex-1">
             🚨 Contato de emergência
-          </Label>
-        </div>
+          </span>
+        </label>
       </div>
 
       <div className="flex gap-3 pt-4">
