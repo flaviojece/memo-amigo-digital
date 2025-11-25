@@ -35,7 +35,7 @@ export default function PatientHome() {
 
   const renderContent = () => {
     switch (activeTab) {
-      case "medications":
+      case "meds":
         return <Medications onTabChange={setActiveTab} />;
       case "appointments":
         return <Appointments onTabChange={setActiveTab} />;
