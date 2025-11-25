@@ -59,13 +59,7 @@ export function WelcomeHeader() {
         </div>
         
         <div className="flex items-center gap-3 justify-end">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={signOut} 
-            className="h-8 px-3 mr-3 text-white/70 hover:text-white hover:bg-white/10 transition-all font-semibold" 
-            aria-label="Sair"
-          >
+          <Button variant="ghost" size="sm" onClick={signOut} aria-label="Sair" className="h-8 px-3 mr-3 text-white/70 hover:text-white hover:bg-white/10 transition-all font-semibold text-justify mx-[11px]">
             SAIR
           </Button>
         </div>
