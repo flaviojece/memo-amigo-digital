@@ -156,27 +156,30 @@ export function ContactList({ contacts, isLoading, onEdit, onRefetch }: ContactL
               <div className="flex flex-col gap-2">
                 <Button
                   variant="outline"
-                  size="icon"
+                  size="lg"
                   onClick={() => toggleFavorite(contact.id, contact.is_favorite)}
+                  className="min-h-[52px] min-w-[52px] p-3"
                   aria-label={contact.is_favorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
                 >
-                  <Heart className={`w-5 h-5 ${contact.is_favorite ? 'fill-current text-primary' : ''}`} />
+                  <Heart className={`w-6 h-6 ${contact.is_favorite ? 'fill-current text-primary' : ''}`} />
                 </Button>
                 <Button
                   variant="outline"
-                  size="icon"
+                  size="lg"
                   onClick={() => onEdit(contact.id)}
+                  className="min-h-[52px] min-w-[52px] p-3"
                   aria-label="Editar contato"
                 >
-                  <Edit className="w-5 h-5" />
+                  <Edit className="w-6 h-6" />
                 </Button>
                 <Button
                   variant="outline"
-                  size="icon"
+                  size="lg"
                   onClick={() => handleDelete(contact.id, contact.name)}
+                  className="min-h-[52px] min-w-[52px] p-3"
                   aria-label="Excluir contato"
                 >
-                  <Trash2 className="w-5 h-5 text-destructive" />
+                  <Trash2 className="w-6 h-6 text-destructive" />
                 </Button>
               </div>
             </div>
