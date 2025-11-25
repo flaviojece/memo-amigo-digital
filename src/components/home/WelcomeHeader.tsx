@@ -63,7 +63,7 @@ export function WelcomeHeader() {
             variant="ghost" 
             size="sm" 
             onClick={signOut} 
-            className="h-8 px-3 text-white/70 hover:text-white hover:bg-white/10 transition-all font-semibold" 
+            className="h-8 px-3 mr-3 text-white/70 hover:text-white hover:bg-white/10 transition-all font-semibold" 
             aria-label="Sair"
           >
             SAIR
