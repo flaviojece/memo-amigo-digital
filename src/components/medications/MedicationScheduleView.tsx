@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BackToHomeButton } from "@/components/ui/BackToHomeButton";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Pill } from "lucide-react";
+import { translateFrequency } from "@/lib/frequencyTranslations";
 
 interface MedicationScheduleViewProps {
   onBackToHome: () => void;
@@ -67,7 +68,7 @@ export function MedicationScheduleView({ onBackToHome }: MedicationScheduleViewP
                         </p>
                       )}
                       <p className="text-senior-sm text-muted-foreground">
-                        {medication.frequency}
+                        {translateFrequency(medication.frequency)}
                       </p>
                     </div>
                   </div>

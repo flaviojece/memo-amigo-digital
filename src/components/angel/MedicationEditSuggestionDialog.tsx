@@ -12,6 +12,7 @@ import { medicationSchema } from "@/lib/validations/medications";
 import { useSuggestions } from "@/hooks/useSuggestions";
 import { z } from "zod";
 import { toast } from "sonner";
+import { frequencyOptions } from "@/lib/frequencyTranslations";
 
 interface Medication {
   id: string;
@@ -194,18 +195,11 @@ export function MedicationEditSuggestionDialog({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="daily" className="text-senior-base">
-                    Diário
-                  </SelectItem>
-                  <SelectItem value="weekly" className="text-senior-base">
-                    Semanal
-                  </SelectItem>
-                  <SelectItem value="monthly" className="text-senior-base">
-                    Mensal
-                  </SelectItem>
-                  <SelectItem value="as_needed" className="text-senior-base">
-                    Quando necessário
-                  </SelectItem>
+                  {frequencyOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value} className="text-senior-base">
+                      {option.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               {errors.frequency && (

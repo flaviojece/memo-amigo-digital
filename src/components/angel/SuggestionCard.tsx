@@ -5,6 +5,7 @@ import { Suggestion } from '@/hooks/useSuggestions';
 import { CheckCircle2, XCircle, Pill, Calendar, Trash2, Edit } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { translateFrequency } from '@/lib/frequencyTranslations';
 
 interface SuggestionCardProps {
   suggestion: Suggestion;
@@ -64,7 +65,7 @@ export function SuggestionCard({ suggestion, isPatientView = false, onApprove, o
             </div>
             <div>
               <span className="font-semibold">Frequência:</span>
-              <p className="text-muted-foreground">{data.frequency}</p>
+              <p className="text-muted-foreground">{translateFrequency(data.frequency)}</p>
             </div>
             <div>
               <span className="font-semibold">Horários:</span>

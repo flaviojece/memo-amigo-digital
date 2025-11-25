@@ -7,8 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Plus, X } from "lucide-react";
+import { frequencyOptions } from "@/lib/frequencyTranslations";
 
 interface MedicationSuggestionDialogProps {
   patientId: string;
@@ -111,12 +113,21 @@ export function MedicationSuggestionDialog({ patientId, open, onOpenChange }: Me
 
           <div>
             <Label htmlFor="frequency" className="text-base">Frequência *</Label>
-            <Input
-              id="frequency"
-              {...register("frequency")}
-              placeholder="Ex: 1x ao dia, 2x ao dia"
-              className="text-base mt-2"
-            />
+            <Select
+              onValueChange={(value) => setValue("frequency", value)}
+              defaultValue="daily"
+            >
+              <SelectTrigger className="text-base mt-2">
+                <SelectValue placeholder="Selecione a frequência" />
+              </SelectTrigger>
+              <SelectContent>
+                {frequencyOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             {errors.frequency && (
               <p className="text-destructive text-sm mt-1">{errors.frequency.message}</p>
             )}
