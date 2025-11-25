@@ -5,6 +5,7 @@ import { contactSchema, ContactFormData } from "@/lib/validations/contacts";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,6 +20,7 @@ interface ContactFormProps {
 export function ContactForm({ contactId, onSuccess, onCancel }: ContactFormProps) {
   const { user } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isEmergency, setIsEmergency] = useState(false);
@@ -110,6 +112,11 @@ export function ContactForm({ contactId, onSuccess, onCancel }: ContactFormProps
       title: "Sucesso",
       description: `Contato ${contactId ? 'atualizado' : 'cadastrado'} com sucesso!`,
     });
+    
+    // Invalidar cache para atualizar a lista de contatos e favoritos
+    queryClient.invalidateQueries({ queryKey: ["contacts"] });
+    queryClient.invalidateQueries({ queryKey: ["favorite-contacts"] });
+    
     onSuccess();
   };
 
