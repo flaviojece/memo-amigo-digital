@@ -169,8 +169,14 @@ export function ContactForm({ contactId, onSuccess, onCancel }: ContactFormProps
         )}
       </div>
 
-      <div className="space-y-4">
-        <div className="flex items-center space-x-2">
+      <div className="space-y-3">
+        <div 
+          className="flex items-center gap-3 p-3 bg-card border-2 border-border rounded-senior cursor-pointer min-h-[52px] touch-manipulation transition-colors hover:bg-accent/5"
+          onClick={() => {
+            setIsFavorite(!isFavorite);
+            setValue("is_favorite", !isFavorite);
+          }}
+        >
           <Checkbox
             id="is_favorite"
             checked={isFavorite}
@@ -178,13 +184,20 @@ export function ContactForm({ contactId, onSuccess, onCancel }: ContactFormProps
               setIsFavorite(checked as boolean);
               setValue("is_favorite", checked as boolean);
             }}
+            className="h-6 w-6"
           />
-          <Label htmlFor="is_favorite" className="text-senior-base cursor-pointer">
-            Marcar como favorito
+          <Label htmlFor="is_favorite" className="text-senior-base cursor-pointer flex-1">
+            ⭐ Marcar como favorito
           </Label>
         </div>
 
-        <div className="flex items-center space-x-2">
+        <div 
+          className="flex items-center gap-3 p-3 bg-card border-2 border-border rounded-senior cursor-pointer min-h-[52px] touch-manipulation transition-colors hover:bg-accent/5"
+          onClick={() => {
+            setIsEmergency(!isEmergency);
+            setValue("is_emergency", !isEmergency);
+          }}
+        >
           <Checkbox
             id="is_emergency"
             checked={isEmergency}
@@ -192,9 +205,10 @@ export function ContactForm({ contactId, onSuccess, onCancel }: ContactFormProps
               setIsEmergency(checked as boolean);
               setValue("is_emergency", checked as boolean);
             }}
+            className="h-6 w-6"
           />
-          <Label htmlFor="is_emergency" className="text-senior-base cursor-pointer">
-            Contato de emergência
+          <Label htmlFor="is_emergency" className="text-senior-base cursor-pointer flex-1">
+            🚨 Contato de emergência
           </Label>
         </div>
       </div>
