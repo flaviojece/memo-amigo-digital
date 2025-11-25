@@ -2,54 +2,42 @@ import { Wifi, WifiOff, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 export function WelcomeHeader() {
-  const { user, signOut } = useAuth();
+  const {
+    user,
+    signOut
+  } = useAuth();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
-
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
-
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-
     return () => {
       clearInterval(timer);
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
   }, []);
-
   const getGreeting = () => {
     const hour = currentTime.getHours();
     if (hour < 12) return "Bom dia";
     if (hour < 18) return "Boa tarde";
     return "Boa noite";
   };
-
   const getUserName = () => {
     if (!user) return "Usuário";
-    
     const fullName = user.user_metadata?.full_name;
     if (fullName) {
       return fullName.split(' ')[0];
     }
-    
     return user.email?.split('@')[0] || "Usuário";
   };
-
   const formatDate = () => {
     return currentTime.toLocaleDateString('pt-BR', {
       weekday: 'long',
@@ -57,16 +45,13 @@ export function WelcomeHeader() {
       month: 'long'
     });
   };
-
   const formatTime = () => {
     return currentTime.toLocaleTimeString('pt-BR', {
       hour: '2-digit',
       minute: '2-digit'
     });
   };
-
-  return (
-    <header className="bg-gradient-warm text-primary-foreground p-6 rounded-b-memo shadow-card">
+  return <header className="bg-gradient-warm text-primary-foreground p-6 rounded-b-memo shadow-card">
       <div className="grid grid-cols-[1fr_auto] items-center mb-3">
         <div className="text-center">
           <h1 className="text-senior-xl font-bold text-white whitespace-nowrap">Dr. Memo</h1>
@@ -76,21 +61,13 @@ export function WelcomeHeader() {
         <div className="flex items-center gap-3 justify-end">
           <div className="flex items-center gap-1 text-white/70 text-senior-xs">
             {isOnline ? <Wifi className="w-4 h-4" /> : <WifiOff className="w-4 h-4" />}
-            <span className="hidden sm:inline">
-              {isOnline ? "Online" : "Offline"}
-            </span>
+            
           </div>
           
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={signOut}
-                  className="h-8 w-8 text-white/70 hover:text-white hover:bg-white/10 transition-all"
-                  aria-label="Sair"
-                >
+                <Button variant="ghost" size="icon" onClick={signOut} className="h-8 w-8 text-white/70 hover:text-white hover:bg-white/10 transition-all" aria-label="Sair">
                   <LogOut className="w-4 h-4" />
                 </Button>
               </TooltipTrigger>
@@ -113,6 +90,5 @@ export function WelcomeHeader() {
           {formatTime()}
         </p>
       </div>
-    </header>
-  );
+    </header>;
 }
