@@ -1,4 +1,4 @@
-import { Home } from "lucide-react";
+import { Home, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface BackToHomeButtonProps {
@@ -9,12 +9,15 @@ export function BackToHomeButton({ onBackToHome }: BackToHomeButtonProps) {
   return (
     <Button
       onClick={onBackToHome}
-      variant="ghost"
-      size="sm"
-      className="group flex items-center gap-3 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300 mb-2"
+      variant="outline"
+      size="lg"
+      className="group flex items-center gap-3 min-h-[48px] min-w-[200px] 
+                 text-primary border-primary/30 hover:bg-primary/10 hover:border-primary 
+                 transition-all duration-300 mb-4 touch-manipulation"
     >
-      <Home className="w-5 h-5 group-hover:scale-110 transition-transform" />
-      <span className="text-senior-sm font-medium">Voltar ao Início</span>
+      <ArrowLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
+      <Home className="w-5 h-5" />
+      <span className="text-senior-base font-medium">Voltar ao Início</span>
     </Button>
   );
 }
