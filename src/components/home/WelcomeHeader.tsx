@@ -59,11 +59,6 @@ export function WelcomeHeader() {
         </div>
         
         <div className="flex items-center gap-3 justify-end">
-          <div className="flex items-center gap-1 text-white/70 text-senior-xs">
-            {isOnline ? <Wifi className="w-4 h-4" /> : <WifiOff className="w-4 h-4" />}
-            
-          </div>
-          
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
