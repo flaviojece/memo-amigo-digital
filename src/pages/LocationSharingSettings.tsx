@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { LocationSharingHeader } from "@/components/location/settings/LocationSharingHeader";
 import { GuardiansManager } from "@/components/location/settings/GuardiansManager";
 import { AdvancedSettings } from "@/components/location/settings/AdvancedSettings";
@@ -46,14 +47,7 @@ export default function LocationSharingSettings() {
   });
 
   if (settingsLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-background">
-        <div className="text-center space-y-4">
-          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-base text-muted-foreground">Carregando...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner fullScreen />;
   }
 
   return (

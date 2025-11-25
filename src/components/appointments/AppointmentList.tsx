@@ -2,6 +2,7 @@ import { Calendar as CalendarIcon, MapPin, Phone, Edit, Trash2, Clock } from "lu
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { supabase } from "@/integrations/supabase/client";
@@ -59,12 +60,7 @@ export function AppointmentList({ appointments, isLoading, onEdit, onRefetch }: 
   };
 
   if (isLoading) {
-    return (
-      <div className="text-center py-12">
-        <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-        <p className="text-senior-base text-muted-foreground">Carregando consultas...</p>
-      </div>
-    );
+    return <LoadingSpinner message="Carregando consultas..." />;
   }
 
   if (!appointments || appointments.length === 0) {

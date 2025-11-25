@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BackToHomeButton } from "@/components/ui/BackToHomeButton";
 import { Badge } from "@/components/ui/badge";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Clock, Pill } from "lucide-react";
 import { translateFrequency } from "@/lib/frequencyTranslations";
 
@@ -47,10 +48,7 @@ export function MedicationScheduleView({ onBackToHome }: MedicationScheduleViewP
         </div>
 
         {isLoading ? (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-senior-base text-muted-foreground">Carregando medicações...</p>
-          </div>
+          <LoadingSpinner message="Carregando medicações..." />
         ) : medications && medications.length > 0 ? (
           <div className="space-y-4">
             {medications.map((medication) => (

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDatabaseStatus } from '@/hooks/useDatabaseStatus';
 import { logger } from '@/lib/logger';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 export function SmartRouter() {
   const { isAngel, isAdmin, hasPatients, loading } = useAuth();
@@ -73,13 +74,9 @@ export function SmartRouter() {
   }, [isAngel, isAdmin, hasPatients, loading, dbLoading, isEmpty, navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center space-y-4">
-        <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-        <p className="text-senior-lg text-muted-foreground">
-          {dbLoading ? "Verificando sistema..." : "Carregando..."}
-        </p>
-      </div>
-    </div>
+    <LoadingSpinner 
+      fullScreen 
+      message={dbLoading ? "Verificando sistema..." : "Carregando..."} 
+    />
   );
 }
