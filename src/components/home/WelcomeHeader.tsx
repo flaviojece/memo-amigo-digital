@@ -70,7 +70,7 @@ Cuidando de você</h1>
         <h2 className="text-senior-xl font-bold text-white mb-1">
           {getGreeting()}, {getUserName()}! 👋
         </h2>
-        <p className="text-white/80 text-senior-sm capitalize">
+        <p className="text-white/80 text-senior-sm capitalize pr-[41px]">
           {formatDate()}
         </p>
         <p className="text-white/95 text-senior-lg font-semibold my-[0px] mx-[110px] text-center px-[0px] pl-[0px] pr-[45px]">
