@@ -9,8 +9,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, X } from "lucide-react";
 import { scheduleMedicationNotifications, deleteNotifications } from "@/lib/notificationScheduler";
+import { frequencyOptions } from "@/lib/frequencyTranslations";
 
 interface MedicationFormProps {
   medicationId?: string | null;
@@ -191,12 +193,21 @@ export function MedicationForm({ medicationId, onSuccess, onCancel }: Medication
 
       <div>
         <Label htmlFor="frequency" className="text-senior-base">Frequência *</Label>
-        <Input
-          id="frequency"
-          {...register("frequency")}
-          placeholder="Ex: 1x ao dia, 2x ao dia"
-          className="text-senior-base mt-2"
-        />
+        <Select
+          onValueChange={(value) => setValue("frequency", value)}
+          defaultValue={medicationId ? undefined : "daily"}
+        >
+          <SelectTrigger className="text-senior-base mt-2">
+            <SelectValue placeholder="Selecione a frequência" />
+          </SelectTrigger>
+          <SelectContent>
+            {frequencyOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         {errors.frequency && (
           <p className="text-destructive text-senior-sm mt-1">{errors.frequency.message}</p>
         )}
