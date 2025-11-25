@@ -59,18 +59,15 @@ export function WelcomeHeader() {
         </div>
         
         <div className="flex items-center gap-3 justify-end">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" onClick={signOut} className="h-8 w-8 text-white/70 hover:text-white hover:bg-white/10 transition-all" aria-label="Sair">
-                  <LogOut className="w-4 h-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Sair</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={signOut} 
+            className="h-8 px-3 text-white/70 hover:text-white hover:bg-white/10 transition-all font-semibold" 
+            aria-label="Sair"
+          >
+            SAIR
+          </Button>
         </div>
       </div>
 
