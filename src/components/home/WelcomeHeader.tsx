@@ -70,7 +70,7 @@ Cuidando de você</h1>
             {formatTime()}
           </p>
           <div className="flex-1 flex justify-end">
-            <Button variant="ghost" size="sm" onClick={signOut} aria-label="Sair" className="h-8 px-3 text-white/70 hover:text-white hover:bg-white/10 transition-all font-semibold pr-[15px]">
+            <Button variant="ghost" size="sm" onClick={signOut} aria-label="Sair" className="h-8 px-3 bg-accent text-accent-foreground hover:bg-accent/90 transition-all font-semibold pr-[15px] shadow-sm">
               SAIR
             </Button>
           </div>
