@@ -52,30 +52,29 @@ export function WelcomeHeader() {
     });
   };
   return <header className="bg-gradient-warm text-primary-foreground p-6 rounded-b-memo shadow-card">
-      <div className="grid grid-cols-[1fr_auto] items-center mb-3">
-        <div className="text-center">
-          <h1 className="font-bold text-white whitespace-nowrap mx-[0px] px-[0px] my-[0px] text-senior-lg text-center py-[20px]">Dr. Memo
+      <div className="text-center mb-3">
+        <h1 className="font-bold text-white whitespace-nowrap text-senior-lg py-[20px]">Dr. Memo
 Cuidando de você</h1>
-          
-        </div>
-        
-        <div className="flex items-center gap-3 justify-end">
-          <Button variant="ghost" size="sm" onClick={signOut} aria-label="Sair" className="h-8 px-3 mr-3 text-white/70 hover:text-white hover:bg-white/10 transition-all font-semibold text-justify mx-[11px]">
-            SAIR
-          </Button>
-        </div>
       </div>
 
       <div className="text-center space-y-1">
         <h2 className="text-senior-xl font-bold text-white mb-1">
           {getGreeting()}, {getUserName()}! 👋
         </h2>
-        <p className="text-white/80 text-senior-sm capitalize pr-[41px]">
+        <p className="text-white/80 text-senior-sm capitalize">
           {formatDate()}
         </p>
-        <p className="text-white/95 text-senior-lg font-semibold my-[0px] mx-[110px] text-center px-[0px] pl-[0px] pr-[45px]">
-          {formatTime()}
-        </p>
+        <div className="flex items-center justify-between">
+          <div className="flex-1"></div>
+          <p className="text-white/95 text-senior-lg font-semibold flex-1 text-center">
+            {formatTime()}
+          </p>
+          <div className="flex-1 flex justify-end">
+            <Button variant="ghost" size="sm" onClick={signOut} aria-label="Sair" className="h-8 px-3 text-white/70 hover:text-white hover:bg-white/10 transition-all font-semibold">
+              SAIR
+            </Button>
+          </div>
+        </div>
       </div>
     </header>;
 }
