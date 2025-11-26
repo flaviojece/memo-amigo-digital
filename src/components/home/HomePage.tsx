@@ -138,7 +138,7 @@ export function HomePage({
 
         {/* Ações rápidas */}
         <section className="space-y-4">
-          <h2 className="text-senior-xl font-bold text-foreground mb-4">
+          <h2 className="text-senior-xl font-bold text-foreground mb-4 pt-[8px] pb-[8px]">
             Ações Rápidas
           </h2>
           
@@ -172,7 +172,7 @@ export function HomePage({
 
         {/* Botão de Emergência */}
         <section className="space-y-4">
-          <h2 className="text-senior-xl font-bold text-foreground mb-4">
+          <h2 className="text-senior-xl font-bold text-foreground mb-4 pt-[8px] pb-[8px]">
             Precisa de Ajuda?
           </h2>
           
