@@ -22,9 +22,11 @@ export function QuickActionCard({
     <button
       onClick={onClick}
       className={cn(
-        "card-memo p-4 text-left w-full transition-all duration-300 touch-manipulation",
-        "hover:scale-[1.02] active:scale-[0.98] active:brightness-95",
-        "min-h-[80px] min-h-touch-comfortable",
+        "bg-card rounded-xl border-2 border-border shadow-sm",
+        "p-3 text-left w-full h-full",
+        "transition-all duration-200 touch-manipulation",
+        "hover:shadow-md hover:scale-[1.01] active:scale-[0.99]",
+        "min-h-[60px]",
         variant === "emergency" &&
           "bg-destructive text-destructive-foreground shadow-emergency border-destructive",
         variant === "accent" && "bg-accent text-accent-foreground",
@@ -32,11 +34,11 @@ export function QuickActionCard({
       )}
       aria-label={`${title}${subtitle ? ": " + subtitle : ""}`}
     >
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2.5">
         <div
           className={cn(
-            "p-2.5 rounded-xl flex-shrink-0",
-            "[&_svg]:w-6 [&_svg]:h-6",
+            "p-2 rounded-lg flex-shrink-0",
+            "[&_svg]:w-5 [&_svg]:h-5",
             variant === "emergency" ? "bg-white/20" : "bg-primary/10",
           )}
         >
@@ -44,14 +46,14 @@ export function QuickActionCard({
         </div>
 
         <div className="flex-1 min-w-0">
-          <h3 className="font-bold text-senior-base mb-0.5 leading-tight">
+          <h3 className="font-semibold text-base leading-tight truncate">
             {title}
           </h3>
           {subtitle && (
             <p
               className={cn(
-                "text-senior-sm mt-0.5 line-clamp-2",
-                variant === "emergency" ? "text-white/90" : "text-muted-foreground",
+                "text-xs mt-0.5 truncate",
+                variant === "emergency" ? "text-white/80" : "text-muted-foreground",
               )}
             >
               {subtitle}
