@@ -26,7 +26,7 @@ export function QuickActionCard({
           <h3 className="font-bold text-senior-base mb-1 leading-tight whitespace-pre-line mx-[0px] pl-[0px] text-center">
             {title}
           </h3>
-          {subtitle && <p className={cn("text-senior-sm", variant === "emergency" ? "text-white/90" : "text-muted-foreground")}>
+          {subtitle && <p className={cn("text-senior-sm text-center", variant === "emergency" ? "text-white/90" : "text-muted-foreground")}>
               {subtitle}
             </p>}
         </div>
