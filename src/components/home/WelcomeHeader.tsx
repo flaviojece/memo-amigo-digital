@@ -54,7 +54,7 @@ export function WelcomeHeader() {
   return <header className="bg-gradient-warm text-primary-foreground p-6 rounded-b-memo shadow-card">
       <div className="grid grid-cols-[1fr_auto] items-center mb-3">
         <div className="text-center">
-          <h1 className="text-senior-xl font-bold text-white whitespace-nowrap text-center mx-[0px] px-[0px] py-[25px] my-[0px]">Dr. Memo
+          <h1 className="font-bold text-white whitespace-nowrap mx-[0px] px-[0px] my-[0px] text-senior-lg text-center py-[20px]">Dr. Memo
 Cuidando de você</h1>
           
         </div>
