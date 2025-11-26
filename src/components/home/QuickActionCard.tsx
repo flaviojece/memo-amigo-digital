@@ -23,7 +23,7 @@ export function QuickActionCard({
         </div>
         
         <div className="flex-1 min-w-0">
-          <h3 className="font-bold text-senior-base mb-1 leading-tight">
+          <h3 className="font-bold text-senior-base mb-1 leading-tight whitespace-pre-line">
             {title}
           </h3>
           {subtitle && <p className={cn("text-senior-sm", variant === "emergency" ? "text-white/90" : "text-muted-foreground")}>

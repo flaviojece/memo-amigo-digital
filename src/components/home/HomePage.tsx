@@ -149,7 +149,7 @@ export function HomePage({
 
             <QuickActionCard title="Ligar" icon={<Phone className="text-accent" />} onClick={() => setShowCallModal(true)} />
 
-            <QuickActionCard title={"Horário das\nMedicações"} icon={<Clock className="text-muted-foreground" />} onClick={() => onTabChange("medication-schedule")} />
+            <QuickActionCard title="Agenda" subtitle="Horários dos remédios" icon={<Clock className="text-muted-foreground" />} onClick={() => onTabChange("medication-schedule")} />
           </div>
         </section>
 
