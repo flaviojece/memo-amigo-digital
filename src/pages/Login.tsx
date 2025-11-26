@@ -153,20 +153,20 @@ const Login = () => {
             <div>
               <Label htmlFor="password" className="text-lg text-white font-semibold">Senha</Label>
               <div className="relative mt-2 input-glow rounded-lg">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  className="h-14 text-lg pr-12 bg-white"
-                  placeholder="••••••••"
-                  {...loginForm.register("password")}
-                />
-                  <button
+                <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors z-10"
                   >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  className="h-14 text-lg pl-12 bg-white"
+                  placeholder="••••••••"
+                  {...loginForm.register("password")}
+                />
               </div>
                 {loginForm.formState.errors.password && (
                   <p className="text-red-600 bg-white/90 px-2 py-1 rounded text-sm mt-1 font-semibold">
@@ -268,10 +268,17 @@ const Login = () => {
             <div>
               <Label htmlFor="signup-password" className="text-lg text-white font-semibold">Senha</Label>
               <div className="relative mt-2 input-glow rounded-lg">
+                <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors z-10"
+                  >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
                 <Input
                   id="signup-password"
                   type={showPassword ? "text" : "password"}
-                  className="h-14 text-lg pr-12 bg-white"
+                  className="h-14 text-lg pl-12 bg-white"
                   placeholder="••••••••"
                   {...signupForm.register("password")}
                   onChange={(e) => {
@@ -279,13 +286,6 @@ const Login = () => {
                     setPasswordValue(e.target.value);
                   }}
                 />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
-                  >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
               </div>
               
               <PasswordStrengthMeter password={passwordValue} />
@@ -300,20 +300,20 @@ const Login = () => {
             <div>
               <Label htmlFor="confirm-password" className="text-lg text-white font-semibold">Confirmar Senha</Label>
               <div className="relative mt-2 input-glow rounded-lg">
-                <Input
-                  id="confirm-password"
-                  type={showConfirmPassword ? "text" : "password"}
-                  className="h-14 text-lg pr-12 bg-white"
-                  placeholder="••••••••"
-                  {...signupForm.register("confirmPassword")}
-                />
-                  <button
+                <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors z-10"
                   >
                   {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
+                <Input
+                  id="confirm-password"
+                  type={showConfirmPassword ? "text" : "password"}
+                  className="h-14 text-lg pl-12 bg-white"
+                  placeholder="••••••••"
+                  {...signupForm.register("confirmPassword")}
+                />
               </div>
                 {signupForm.formState.errors.confirmPassword && (
                   <p className="text-red-600 bg-white/90 px-2 py-1 rounded text-sm mt-1 font-semibold">
