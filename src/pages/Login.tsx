@@ -103,18 +103,14 @@ const Login = () => {
           </div>
           
           {/* Badges de confiança */}
-          <div className="flex items-center justify-between mt-4 text-xs text-white/90">
-            <div className="flex items-center gap-1">
-              <Shield className="w-4 h-4 text-green-400" />
-              <span>Dados Seguros</span>
+          <div className="flex flex-wrap justify-center gap-3 mt-6 text-sm">
+            <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full">
+              <Shield className="w-4 h-4 text-white/80" />
+              <span className="text-white/90">Dados criptografados</span>
             </div>
-            <div className="flex items-center gap-1">
-              <Sparkles className="w-4 h-4 text-yellow-400" />
-              <span>Fácil de usar</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Users className="w-4 h-4 text-blue-400" />
-              <span>+1000 usuários</span>
+            <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full">
+              <Heart className="w-4 h-4 text-white/80" />
+              <span className="text-white/90">Feito para idosos</span>
             </div>
           </div>
         </div>
