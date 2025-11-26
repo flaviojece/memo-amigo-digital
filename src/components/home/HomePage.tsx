@@ -142,14 +142,14 @@ export function HomePage({
             Ações Rápidas
           </h2>
           
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3 auto-rows-fr">
             <QuickActionCard title="Remédios" icon={<Pill className="text-primary" />} onClick={() => onTabChange("meds")} />
 
             <QuickActionCard title="Consultas" icon={<Calendar className="text-secondary" />} onClick={() => onTabChange("appointments")} />
 
             <QuickActionCard title="Ligar" icon={<Phone className="text-accent" />} onClick={() => setShowCallModal(true)} />
 
-            <QuickActionCard title="Agenda" subtitle="Horários dos remédios" icon={<Clock className="text-muted-foreground" />} onClick={() => onTabChange("medication-schedule")} />
+            <QuickActionCard title="Agenda" icon={<Clock className="text-muted-foreground" />} onClick={() => onTabChange("medication-schedule")} />
           </div>
         </section>
 
