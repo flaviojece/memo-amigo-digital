@@ -127,12 +127,12 @@ export function HomePage({
             Resumo do Dia
           </h2>
           
-          <div className="grid gap-4 pl-[10px] pr-[10px]">
-            <QuickActionCard title="Próximo Remédio" subtitle={nextMedication ? `${nextMedication.name} - ${getNextMedicationTime(nextMedication) || 'Sem horários definidos'}` : "Nenhum medicamento cadastrado"} icon={<Pill className="text-primary" />} onClick={() => onTabChange("meds")} className="pl-[30px] px-[3px]" />
+          <div className="grid gap-4">
+            <QuickActionCard title="Próximo Remédio" subtitle={nextMedication ? `${nextMedication.name} - ${getNextMedicationTime(nextMedication) || 'Sem horários definidos'}` : "Nenhum medicamento cadastrado"} icon={<Pill className="text-primary" />} onClick={() => onTabChange("meds")} />
 
-            <QuickActionCard title="Próxima Consulta" subtitle={nextAppointment ? `${nextAppointment.doctor_name} - ${nextAppointment.specialty}\n${formatAppointmentDate(nextAppointment.date)}` : "Nenhuma consulta agendada"} icon={<Stethoscope className="text-secondary" />} onClick={() => onTabChange("appointments")} className="pl-[30px]" />
+            <QuickActionCard title="Próxima Consulta" subtitle={nextAppointment ? `${nextAppointment.doctor_name} - ${nextAppointment.specialty}\n${formatAppointmentDate(nextAppointment.date)}` : "Nenhuma consulta agendada"} icon={<Stethoscope className="text-secondary" />} onClick={() => onTabChange("appointments")} />
 
-            <QuickActionCard title="Contatos Favoritos" subtitle={`${favoriteContacts?.length || 0} contatos favoritos`} icon={<Heart className="text-accent" />} onClick={() => setShowCallModal(true)} variant="accent" className="pl-[30px]" />
+            <QuickActionCard title="Contatos Favoritos" subtitle={`${favoriteContacts?.length || 0} contatos favoritos`} icon={<Heart className="text-accent" />} onClick={() => setShowCallModal(true)} variant="accent" />
           </div>
         </section>
 
