@@ -27,6 +27,7 @@ export default defineConfig(({ mode }) => ({
         theme_color: '#9b87f5',
         background_color: '#1A1F2C',
         display: 'standalone',
+        display_override: ['standalone', 'minimal-ui', 'browser'],
         orientation: 'portrait',
         start_url: '/',
         id: '/',
@@ -35,6 +36,25 @@ export default defineConfig(({ mode }) => ({
         dir: 'ltr',
         categories: ['health', 'medical', 'lifestyle'],
         prefer_related_applications: false,
+        related_applications: [],
+        launch_handler: {
+          client_mode: ['navigate-existing', 'auto']
+        },
+        share_target: {
+          action: '/share',
+          method: 'GET',
+          params: {
+            title: 'title',
+            text: 'text',
+            url: 'url'
+          }
+        },
+        protocol_handlers: [
+          {
+            protocol: 'web+drmemo',
+            url: '/?action=%s'
+          }
+        ],
         icons: [
           {
             src: '/icon-72.png',
@@ -131,6 +151,20 @@ export default defineConfig(({ mode }) => ({
             type: 'image/png',
             form_factor: 'narrow',
             label: 'Lista de medicamentos'
+          },
+          {
+            src: '/screenshots/home-wide.png',
+            sizes: '1920x1080',
+            type: 'image/png',
+            form_factor: 'wide',
+            label: 'Tela inicial - Desktop'
+          },
+          {
+            src: '/screenshots/medications-wide.png',
+            sizes: '1920x1080',
+            type: 'image/png',
+            form_factor: 'wide',
+            label: 'Lista de medicamentos - Desktop'
           }
         ]
       },
