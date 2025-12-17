@@ -14,8 +14,12 @@ export default defineConfig(({ mode }) => ({
     react(),
     mode === 'development' && componentTagger(),
     VitePWA({
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.ts',
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'robots.txt'],
+      injectRegister: 'auto',
       manifest: {
         name: 'Dr. Memo - Cuidado Sênior',
         short_name: 'Dr. Memo',
@@ -25,9 +29,12 @@ export default defineConfig(({ mode }) => ({
         display: 'standalone',
         orientation: 'portrait',
         start_url: '/',
+        id: '/',
+        scope: '/',
         lang: 'pt-BR',
         dir: 'ltr',
         categories: ['health', 'medical', 'lifestyle'],
+        prefer_related_applications: false,
         icons: [
           {
             src: '/icon-72.png',
@@ -101,30 +108,31 @@ export default defineConfig(({ mode }) => ({
             url: '/contacts',
             icons: [{ src: '/icon-96.png', sizes: '96x96' }]
           }
-        ]
-      },
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
-        runtimeCaching: [
+        ],
+        screenshots: [
           {
-            urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'supabase-cache',
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
+            src: '/screenshots/home.png',
+            sizes: '1080x1920',
+            type: 'image/png',
+            form_factor: 'narrow',
+            label: 'Tela inicial do Dr. Memo'
+          },
+          {
+            src: '/screenshots/medications.png',
+            sizes: '1080x1920',
+            type: 'image/png',
+            form_factor: 'narrow',
+            label: 'Lista de medicamentos'
           }
         ]
       },
+      injectManifest: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024
+      },
       devOptions: {
-        enabled: true
+        enabled: true,
+        type: 'module'
       }
     })
   ].filter(Boolean),
