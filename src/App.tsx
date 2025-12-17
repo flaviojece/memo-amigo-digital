@@ -14,6 +14,7 @@ const Index = lazy(() => import("./pages/Index"));
 const Login = lazy(() => import("./pages/Login"));
 const SetupInicial = lazy(() => import("./pages/SetupInicial"));
 const DevReset = lazy(() => import("./pages/DevReset"));
+const DevGenerateIcons = lazy(() => import("./pages/DevGenerateIcons"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const AcceptInvitation = lazy(() => import("./pages/AcceptInvitation"));
 const LocationSharingSettings = lazy(() => import("./pages/LocationSharingSettings"));
@@ -39,6 +40,7 @@ const App = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/setup-inicial" element={<SetupInicial />} />
               <Route path="/dev-reset" element={<DevReset />} />
+              <Route path="/dev/generate-icons" element={<DevGenerateIcons />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/accept-invitation" element={<AcceptInvitation />} />
               
