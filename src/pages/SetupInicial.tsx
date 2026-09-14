@@ -42,10 +42,21 @@ export default function SetupInicial() {
         }
       });
 
-      if (error) throw error;
+      // Erros HTTP (ex.: 400) chegam aqui sem corpo; extrair a mensagem real
+      let errorMessage: string | null = data?.error ?? null;
 
-      if (data?.error) {
-        throw new Error(data.error);
+      if (error) {
+        errorMessage = error.message || 'Erro ao criar administrador';
+        try {
+          const body = await (error as any)?.context?.json?.();
+          if (body?.error) errorMessage = body.error;
+        } catch {
+          // corpo indisponível — mantém a mensagem padrão
+        }
+      }
+
+      if (errorMessage) {
+        throw new Error(errorMessage);
       }
 
       toast.success("Administrador criado com sucesso!");
@@ -57,17 +68,20 @@ export default function SetupInicial() {
 
     } catch (error: any) {
       console.error('Erro ao criar admin:', error);
-      
-      if (error.message?.includes('Já existem usuários')) {
-        toast.error("O sistema já possui usuários. Use a tela de login.");
-        setTimeout(() => navigate('/login'), 2000);
+
+      const message: string = error?.message || "Erro ao criar administrador";
+
+      if (/já existem usuários/i.test(message) || /already/i.test(message)) {
+        toast.error("O sistema já possui contas cadastradas. Use a tela de login.");
+        setTimeout(() => navigate('/login', { replace: true }), 2000);
       } else {
-        toast.error(error.message || "Erro ao criar administrador");
+        toast.error(message);
       }
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4">
