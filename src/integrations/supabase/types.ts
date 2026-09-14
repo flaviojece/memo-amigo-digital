@@ -770,6 +770,7 @@ export type Database = {
         Returns: boolean
       }
       is_invitation_valid: { Args: { invitation_id: string }; Returns: boolean }
+      is_system_empty: { Args: never; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "user" | "angel"
