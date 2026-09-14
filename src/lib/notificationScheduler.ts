@@ -28,7 +28,8 @@ export const scheduleNotification = async (params: ScheduleNotificationParams) =
     .insert({
       user_id: userId,
       type,
-      [type === 'medication' ? 'medication_id' : 'appointment_id']: itemId,
+      medication_id: type === 'medication' ? itemId : null,
+      appointment_id: type === 'appointment' ? itemId : null,
       scheduled_for: scheduledFor.toISOString(),
       title,
       body,

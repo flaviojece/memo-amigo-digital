@@ -7,6 +7,7 @@ import { logger } from '@/lib/logger';
 interface Invitation {
   id: string;
   invited_email: string;
+  invitation_token: string;
   relationship_type: string | null;
   status: string;
   created_at: string;
