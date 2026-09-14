@@ -24,5 +24,6 @@ Minha sugestão é **flaviojece@gmail.com** (a primeira criada). Se a conta que 
 ## Detalhes técnicos
 
 - Nova migração: `create or replace function public.is_system_empty()` retornando `not exists (select 1 from auth.users)`, `stable security definer`, `set search_path = public`; `revoke all ... from public` e `grant execute` para `anon` e `authenticated`.
-- Mesma migração: `insert into public.user_roles (user_id, role) select id, 'admin' from auth.users where email = 'flaviojece@gmail.com' on conflict do nothing;`
+- Mesma migração: `insert into public.user_roles (user_id, role) select id, 'admin' from auth.users where email = '<conta escolhida>' on conflict (user_id, role) do nothing;`
+- Já existe o índice único `user_roles_user_id_role_key` em `(user_id, role)`, então o `on conflict` funciona e não é preciso criar nada novo.
 - `src/pages/SetupInicial.tsx`: tratar a resposta de erro da função `create-first-admin` (inclusive quando ela vem no corpo com status 400), exibir toast e redirecionar para `/login`.
