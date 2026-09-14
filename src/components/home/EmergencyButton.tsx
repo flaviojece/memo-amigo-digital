@@ -88,7 +88,6 @@ export function EmergencyButton() {
           'send-emergency-alert',
           {
             body: {
-              userId: user.id,
               activationId: data.id,
               location
             }

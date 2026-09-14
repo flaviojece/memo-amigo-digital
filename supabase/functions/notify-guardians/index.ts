@@ -1,10 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from 'jsr:@supabase/supabase-js@2';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { corsHeaders, jsonResponse, serviceClient, getCallerUser } from '../_shared/auth.ts';
 
 type EventType = 
   | 'medication_taken' 
@@ -16,7 +11,6 @@ type EventType =
   | 'appointment_cancelled';
 
 interface NotifyGuardiansRequest {
-  patientId: string;
   eventType: EventType;
   eventData: {
     medicationName?: string;
@@ -33,12 +27,14 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
+    const supabase = serviceClient();
 
-    const { patientId, eventType, eventData }: NotifyGuardiansRequest = await req.json();
+    // Segurança: só o próprio paciente pode notificar os seus anjos
+    const caller = await getCallerUser(req, supabase);
+    if (!caller) return jsonResponse({ error: 'Não autorizado' }, 401);
+    const patientId = caller.id;
+
+    const { eventType, eventData }: NotifyGuardiansRequest = await req.json();
 
     console.log(`👪 Notifying guardians for patient ${patientId}, event: ${eventType}`);
 

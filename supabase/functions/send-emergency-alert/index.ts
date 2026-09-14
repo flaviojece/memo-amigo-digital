@@ -1,14 +1,8 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from 'jsr:@supabase/supabase-js@2';
 import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { corsHeaders, jsonResponse, serviceClient, getCallerUser } from '../_shared/auth.ts';
 
 interface EmergencyAlertRequest {
-  userId: string;
   activationId: string;
   location?: {
     latitude: number;
@@ -23,12 +17,25 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
+    const supabase = serviceClient();
 
-    const { userId, activationId, location }: EmergencyAlertRequest = await req.json();
+    // Segurança: o usuário é sempre o dono do JWT, nunca o userId enviado no body
+    const caller = await getCallerUser(req, supabase);
+    if (!caller) return jsonResponse({ error: 'Não autorizado' }, 401);
+    const userId = caller.id;
+
+    const { activationId, location }: EmergencyAlertRequest = await req.json();
+
+    // A ativação precisa existir e pertencer ao usuário chamador
+    const { data: activation, error: activationError } = await supabase
+      .from('emergency_activations')
+      .select('id')
+      .eq('id', activationId)
+      .eq('user_id', userId)
+      .single();
+    if (activationError || !activation) {
+      return jsonResponse({ error: 'Ativação de emergência inválida' }, 403);
+    }
 
     console.log('🚨 Processing emergency alert for user:', userId);
 

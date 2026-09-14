@@ -6,7 +6,7 @@ import { logger } from '@/lib/logger';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 export function SmartRouter() {
-  const { isAngel, isAdmin, hasPatients, loading } = useAuth();
+  const { isAngel, isAdmin, hasPatients, loading, rolesLoading } = useAuth();
   const { isEmpty, loading: dbLoading } = useDatabaseStatus();
   const navigate = useNavigate();
 
@@ -14,7 +14,7 @@ export function SmartRouter() {
     logger.log('[SmartRouter] State:', { loading, dbLoading, isEmpty, isAngel, isAdmin, hasPatients });
     
     // Aguardar ambas as verificações
-    if (loading || dbLoading) {
+    if (loading || rolesLoading || dbLoading) {
       logger.log('[SmartRouter] Still loading, waiting...');
       return;
     }
@@ -39,9 +39,9 @@ export function SmartRouter() {
       logger.log('[SmartRouter] Admin user, preference:', adminPreference);
       
       if (adminPreference) {
-        navigate(adminPreference);
+        navigate(adminPreference, { replace: true });
       } else {
-        navigate('/admin');
+        navigate('/admin', { replace: true });
       }
       return;
     }
@@ -52,13 +52,13 @@ export function SmartRouter() {
     
     if (preference === '/angel' && isAngel && hasPatients) {
       logger.log('[SmartRouter] Navigating to /angel (preference)');
-      navigate('/angel');
+      navigate('/angel', { replace: true });
       return;
     }
 
     if (preference === '/patient') {
       logger.log('[SmartRouter] Navigating to /patient (preference)');
-      navigate('/patient');
+      navigate('/patient', { replace: true });
       return;
     }
 
@@ -66,12 +66,12 @@ export function SmartRouter() {
     if (isAngel) {
       // Se é anjo, vai pro dashboard do anjo (mesmo sem pacientes ainda)
       logger.log('[SmartRouter] Navigating to /angel (auto-detect)');
-      navigate('/angel');
+      navigate('/angel', { replace: true });
     } else {
       logger.log('[SmartRouter] Navigating to /patient (default)');
-      navigate('/patient');
+      navigate('/patient', { replace: true });
     }
-  }, [isAngel, isAdmin, hasPatients, loading, dbLoading, isEmpty, navigate]);
+  }, [isAngel, isAdmin, hasPatients, loading, rolesLoading, dbLoading, isEmpty, navigate]);
 
   return (
     <LoadingSpinner 

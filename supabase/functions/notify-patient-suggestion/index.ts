@@ -1,30 +1,35 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { corsHeaders, jsonResponse, serviceClient, getCallerUser, isGuardianOf } from '../_shared/auth.ts';
 
 interface NotificationRequest {
   patientId: string;
-  angelName: string;
   suggestionType: string;
 }
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-    );
+    const supabase = serviceClient();
 
-    const { patientId, angelName, suggestionType }: NotificationRequest = await req.json();
+    // Segurança: o anjo é o dono do JWT e precisa ter vínculo ativo com o paciente
+    const caller = await getCallerUser(req, supabase);
+    if (!caller) return jsonResponse({ error: "Não autorizado" }, 401);
+
+    const { patientId, suggestionType }: NotificationRequest = await req.json();
+
+    if (!(await isGuardianOf(supabase, caller.id, patientId))) {
+      return jsonResponse({ error: "Você não é anjo deste paciente" }, 403);
+    }
+
+    const { data: angelProfile } = await supabase
+      .from("profiles")
+      .select("full_name")
+      .eq("id", caller.id)
+      .single();
+    const angelName = angelProfile?.full_name || caller.email || "Um anjo";
 
     console.log("Notification request:", { patientId, angelName, suggestionType });
 

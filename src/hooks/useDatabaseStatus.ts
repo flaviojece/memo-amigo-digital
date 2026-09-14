@@ -11,10 +11,9 @@ export function useDatabaseStatus() {
 
   const checkDatabaseStatus = async () => {
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id')
-        .limit(1);
+      // RPC security definer: verifica se já existe algum admin sem depender do RLS de profiles.
+      // Antes, um usuário sem perfil (falha na trigger) era enviado ao setup inicial.
+      const { data, error } = await supabase.rpc('is_system_empty');
 
       if (error) {
         console.error('Erro ao verificar status do banco:', error);
@@ -22,7 +21,7 @@ export function useDatabaseStatus() {
         return;
       }
 
-      setIsEmpty(!data || data.length === 0);
+      setIsEmpty(data === true);
     } catch (error) {
       console.error('Erro ao verificar status do banco:', error);
       setIsEmpty(false);

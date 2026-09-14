@@ -1,19 +1,20 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import { corsHeaders, jsonResponse, serviceClient, getCallerUser } from '../_shared/auth.ts';
 
 interface InvitationEmailRequest {
-  invited_email: string;
-  patient_name: string;
-  relationship_type: string;
   invitation_token: string;
   message?: string;
   site_url: string;
+}
+
+// Só permite links de aceite para domínios do próprio app (evita phishing)
+const ALLOWED_SITE_HOSTS = [/\.lovable\.app$/, /\.lovableproject\.com$/, /^localhost(:\d+)?$/];
+function safeSiteUrl(raw: string): string {
+  try {
+    const u = new URL(raw);
+    if (ALLOWED_SITE_HOSTS.some((r) => r.test(u.host))) return u.origin;
+  } catch { /* ignore */ }
+  return Deno.env.get("APP_PUBLIC_URL") ?? "";
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -22,14 +23,30 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const {
-      invited_email,
-      patient_name,
-      relationship_type,
-      invitation_token,
-      message,
-      site_url,
-    }: InvitationEmailRequest = await req.json();
+    const supabase = serviceClient();
+    const caller = await getCallerUser(req, supabase);
+    if (!caller) return jsonResponse({ error: "Não autorizado" }, 401);
+
+    const { invitation_token, message, site_url: rawSiteUrl }: InvitationEmailRequest = await req.json();
+
+    // Segurança: o convite precisa existir, estar pendente e pertencer ao chamador.
+    // E-mail do convidado, nome do paciente e tipo de relação vêm do banco, não do body.
+    const { data: invitation, error: invError } = await supabase
+      .from("guardian_invitations")
+      .select("invited_email, relationship_type, status, patient_id")
+      .eq("invitation_token", invitation_token)
+      .eq("patient_id", caller.id)
+      .single();
+    if (invError || !invitation) return jsonResponse({ error: "Convite não encontrado" }, 403);
+    if (invitation.status !== "pending") return jsonResponse({ error: "Convite não está pendente" }, 400);
+
+    const { data: patientProfile } = await supabase
+      .from("profiles").select("full_name").eq("id", caller.id).single();
+
+    const invited_email = invitation.invited_email;
+    const relationship_type = invitation.relationship_type;
+    const patient_name = patientProfile?.full_name || caller.email || "Um paciente";
+    const site_url = safeSiteUrl(rawSiteUrl);
 
     console.log("Sending invitation email to:", invited_email);
 
@@ -169,4 +186,4 @@ const handler = async (req: Request): Promise<Response> => {
   }
 };
 
-serve(handler);
+Deno.serve(handler);

@@ -4,21 +4,35 @@ import { useSuggestions } from '../useSuggestions';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactNode } from 'react';
 
-// Mock do Supabase
-vi.mock('@/integrations/supabase/client', () => ({
-  supabase: {
-    from: vi.fn(() => ({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          order: vi.fn(() => Promise.resolve({ data: [], error: null })),
-        })),
-      })),
-      update: vi.fn(() => ({
-        eq: vi.fn(() => Promise.resolve({ data: null, error: null })),
-      })),
-    })),
-  },
-}));
+// Mock do Supabase: query builder encadeável que resolve como uma lista vazia
+vi.mock('@/integrations/supabase/client', () => {
+  const builder: any = new Proxy(
+    {},
+    {
+      get(_target, prop) {
+        if (prop === 'then') {
+          return (resolve: (v: unknown) => unknown) => resolve({ data: [], error: null });
+        }
+        return vi.fn(() => builder);
+      },
+    }
+  );
+
+  const channel: any = {
+    on: vi.fn(() => channel),
+    subscribe: vi.fn(() => channel),
+    unsubscribe: vi.fn(),
+  };
+
+  return {
+    supabase: {
+      from: vi.fn(() => builder),
+      channel: vi.fn(() => channel),
+      removeChannel: vi.fn(),
+      functions: { invoke: vi.fn(() => Promise.resolve({ data: null, error: null })) },
+    },
+  };
+});
 
 // Mock do AuthContext
 vi.mock('@/contexts/AuthContext', () => ({

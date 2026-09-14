@@ -25,8 +25,8 @@ export async function notifyGuardians(
 ) {
   try {
     const { data, error } = await supabase.functions.invoke('notify-guardians', {
+      // patientId é ignorado pelo servidor: a identidade vem do JWT
       body: {
-        patientId,
         eventType,
         eventData
       }

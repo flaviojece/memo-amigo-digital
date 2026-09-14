@@ -127,9 +127,6 @@ export const useGuardianInvitations = () => {
     try {
       const { data, error: emailError } = await supabase.functions.invoke('send-invitation-email', {
         body: {
-          invited_email: email,
-          patient_name: profile?.full_name || user.email || 'Um paciente',
-          relationship_type: relationshipType,
           invitation_token: invitation.invitation_token,
           message: message,
           site_url: window.location.origin,
@@ -250,18 +247,11 @@ export const useGuardianInvitations = () => {
     if (!user) return false;
 
     try {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('full_name')
-        .eq('id', user.id)
-        .single();
-
+      // Bug corrigido: antes enviava invitation.id no lugar do invitation_token,
+      // gerando links de aceite inválidos no reenvio.
       const { error: emailError } = await supabase.functions.invoke('send-invitation-email', {
         body: {
-          invited_email: invitation.invited_email,
-          patient_name: profile?.full_name || user.email || 'Um paciente',
-          relationship_type: invitation.relationship_type || 'family',
-          invitation_token: invitation.id,
+          invitation_token: invitation.invitation_token,
           message: null,
           site_url: window.location.origin,
         }

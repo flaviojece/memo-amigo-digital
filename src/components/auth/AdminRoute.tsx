@@ -7,9 +7,9 @@ interface AdminRouteProps {
 }
 
 export const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
-  const { user, isAdmin, loading } = useAuth();
+  const { user, isAdmin, loading, rolesLoading } = useAuth();
 
-  if (loading) {
+  if (loading || rolesLoading) {
     return <LoadingSpinner fullScreen message="Carregando painel administrativo..." />;
   }
 

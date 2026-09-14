@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Segredos locais (nunca commitar)
+.env
+.env.*
+!.env.example
