@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSuggestions } from "@/hooks/useSuggestions";
 import { HomePage } from "@/components/home/HomePage";
@@ -13,12 +12,46 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SuggestionCard } from "@/components/angel/SuggestionCard";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { Bell, Shield, Lightbulb } from "lucide-react";
+import { Navigation } from "@/components/ui/navigation";
+import { InstallPrompt } from "@/components/mobile/InstallPrompt";
+import { NotificationSettings } from "@/components/notifications/NotificationSettings";
+import { GuardianManager } from "@/components/guardians/GuardianManager";
+import { PatientsLocationList } from "@/components/location/PatientsLocationList";
+import { BackToHomeButton } from "@/components/ui/BackToHomeButton";
+import { Bell, Shield, Lightbulb, LogOut, MapPin, UserCircle } from "lucide-react";
+
+/**
+ * Abas válidas da área do paciente. Cada aba é um segmento de URL
+ * (/patient/meds, /patient/more, ...) para que o botão "voltar" do Android
+ * e do navegador voltem para a tela anterior em vez de sair do app.
+ */
+const VALID_TABS = [
+  "home",
+  "meds",
+  "medication-schedule",
+  "appointments",
+  "contacts",
+  "location",
+  "profile",
+  "suggestions",
+  "more",
+] as const;
+
+type PatientTab = (typeof VALID_TABS)[number];
 
 export default function PatientHome() {
-  const { user, isAngel, hasPatients, loading } = useAuth();
+  const { isAngel, hasPatients, loading, signOut } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("home");
+  const { tab } = useParams<{ tab?: string }>();
+
+  const activeTab: PatientTab = VALID_TABS.includes(tab as PatientTab)
+    ? (tab as PatientTab)
+    : "home";
+
+  const setActiveTab = (next: string) => {
+    navigate(next === "home" ? "/patient" : `/patient/${next}`);
+  };
+
   const { suggestions, approveSuggestion, rejectSuggestion } = useSuggestions();
 
   // Show loading screen while auth is initializing
@@ -38,8 +71,67 @@ export default function PatientHome() {
         return <Appointments onTabChange={setActiveTab} />;
       case "contacts":
         return <Contacts onTabChange={setActiveTab} />;
+      case "location":
+        return <PatientsLocationList onBackToMore={() => setActiveTab("more")} />;
       case "profile":
-        return <Profile onBackToMore={() => setActiveTab("home")} />;
+        return <Profile onBackToMore={() => setActiveTab("more")} />;
+      case "more":
+        return (
+          <div className="flex flex-col min-h-[60vh] p-6 pb-36 space-y-6">
+            <BackToHomeButton onBackToHome={() => setActiveTab("home")} />
+
+            <div className="space-y-2">
+              <h2 className="text-senior-2xl font-display text-foreground">Configurações</h2>
+              <p className="text-muted-foreground text-senior-sm">
+                Ajuste seu perfil, seus anjos e os lembretes do Dr. Memo
+              </p>
+            </div>
+
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setActiveTab("profile")}>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-3 text-senior-lg">
+                  <UserCircle className="w-6 h-6 text-primary" />
+                  Meu Perfil
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground text-senior-sm">
+                  Visualize e edite suas informações pessoais
+                </p>
+              </CardContent>
+            </Card>
+
+            {isAngel && hasPatients && (
+              <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setActiveTab("location")}>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-3 text-senior-lg">
+                    <MapPin className="w-6 h-6 text-primary" />
+                    Localização dos Pacientes
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground text-senior-sm">
+                    Acompanhe em tempo real quem está sob seus cuidados
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+
+            <NotificationSettings />
+
+            <GuardianManager />
+
+            <Button
+              onClick={signOut}
+              variant="destructive"
+              size="lg"
+              className="min-h-[60px] text-senior-lg"
+            >
+              <LogOut className="mr-2" size={24} />
+              Sair
+            </Button>
+          </div>
+        );
       case "suggestions":
         return (
           <div className="min-h-screen bg-background pattern-bg pb-24">
@@ -132,7 +224,7 @@ export default function PatientHome() {
                     <Button 
                       variant="outline" 
                       size="sm"
-                      onClick={() => navigate('/suggestions')}
+                      onClick={() => setActiveTab("suggestions")}
                     >
                       Ver todas
                     </Button>
@@ -166,5 +258,11 @@ export default function PatientHome() {
     }
   };
 
-  return renderContent();
+  return (
+    <div className="bg-background min-h-screen pb-32">
+      {renderContent()}
+      <InstallPrompt />
+      <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
+    </div>
+  );
 }

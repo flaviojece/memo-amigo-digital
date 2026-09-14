@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { WelcomeHeader } from "./WelcomeHeader";
 import { QuickActionCard } from "./QuickActionCard";
 import { EmergencyButton } from "./EmergencyButton";
@@ -24,25 +25,52 @@ export function HomePage({
   const {
     user
   } = useAuth();
+  const navigate = useNavigate();
   const [showCallModal, setShowCallModal] = useState(false);
   const [showLocationModal, setShowLocationModal] = useState(false);
 
-  // Buscar próximo medicamento
+  // Buscar próximo medicamento: entre TODOS os ativos de hoje, o horário mais próximo
+  // (antes pegava apenas o cadastrado mais recentemente, ignorando os horários)
   const {
     data: nextMedication
   } = useQuery({
     queryKey: ["next-medication", user?.id],
     queryFn: async () => {
-      const {
-        data,
-        error
-      } = await supabase.from("medications").select("*").eq("user_id", user?.id).eq("active", true).lte("start_date", new Date().toISOString()).or(`end_date.is.null,end_date.gte.${new Date().toISOString()}`).order("created_at", {
-        ascending: false
-      }).limit(1).single();
-      if (error && error.code !== 'PGRST116') throw error;
-      return data;
+      const nowIso = new Date().toISOString();
+      const { data, error } = await supabase
+        .from("medications")
+        .select("id, name, dosage, times")
+        .eq("user_id", user?.id)
+        .eq("active", true)
+        .lte("start_date", nowIso)
+        .or(`end_date.is.null,end_date.gte.${nowIso}`);
+      if (error) throw error;
+
+      const now = new Date();
+      const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+      let best: { med: any; time: string; isTomorrow: boolean } | null = null;
+      for (const med of data || []) {
+        const times: string[] = (Array.isArray(med.times) ? med.times : JSON.parse(String(med.times || '[]')))
+          .filter((t: unknown): t is string => typeof t === 'string')
+          .sort();
+        if (times.length === 0) continue;
+        const upcoming = times.find(t => t >= currentTime);
+        const candidate = upcoming
+          ? { med, time: upcoming, isTomorrow: false }
+          : { med, time: times[0], isTomorrow: true };
+        if (
+          !best ||
+          (best.isTomorrow && !candidate.isTomorrow) ||
+          (best.isTomorrow === candidate.isTomorrow && candidate.time < best.time)
+        ) {
+          best = candidate;
+        }
+      }
+      return best;
     },
-    enabled: !!user
+    enabled: !!user,
+    refetchInterval: 60_000, // recalcula a cada minuto para o card não ficar preso no passado
   });
 
   // Buscar próxima consulta
@@ -100,16 +128,6 @@ export function HomePage({
     enabled: !!user
   });
 
-  // Calcular próximo horário do medicamento
-  const getNextMedicationTime = (med: any) => {
-    if (!med) return null;
-    const times = Array.isArray(med.times) ? med.times : JSON.parse(med.times || '[]');
-    const now = new Date();
-    const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-    const nextTime = times.find((t: string) => t > currentTime);
-    return nextTime || times[0];
-  };
-
   // Formatar data da consulta
   const formatAppointmentDate = (date: string) => {
     const d = parseISO(date);
@@ -128,7 +146,7 @@ export function HomePage({
           </h2>
           
           <div className="grid gap-4">
-            <QuickActionCard title="Próximo Remédio" subtitle={nextMedication ? `${nextMedication.name} - ${getNextMedicationTime(nextMedication) || 'Sem horários definidos'}` : "Nenhum medicamento cadastrado"} icon={<Pill className="text-primary" />} onClick={() => onTabChange("meds")} />
+            <QuickActionCard title="Próximo Remédio" subtitle={nextMedication ? `${nextMedication.med.name} - ${nextMedication.isTomorrow ? 'amanhã às ' : ''}${nextMedication.time}` : "Nenhum medicamento com horário para hoje"} icon={<Pill className="text-primary" />} onClick={() => onTabChange("meds")} />
 
             <QuickActionCard title="Próxima Consulta" subtitle={nextAppointment ? `${nextAppointment.doctor_name} - ${nextAppointment.specialty}\n${formatAppointmentDate(nextAppointment.date)}` : "Nenhuma consulta agendada"} icon={<Stethoscope className="text-secondary" />} onClick={() => onTabChange("appointments")} />
 
@@ -155,7 +173,7 @@ export function HomePage({
 
         {/* Acesso à Localização dos Pacientes */}
         {guardiansCount !== undefined && guardiansCount === 0 && <section className="space-y-4">
-            <QuickActionCard title="Localização dos Pacientes" subtitle="Acompanhe quem está sob seus cuidados" icon={<MapPin className="text-primary" />} onClick={() => onTabChange("location")} />
+            <QuickActionCard title="Adicionar um Anjo" subtitle="Convide um familiar ou cuidador para acompanhar você" icon={<MapPin className="text-primary" />} onClick={() => navigate("/location-sharing-settings")} />
           </section>}
 
         {/* Botão de Compartilhar Localização */}
@@ -183,7 +201,7 @@ export function HomePage({
         <section className="bg-card p-4 rounded-memo border-2 border-border">
           <div className="text-center space-y-2">
             <p className="text-senior-sm text-muted-foreground">
-              Última sincronização: Agora
+              {navigator.onLine ? "Conectado" : "Sem conexão — dados podem estar desatualizados"}
             </p>
             <p className="text-senior-sm text-muted-foreground">
               Familiares conectados: {guardiansCount || 0} anjos 👨‍👩‍👧‍👦

@@ -10,7 +10,10 @@ interface AuthContextType {
   isAdmin: boolean;
   isAngel: boolean;
   hasPatients: boolean;
+  /** Sessão inicial carregada */
   loading: boolean;
+  /** Papéis (admin/anjo) ainda sendo verificados — rotas que dependem deles devem aguardar */
+  rolesLoading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, password: string, fullName: string, userType: 'patient' | 'angel') => Promise<{ error: any }>;
   signOut: () => Promise<void>;
@@ -25,7 +28,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isAngel, setIsAngel] = useState(false);
   const [hasPatients, setHasPatients] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [rolesLoading, setRolesLoading] = useState(true);
   const { toast } = useToast();
+
+  /** Verifica todos os papéis e só libera rolesLoading no fim (evita redirecionamento prematuro) */
+  const loadRoles = async (userId: string) => {
+    setRolesLoading(true);
+    try {
+      await Promise.all([checkAdminRole(userId), checkAngelRole(userId)]);
+    } finally {
+      setRolesLoading(false);
+    }
+  };
 
   const checkAdminRole = async (userId: string) => {
     try {
@@ -70,6 +84,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (patientsError) {
         logger.error('Error checking patients:', patientsError);
         setHasPatients(false);
+        setRolesLoading(false);
       } else {
         setHasPatients((patientsData?.length || 0) > 0);
       }
@@ -77,6 +92,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       logger.error('Error checking angel role:', error);
       setIsAngel(false);
       setHasPatients(false);
+        setRolesLoading(false);
     }
   };
 
@@ -97,12 +113,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(session.user);
         setSession(session);
         
-        // Run role checks in background without blocking loading state
-        setTimeout(() => {
-          logger.log('[AuthContext] Running initial role checks in background...');
-          checkAdminRole(session.user!.id);
-          checkAngelRole(session.user!.id);
-        }, 0);
+        // Papéis carregam em paralelo; a UI usa rolesLoading para esperar
+        
+        loadRoles(session.user.id);
         
         logger.log('[AuthContext] Initial session processed (user set, role checks scheduled)');
         } else {
@@ -112,6 +125,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setIsAdmin(false);
           setIsAngel(false);
           setHasPatients(false);
+        setRolesLoading(false);
         }
       } catch (error) {
         logger.error('[AuthContext] Error during initial session check:', error);
@@ -121,6 +135,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsAdmin(false);
         setIsAngel(false);
         setHasPatients(false);
+        setRolesLoading(false);
       } finally {
         if (isMounted) {
           setLoading(false);
@@ -147,12 +162,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setUser(session.user);
             setSession(session);
             
-            // Run role checks in background without blocking loading state
-            setTimeout(() => {
-              logger.log('[AuthContext] Running SIGNED_IN role checks in background...');
-              checkAdminRole(session.user!.id);
-              checkAngelRole(session.user!.id);
-            }, 0);
+            // Papéis carregam em paralelo; a UI usa rolesLoading para esperar
+            
+            loadRoles(session.user.id);
           } else if (event === 'SIGNED_OUT') {
             logger.log('[AuthContext] SIGNED_OUT event, clearing state');
             setUser(null);
@@ -160,6 +172,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setIsAdmin(false);
             setIsAngel(false);
             setHasPatients(false);
+        setRolesLoading(false);
           }
         } catch (error) {
           logger.error('[AuthContext] Error processing auth event:', error);
@@ -256,6 +269,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsAdmin(false);
     setIsAngel(false);
     setHasPatients(false);
+        setRolesLoading(false);
     toast({
       title: "Até logo!",
       description: "Você saiu do Dr. Memo",
@@ -271,6 +285,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isAngel,
         hasPatients,
         loading,
+        rolesLoading,
         signIn,
         signUp,
         signOut,

@@ -116,7 +116,6 @@ export function useSuggestions(patientId?: string) {
       await supabase.functions.invoke('notify-patient-suggestion', {
         body: {
           patientId: input.patientId,
-          angelName: user.user_metadata?.full_name || user.email,
           suggestionType: input.type,
         },
       });

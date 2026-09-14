@@ -10,12 +10,11 @@ import { AdminRoute } from "@/components/auth/AdminRoute";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 // Lazy load pages for better mobile performance
-const Index = lazy(() => import("./pages/Index"));
 const Login = lazy(() => import("./pages/Login"));
 const SetupInicial = lazy(() => import("./pages/SetupInicial"));
-const DevReset = lazy(() => import("./pages/DevReset"));
-const DevGenerateIcons = lazy(() => import("./pages/DevGenerateIcons"));
-const DevGenerateScreenshots = lazy(() => import("./pages/DevGenerateScreenshots"));
+// Páginas de desenvolvimento: só entram no bundle em modo DEV
+const DevGenerateIcons = import.meta.env.DEV ? lazy(() => import("./pages/DevGenerateIcons")) : null;
+const DevGenerateScreenshots = import.meta.env.DEV ? lazy(() => import("./pages/DevGenerateScreenshots")) : null;
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const AcceptInvitation = lazy(() => import("./pages/AcceptInvitation"));
 const LocationSharingSettings = lazy(() => import("./pages/LocationSharingSettings"));
@@ -40,9 +39,12 @@ const App = () => (
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/setup-inicial" element={<SetupInicial />} />
-              <Route path="/dev-reset" element={<DevReset />} />
-              <Route path="/dev/generate-icons" element={<DevGenerateIcons />} />
-              <Route path="/dev/generate-screenshots" element={<DevGenerateScreenshots />} />
+              {import.meta.env.DEV && DevGenerateIcons && DevGenerateScreenshots && (
+                <>
+                  <Route path="/dev/generate-icons" element={<DevGenerateIcons />} />
+                  <Route path="/dev/generate-screenshots" element={<DevGenerateScreenshots />} />
+                </>
+              )}
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/accept-invitation" element={<AcceptInvitation />} />
               
@@ -56,9 +58,17 @@ const App = () => (
                 }
               />
               
-              {/* Patient interface */}
+              {/* Patient interface — cada aba tem sua própria URL (botão voltar do Android) */}
               <Route
                 path="/patient"
+                element={
+                  <ProtectedRoute>
+                    <PatientHome />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/patient/:tab"
                 element={
                   <ProtectedRoute>
                     <PatientHome />
