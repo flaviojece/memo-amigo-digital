@@ -42,7 +42,9 @@ Vou aplicar no projeto as mudanças do arquivo que você enviou, adaptando os po
 
 Estas eu não consigo fazer:
 1. Trocar a senha do administrador (ela ficou exposta).
-2. Limpar o histórico do git do seu repositório espelhado (`git filter-repo`).
+2. Limpar o histórico do git do seu repositório no GitHub (`git filter-repo`) — remover o arquivo agora não apaga a senha dos commits antigos; esse passo continua sendo necessário e é seu.
 3. Restringir o token do Mapbox por URL no painel da Mapbox.
 4. Rotacionar a senha de e-mail SMTP e as chaves de notificação push.
-5. Definir o endereço público do app nos segredos do backend (`APP_PUBLIC_URL`) — posso adicionar esse segredo se você me passar o valor, ou uso `https://drmemo.com.br` como padrão.
+
+Sobre o endereço público usado no link de convite: o app publicado é `https://drmemo.com.br` (domínio próprio já ativo, além de `memo-amigo-digital.lovable.app`), então vou usar `https://drmemo.com.br` como valor do segredo `APP_PUBLIC_URL`. Se preferir outro, me diga antes de aprovar.
+
