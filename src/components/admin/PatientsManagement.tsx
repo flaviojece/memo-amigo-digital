@@ -56,12 +56,12 @@ export function PatientsManagement() {
             placeholder="Buscar paciente..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="max-w-sm"
+            className="min-w-0 max-w-sm"
           />
         </div>
 
-        <div className="rounded-md border">
-          <Table>
+        <div className="rounded-md border overflow-hidden">
+          <Table className="min-w-[920px]">
             <TableHeader>
               <TableRow>
                 <TableHead>Nome</TableHead>
@@ -117,7 +117,7 @@ export function PatientsManagement() {
                       )}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button size="sm" variant="ghost">
+                      <Button size="icon" variant="ghost" aria-label={`Ver detalhes de ${patient.full_name || patient.email}`}>
                         <Eye className="h-4 w-4" />
                       </Button>
                     </TableCell>

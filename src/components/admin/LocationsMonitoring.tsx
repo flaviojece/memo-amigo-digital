@@ -49,11 +49,11 @@ export function LocationsMonitoring() {
             </div>
 
             {isLoading ? (
-              <div className="h-96 flex items-center justify-center bg-muted rounded-lg">
+              <div className="h-[min(24rem,65dvh)] min-h-[320px] flex items-center justify-center bg-muted rounded-lg">
                 <p className="text-muted-foreground">Carregando localizações...</p>
               </div>
             ) : !firstActiveLocation?.location ? (
-              <div className="h-96 flex items-center justify-center bg-muted rounded-lg">
+              <div className="h-[min(24rem,65dvh)] min-h-[320px] flex items-center justify-center bg-muted rounded-lg">
                 <p className="text-muted-foreground">Nenhuma localização ativa no momento</p>
               </div>
             ) : (
@@ -68,7 +68,7 @@ export function LocationsMonitoring() {
               {activeLocations?.map((loc) => (
                 <div
                   key={loc.user_id}
-                  className="flex items-center justify-between p-2 hover:bg-muted rounded"
+                  className="flex flex-col gap-2 p-3 hover:bg-muted rounded min-[430px]:flex-row min-[430px]:items-center min-[430px]:justify-between"
                 >
                   <div>
                     <p className="font-medium">{(loc.profiles as any)?.full_name || "Sem nome"}</p>

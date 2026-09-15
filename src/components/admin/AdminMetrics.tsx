@@ -78,7 +78,7 @@ export function AdminMetrics({ stats, loading }: AdminMetricsProps) {
 
   if (loading) {
     return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-2 lg:grid-cols-4">
         {[...Array(8)].map((_, i) => (
           <Card key={i} className="animate-pulse">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -95,21 +95,21 @@ export function AdminMetrics({ stats, loading }: AdminMetricsProps) {
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 md:grid-cols-2 lg:grid-cols-4">
       {metrics.map((metric) => {
         const Icon = metric.icon;
         return (
           <Card key={metric.title} className="hover:shadow-lg transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardHeader className="flex flex-col items-start gap-2 space-y-0 p-3 pb-2 min-[430px]:flex-row min-[430px]:justify-between sm:p-6 sm:pb-2">
+              <CardTitle className="text-xs font-medium text-muted-foreground sm:text-sm">
                 {metric.title}
               </CardTitle>
               <div className={`p-2 rounded-lg ${metric.bgColor}`}>
                 <Icon className={`h-4 w-4 ${metric.color}`} />
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{metric.value}</div>
+            <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+              <div className="text-2xl font-bold sm:text-3xl">{metric.value}</div>
             </CardContent>
           </Card>
         );
