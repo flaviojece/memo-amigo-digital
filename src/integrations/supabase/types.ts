@@ -23,8 +23,6 @@ export type Database = {
           location: string | null
           notes: string | null
           phone: string | null
-          preparation: string | null
-          reminder_24h_sent: boolean
           reminder_sent: boolean | null
           specialty: string
           status: string | null
@@ -39,8 +37,6 @@ export type Database = {
           location?: string | null
           notes?: string | null
           phone?: string | null
-          preparation?: string | null
-          reminder_24h_sent?: boolean
           reminder_sent?: boolean | null
           specialty: string
           status?: string | null
@@ -55,8 +51,6 @@ export type Database = {
           location?: string | null
           notes?: string | null
           phone?: string | null
-          preparation?: string | null
-          reminder_24h_sent?: boolean
           reminder_sent?: boolean | null
           specialty?: string
           status?: string | null
@@ -230,7 +224,6 @@ export type Database = {
           enabled: boolean
           guardian_id: string
           id: string
-          escalate_after_minutes: number
           notify_appointment_cancelled: boolean
           notify_appointment_completed: boolean
           notify_appointment_created: boolean
@@ -239,8 +232,6 @@ export type Database = {
           notify_medication_taken: boolean
           notify_medication_upcoming: boolean
           patient_id: string
-          quiet_hours_end: string
-          quiet_hours_start: string
           updated_at: string | null
         }
         Insert: {
@@ -248,7 +239,6 @@ export type Database = {
           enabled?: boolean
           guardian_id: string
           id?: string
-          escalate_after_minutes?: number
           notify_appointment_cancelled?: boolean
           notify_appointment_completed?: boolean
           notify_appointment_created?: boolean
@@ -257,8 +247,6 @@ export type Database = {
           notify_medication_taken?: boolean
           notify_medication_upcoming?: boolean
           patient_id: string
-          quiet_hours_end: string
-          quiet_hours_start: string
           updated_at?: string | null
         }
         Update: {
@@ -266,7 +254,6 @@ export type Database = {
           enabled?: boolean
           guardian_id?: string
           id?: string
-          escalate_after_minutes?: number
           notify_appointment_cancelled?: boolean
           notify_appointment_completed?: boolean
           notify_appointment_created?: boolean
@@ -275,8 +262,6 @@ export type Database = {
           notify_medication_taken?: boolean
           notify_medication_upcoming?: boolean
           patient_id?: string
-          quiet_hours_end?: string
-          quiet_hours_start?: string
           updated_at?: string | null
         }
         Relationships: [
@@ -362,7 +347,6 @@ export type Database = {
           last_movement_at: string | null
           latitude: number
           longitude: number
-          source: string
           speed: number | null
           updated_at: string | null
           user_id: string
@@ -375,7 +359,6 @@ export type Database = {
           last_movement_at?: string | null
           latitude: number
           longitude: number
-          source?: string
           speed?: number | null
           updated_at?: string | null
           user_id: string
@@ -388,7 +371,6 @@ export type Database = {
           last_movement_at?: string | null
           latitude?: number
           longitude?: number
-          source?: string
           speed?: number | null
           updated_at?: string | null
           user_id?: string
@@ -436,11 +418,6 @@ export type Database = {
           created_at: string | null
           is_sharing: boolean
           update_interval_seconds: number | null
-          retention_days: number
-          tracking_active: boolean
-          tracking_started_at: string | null
-          tracking_stopped_at: string | null
-          tracking_stopped_reason: string | null
           updated_at: string | null
           user_id: string
         }
@@ -451,11 +428,6 @@ export type Database = {
           created_at?: string | null
           is_sharing?: boolean
           update_interval_seconds?: number | null
-          retention_days?: number
-          tracking_active?: boolean
-          tracking_started_at?: string | null
-          tracking_stopped_at?: string | null
-          tracking_stopped_reason?: string | null
           updated_at?: string | null
           user_id: string
         }
@@ -466,11 +438,6 @@ export type Database = {
           created_at?: string | null
           is_sharing?: boolean
           update_interval_seconds?: number | null
-          retention_days?: number
-          tracking_active?: boolean
-          tracking_started_at?: string | null
-          tracking_stopped_at?: string | null
-          tracking_stopped_reason?: string | null
           updated_at?: string | null
           user_id?: string
         }
@@ -528,8 +495,6 @@ export type Database = {
           name: string
           notes: string | null
           photo_url: string | null
-          stock_alert_at: number
-          stock_quantity: number | null
           start_date: string
           times: Json
           updated_at: string | null
@@ -545,8 +510,6 @@ export type Database = {
           name: string
           notes?: string | null
           photo_url?: string | null
-          stock_alert_at?: number
-          stock_quantity?: number | null
           start_date: string
           times: Json
           updated_at?: string | null
@@ -562,8 +525,6 @@ export type Database = {
           name?: string
           notes?: string | null
           photo_url?: string | null
-          stock_alert_at?: number
-          stock_quantity?: number | null
           start_date?: string
           times?: Json
           updated_at?: string | null
@@ -780,6 +741,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_adherence_by_day: {
+        Args: { _days?: number; _patient_id: string }
+        Returns: {
+          dia: string
+          previstas: number
+          tomadas: number
+        }[]
+      }
+      get_adherence_by_medication: {
+        Args: { _days?: number; _patient_id: string }
+        Returns: {
+          dosagem: string
+          medication_id: string
+          nome: string
+          previstas: number
+          tomadas: number
+        }[]
+      }
       get_admin_stats: { Args: never; Returns: Json }
       get_guardians_to_notify: {
         Args: { _notification_type: string; _patient_id: string }
@@ -812,51 +791,6 @@ export type Database = {
         Returns: boolean
       }
       is_invitation_valid: { Args: { invitation_id: string }; Returns: boolean }
-      admin_live_locations: {
-        Args: Record<string, never>
-        Returns: {
-          full_name: string
-          latitude: number
-          longitude: number
-          updated_at: string
-          user_id: string
-        }[]
-      }
-      admin_patient_counts: {
-        Args: Record<string, never>
-        Returns: {
-          angels_count: number
-          appointments_count: number
-          created_at: string
-          email: string
-          full_name: string
-          is_sharing_location: boolean
-          medications_count: number
-          patient_id: string
-        }[]
-      }
-      minhas_visualizacoes_localizacao: {
-        Args: { _dias?: number }
-        Returns: { anjo_nome: string; visualizado_em: string }[]
-      }
-      registrar_visualizacao_localizacao: {
-        Args: { _patient_id: string }
-        Returns: undefined
-      }
-      get_adherence_by_day: {
-        Args: { _days?: number; _patient_id: string }
-        Returns: { dia: string; previstas: number; tomadas: number }[]
-      }
-      get_adherence_by_medication: {
-        Args: { _days?: number; _patient_id: string }
-        Returns: {
-          dosagem: string
-          medication_id: string
-          nome: string
-          previstas: number
-          tomadas: number
-        }[]
-      }
       is_system_empty: { Args: never; Returns: boolean }
     }
     Enums: {
