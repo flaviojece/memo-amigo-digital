@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { LocationFreshness } from "./LocationFreshness";
 import { LiveLocationMap } from "./LiveLocationMap";
 import { logger } from "@/lib/logger";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 interface PatientsLocationListProps {
   onBackToMore?: () => void;
@@ -141,12 +142,12 @@ export function PatientsLocationList({ onBackToMore }: PatientsLocationListProps
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24 p-4">
+    <div className="min-h-screen bg-background p-4 pb-[calc(var(--mobile-nav-height)+1rem)]">
       {onBackToMore && (
         <Button
           onClick={onBackToMore}
           variant="ghost"
-          size="sm"
+          size="default"
           className="group flex items-center gap-3 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300 mb-4"
         >
           <ArrowLeft className="w-5 h-5 group-hover:scale-110 transition-transform" />
@@ -164,7 +165,7 @@ export function PatientsLocationList({ onBackToMore }: PatientsLocationListProps
         <CardContent>
           {isLoading ? (
             <div className="flex justify-center p-8">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+              <LoadingSpinner />
             </div>
           ) : patients && patients.length > 0 ? (
             <div className="space-y-4">
@@ -175,7 +176,7 @@ export function PatientsLocationList({ onBackToMore }: PatientsLocationListProps
                 return (
                   <Card key={patient.id} className="overflow-hidden">
                     <CardContent className="p-4">
-                      <div className="flex items-center gap-4">
+                      <div className="flex flex-col gap-4 min-[430px]:flex-row min-[430px]:items-center">
                         {/* Avatar */}
                         <Avatar className="w-14 h-14">
                           <AvatarFallback className="bg-primary text-primary-foreground text-xl">
@@ -185,8 +186,8 @@ export function PatientsLocationList({ onBackToMore }: PatientsLocationListProps
 
                         {/* Info */}
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-bold text-lg truncate">
+                          <div className="flex flex-wrap items-center gap-2 mb-1">
+                            <h3 className="min-w-0 font-bold text-lg break-words">
                               {profile?.full_name || profile?.email}
                             </h3>
                             <Badge variant={status.isSharing ? "default" : "secondary"}>
@@ -226,7 +227,7 @@ export function PatientsLocationList({ onBackToMore }: PatientsLocationListProps
                           disabled={!status.isSharing}
                           variant={status.isSharing ? "default" : "outline"}
                           size="lg"
-                          className="flex-shrink-0"
+                          className="w-full flex-shrink-0 min-[430px]:w-auto"
                         >
                           <Navigation className="w-5 h-5 mr-2" />
                           Ver no Mapa

@@ -76,7 +76,7 @@ export function MedicationSuggestionDialog({ patientId, open, onOpenChange }: Me
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="text-2xl">Sugerir Novo Medicamento</DialogTitle>
           <DialogDescription>
@@ -133,7 +133,7 @@ export function MedicationSuggestionDialog({ patientId, open, onOpenChange }: Me
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <Label htmlFor="start_date" className="text-base">Data de Início *</Label>
               <Input
@@ -162,9 +162,9 @@ export function MedicationSuggestionDialog({ patientId, open, onOpenChange }: Me
           </div>
 
           <div>
-            <div className="flex justify-between items-center mb-2">
+            <div className="flex flex-col gap-2 mb-2 min-[430px]:flex-row min-[430px]:items-center min-[430px]:justify-between">
               <Label className="text-base">Horários *</Label>
-              <Button type="button" onClick={addTime} variant="outline" size="sm">
+              <Button type="button" onClick={addTime} variant="outline" className="w-full min-[430px]:w-auto">
                 <Plus className="w-4 h-4 mr-1" />
                 Adicionar Horário
               </Button>
@@ -209,7 +209,7 @@ export function MedicationSuggestionDialog({ patientId, open, onOpenChange }: Me
             )}
           </div>
 
-          <div className="flex gap-3 pt-4">
+          <div className="flex flex-col-reverse gap-3 pt-4 min-[430px]:flex-row">
             <Button
               type="button"
               variant="outline"

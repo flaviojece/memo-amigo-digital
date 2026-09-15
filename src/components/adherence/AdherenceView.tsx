@@ -41,7 +41,7 @@ export function AdherenceView({ patientId, patientName, onBackToHome }: Adherenc
   const hoje = new Date().toLocaleDateString("pt-BR");
 
   return (
-    <div className="min-h-screen bg-background pb-32">
+    <div className="min-h-screen bg-background pb-[calc(var(--mobile-nav-height)+1rem)]">
       <div className="max-w-3xl mx-auto p-4 space-y-4">
         {onBackToHome && (
           <div className="no-print">
@@ -54,7 +54,7 @@ export function AdherenceView({ patientId, patientName, onBackToHome }: Adherenc
         </h1>
 
         {/* Seletor de período */}
-        <div className="flex gap-2 no-print" role="group" aria-label="Período">
+        <div className="grid grid-cols-3 gap-2 no-print" role="group" aria-label="Período">
           {PERIODOS.map((p) => (
             <Button
               key={p.dias}
@@ -86,10 +86,10 @@ export function AdherenceView({ patientId, patientName, onBackToHome }: Adherenc
               </p>
             ) : (
               <>
-                <div className="flex items-baseline gap-3">
+                <div className="flex flex-col gap-2 min-[430px]:flex-row min-[430px]:items-baseline min-[430px]:gap-3">
                   <span
                     className={cn(
-                      "text-[56px] leading-none font-bold",
+                      "text-senior-3xl leading-none font-bold",
                       (pct ?? 0) >= 80 ? "text-secondary" : "text-accent-foreground"
                     )}
                   >
