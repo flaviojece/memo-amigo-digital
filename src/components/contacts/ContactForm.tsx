@@ -121,17 +121,17 @@ export function ContactForm({ contactId, onSuccess, onCancel }: ContactFormProps
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-7">
       <div>
         <Label htmlFor="name" className="text-senior-base">Nome *</Label>
         <Input
           id="name"
           {...register("name")}
           placeholder="Ex: Maria Silva"
-          className="text-senior-base mt-2"
+          className="mt-3"
         />
         {errors.name && (
-          <p className="text-destructive text-senior-sm mt-1">{errors.name.message}</p>
+          <p className="text-destructive text-senior-sm mt-2">{errors.name.message}</p>
         )}
       </div>
 
@@ -141,10 +141,10 @@ export function ContactForm({ contactId, onSuccess, onCancel }: ContactFormProps
           id="relationship"
           {...register("relationship")}
           placeholder="Ex: Filha, Esposo, Amigo"
-          className="text-senior-base mt-2"
+          className="mt-3"
         />
         {errors.relationship && (
-          <p className="text-destructive text-senior-sm mt-1">{errors.relationship.message}</p>
+          <p className="text-destructive text-senior-sm mt-2">{errors.relationship.message}</p>
         )}
       </div>
 
@@ -155,10 +155,10 @@ export function ContactForm({ contactId, onSuccess, onCancel }: ContactFormProps
           type="tel"
           {...register("phone")}
           placeholder="Ex: (11) 98765-4321"
-          className="text-senior-base mt-2"
+          className="mt-3"
         />
         {errors.phone && (
-          <p className="text-destructive text-senior-sm mt-1">{errors.phone.message}</p>
+          <p className="text-destructive text-senior-sm mt-2">{errors.phone.message}</p>
         )}
       </div>
 
@@ -169,10 +169,10 @@ export function ContactForm({ contactId, onSuccess, onCancel }: ContactFormProps
           type="email"
           {...register("email")}
           placeholder="Ex: maria@exemplo.com"
-          className="text-senior-base mt-2"
+          className="mt-3"
         />
         {errors.email && (
-          <p className="text-destructive text-senior-sm mt-1">{errors.email.message}</p>
+          <p className="text-destructive text-senior-sm mt-2">{errors.email.message}</p>
         )}
       </div>
 

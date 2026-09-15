@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { LocationFreshness } from "./LocationFreshness";
 import { useQuery } from "@tanstack/react-query";
 import mapboxgl from "mapbox-gl";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,10 @@ export function LiveLocationMap({ patientId, onClose, variant = 'fullscreen', is
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const markerRef = useRef<mapboxgl.Marker | null>(null);
+  const [sharingStatus, setSharingStatus] = useState<{
+    trackingActive: boolean;
+    stoppedReason: string | null;
+  }>({ trackingActive: false, stoppedReason: null });
   const [location, setLocation] = useState<any>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [mapReady, setMapReady] = useState(false);
@@ -296,19 +301,29 @@ export function LiveLocationMap({ patientId, onClose, variant = 'fullscreen', is
     }
   }, [location, history, mapReady]);
 
-  // Subscribe em atualizações em tempo real
+  // Assinatura das atualizações de posição
   useEffect(() => {
     // Buscar localização inicial
     const fetchInitialLocation = async () => {
-      const { data } = await supabase
-        .from("live_locations")
-        .select("*")
-        .eq("user_id", patientId)
-        .maybeSingle();
+      // Quem é observado tem direito de saber quando foi observado
+      void supabase.rpc("registrar_visualizacao_localizacao", {
+        _patient_id: patientId,
+      });
 
-      if (data) {
-        setLocation(data);
-      }
+      const [{ data }, { data: settings }] = await Promise.all([
+        supabase.from("live_locations").select("*").eq("user_id", patientId).maybeSingle(),
+        supabase
+          .from("location_sharing_settings")
+          .select("tracking_active, tracking_stopped_reason")
+          .eq("user_id", patientId)
+          .maybeSingle(),
+      ]);
+
+      if (data) setLocation(data);
+      setSharingStatus({
+        trackingActive: settings?.tracking_active ?? false,
+        stoppedReason: settings?.tracking_stopped_reason ?? null,
+      });
     };
 
     fetchInitialLocation();
@@ -379,7 +394,7 @@ export function LiveLocationMap({ patientId, onClose, variant = 'fullscreen', is
             <div>
               <h3 className="text-senior-lg font-bold mb-2">Token do Mapbox não configurado</h3>
               <p className="text-muted-foreground text-senior-sm mb-4">
-                Para visualizar a localização em tempo real, você precisa configurar um token do Mapbox.
+                Para visualizar a localização no mapa, você precisa configurar um token do Mapbox.
               </p>
             </div>
             <div className="bg-muted/50 p-4 rounded-lg text-left space-y-3 max-w-md mx-auto">
@@ -492,18 +507,23 @@ export function LiveLocationMap({ patientId, onClose, variant = 'fullscreen', is
                 <h3 className="font-bold text-lg truncate">
                   {patient?.full_name || patient?.email}
                 </h3>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Badge variant="outline" className="bg-green-50">
-                    🟢 Ao vivo
-                  </Badge>
-                  <span>
-                    {formatDistanceToNow(new Date(location.updated_at), {
-                      addSuffix: true,
-                      locale: ptBR,
-                    })}
-                  </span>
-                </div>
+                <LocationFreshness
+                  updatedAt={location.updated_at}
+                  trackingActive={sharingStatus.trackingActive}
+                  stoppedReason={sharingStatus.stoppedReason}
+                  source={(location as { source?: string }).source}
+                  compacto
+                />
               </div>
+            </div>
+
+            <div className="mt-3">
+              <LocationFreshness
+                updatedAt={location.updated_at}
+                trackingActive={sharingStatus.trackingActive}
+                stoppedReason={sharingStatus.stoppedReason}
+                source={(location as { source?: string }).source}
+              />
             </div>
 
             <div className="mt-3 grid grid-cols-2 gap-2 text-sm">

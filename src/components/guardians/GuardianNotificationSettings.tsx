@@ -1,6 +1,8 @@
 import { useGuardianNotificationPreferences } from '@/hooks/useGuardianNotificationPreferences';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Bell, BellOff, Pill, Calendar } from 'lucide-react';
@@ -105,6 +107,66 @@ export const GuardianNotificationSettings = ({
                   disabled={!preferences.enabled}
                 />
               </div>
+
+              {/* Escalonamento: quanto esperar antes de avisar, e quando não incomodar */}
+              {preferences.notify_medication_missed && (
+                <div className="rounded-lg border p-3 space-y-3 bg-muted/30">
+                  <div className="space-y-1">
+                    <Label htmlFor="escalate" className="text-sm">
+                      Avisar depois de quantos minutos
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      Tempo de tolerância antes de considerar a dose perdida
+                    </p>
+                    <Select
+                      value={String(preferences.escalate_after_minutes)}
+                      onValueChange={(v) =>
+                        updatePreferences({ escalate_after_minutes: Number(v) })
+                      }
+                      disabled={!preferences.enabled}
+                    >
+                      <SelectTrigger id="escalate" className="mt-1">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="0">Não avisar</SelectItem>
+                        <SelectItem value="15">15 minutos</SelectItem>
+                        <SelectItem value="30">30 minutos</SelectItem>
+                        <SelectItem value="60">1 hora</SelectItem>
+                        <SelectItem value="120">2 horas</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label className="text-sm">Não me avise entre</Label>
+                    <p className="text-xs text-muted-foreground">
+                      Fora desta janela você recebe normalmente
+                    </p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Input
+                        type="time"
+                        aria-label="Início do silêncio"
+                        value={preferences.quiet_hours_start?.slice(0, 5) ?? "22:00"}
+                        onChange={(e) =>
+                          updatePreferences({ quiet_hours_start: e.target.value })
+                        }
+                        disabled={!preferences.enabled}
+                      />
+                      <span className="text-sm text-muted-foreground">e</span>
+                      <Input
+                        type="time"
+                        aria-label="Fim do silêncio"
+                        value={preferences.quiet_hours_end?.slice(0, 5) ?? "07:00"}
+                        onChange={(e) =>
+                          updatePreferences({ quiet_hours_end: e.target.value })
+                        }
+                        disabled={!preferences.enabled}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">

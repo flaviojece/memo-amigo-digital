@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { LocationSharingHeader } from "@/components/location/settings/LocationSharingHeader";
 import { GuardiansManager } from "@/components/location/settings/GuardiansManager";
+import { LocationViewsPanel } from "@/components/location/LocationViewsPanel";
 import { AdvancedSettings } from "@/components/location/settings/AdvancedSettings";
 
 export default function LocationSharingSettings() {
@@ -74,6 +75,9 @@ export default function LocationSharingSettings() {
 
         {/* Gerenciamento de guardiões/anjos */}
         <GuardiansManager />
+
+        {/* Transparência: quem consultou minha localização */}
+        <LocationViewsPanel />
 
         {/* Configurações avançadas (colapsável) */}
         <AdvancedSettings settings={settings} lastLocation={lastLocation} />

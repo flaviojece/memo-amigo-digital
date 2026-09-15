@@ -1,4 +1,4 @@
-import { Calendar as CalendarIcon, MapPin, Phone, Edit, Trash2, Clock } from "lucide-react";
+import { Calendar as CalendarIcon, MapPin, Phone, Edit, Trash2, Clock, ClipboardList } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +14,7 @@ interface Appointment {
   specialty: string;
   date: string;
   location?: string;
+  preparation?: string;
   phone?: string;
   notes?: string;
   status: string;
@@ -112,9 +113,26 @@ export function AppointmentList({ appointments, isLoading, onEdit, onRefetch }: 
                   </div>
 
                   {appointment.location && (
-                    <div className="flex items-center gap-2 text-senior-base text-muted-foreground">
-                      <MapPin className="w-5 h-5" />
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                        appointment.location
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-senior-base text-secondary-text underline underline-offset-4 min-h-[48px]"
+                    >
+                      <MapPin className="w-5 h-5 shrink-0" aria-hidden="true" />
                       <span>{appointment.location}</span>
+                    </a>
+                  )}
+
+                  {appointment.preparation && (
+                    <div className="flex items-start gap-2 text-senior-base bg-accent/15 rounded-senior p-3">
+                      <ClipboardList className="w-5 h-5 shrink-0 mt-1 text-accent-text" aria-hidden="true" />
+                      <div>
+                        <p className="font-semibold text-foreground">Levar / preparar</p>
+                        <p className="text-muted-foreground">{appointment.preparation}</p>
+                      </div>
                     </div>
                   )}
 

@@ -55,6 +55,9 @@ export default {
 					DEFAULT: 'hsl(var(--muted))',
 					foreground: 'hsl(var(--muted-foreground))'
 				},
+				'primary-text': 'hsl(var(--primary-text))',
+				'secondary-text': 'hsl(var(--secondary-text))',
+				'accent-text': 'hsl(var(--accent-text))',
 				accent: {
 					DEFAULT: 'hsl(var(--accent))',
 					foreground: 'hsl(var(--accent-foreground))'
@@ -96,12 +99,12 @@ export default {
 				'emergency': 'var(--shadow-emergency)'
 			},
 			fontSize: {
-				'senior-xs': ['16px', '1.5'],
-				'senior-sm': ['18px', '1.6'],
-				'senior-base': ['20px', '1.6'],
-				'senior-lg': ['24px', '1.4'],
-				'senior-xl': ['28px', '1.3'],
-				'senior-2xl': ['32px', '1.2']
+				'senior-xs': ['1rem', '1.5'],
+				'senior-sm': ['1.125rem', '1.6'],
+				'senior-base': ['1.25rem', '1.6'],
+				'senior-lg': ['1.5rem', '1.4'],
+				'senior-xl': ['1.75rem', '1.3'],
+				'senior-2xl': ['2rem', '1.2']
 			},
 			keyframes: {
 				'accordion-down': {

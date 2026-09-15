@@ -6,36 +6,22 @@ import { LiveLocationMap } from "@/components/location/LiveLocationMap";
 import { Badge } from "@/components/ui/badge";
 
 export function LocationsMonitoring() {
+  // Acesso ao mapa passa por RPC que registra em audit_logs.
+  // Postgres não tem trigger de SELECT, então auditar leitura exige isto.
   const { data: activeLocations, isLoading } = useQuery({
     queryKey: ["admin-active-locations"],
     queryFn: async () => {
-      const { data: settings, error: settingsError } = await supabase
-        .from("location_sharing_settings")
-        .select(`
-          user_id,
-          is_sharing,
-          profiles (
-            full_name,
-            email
-          )
-        `)
-        .eq("is_sharing", true);
+      const { data, error } = await supabase.rpc("admin_live_locations");
+      if (error) throw error;
 
-      if (settingsError) throw settingsError;
-
-      const { data: locations, error: locError } = await supabase
-        .from("live_locations")
-        .select("*")
-        .in(
-          "user_id",
-          settings?.map((s) => s.user_id) || []
-        );
-
-      if (locError) throw locError;
-
-      return settings?.map((setting) => ({
-        ...setting,
-        location: locations?.find((l) => l.user_id === setting.user_id),
+      return (data ?? []).map((l) => ({
+        user_id: l.user_id,
+        profiles: { full_name: l.full_name },
+        location: {
+          latitude: l.latitude,
+          longitude: l.longitude,
+          updated_at: l.updated_at,
+        },
       }));
     },
   });
@@ -51,7 +37,7 @@ export function LocationsMonitoring() {
             Monitoramento de Localizações
           </CardTitle>
           <CardDescription>
-            Visualizar localizações em tempo real de todos os pacientes
+            Última localização conhecida dos pacientes que compartilham
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -86,7 +72,6 @@ export function LocationsMonitoring() {
                 >
                   <div>
                     <p className="font-medium">{(loc.profiles as any)?.full_name || "Sem nome"}</p>
-                    <p className="text-sm text-muted-foreground">{(loc.profiles as any)?.email}</p>
                   </div>
                   {loc.location && (
                     <Badge variant="outline">

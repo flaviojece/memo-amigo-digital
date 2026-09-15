@@ -33,7 +33,21 @@ export const medicationSchema = z.object({
     .max(500, { message: "Observações muito longas (máximo 500 caracteres)" })
     .optional(),
   
-  active: z.boolean().default(true)
+  active: z.boolean().default(true),
+
+  // Estoque é opcional: nem todo remédio vem em cartela contável
+  stock_quantity: z.coerce.number()
+    .int({ message: "Use um número inteiro" })
+    .min(0, { message: "A quantidade não pode ser negativa" })
+    .max(1000, { message: "Quantidade muito alta" })
+    .optional()
+    .nullable(),
+
+  stock_alert_at: z.coerce.number()
+    .int()
+    .min(1, { message: "Avise com pelo menos 1 dose restante" })
+    .max(100)
+    .optional()
 });
 
 export const medicationLogSchema = z.object({

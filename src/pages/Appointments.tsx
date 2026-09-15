@@ -83,7 +83,7 @@ export default function Appointments({ onTabChange }: AppointmentsProps) {
         />
 
         <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-senior-xl">
                 {editingId ? "Editar Consulta" : "Nova Consulta"}

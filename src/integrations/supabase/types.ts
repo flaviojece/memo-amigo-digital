@@ -23,6 +23,8 @@ export type Database = {
           location: string | null
           notes: string | null
           phone: string | null
+          preparation: string | null
+          reminder_24h_sent: boolean
           reminder_sent: boolean | null
           specialty: string
           status: string | null
@@ -37,6 +39,8 @@ export type Database = {
           location?: string | null
           notes?: string | null
           phone?: string | null
+          preparation?: string | null
+          reminder_24h_sent?: boolean
           reminder_sent?: boolean | null
           specialty: string
           status?: string | null
@@ -51,6 +55,8 @@ export type Database = {
           location?: string | null
           notes?: string | null
           phone?: string | null
+          preparation?: string | null
+          reminder_24h_sent?: boolean
           reminder_sent?: boolean | null
           specialty?: string
           status?: string | null
@@ -222,6 +228,7 @@ export type Database = {
         Row: {
           created_at: string | null
           enabled: boolean
+          escalate_after_minutes: number
           guardian_id: string
           id: string
           notify_appointment_cancelled: boolean
@@ -232,11 +239,14 @@ export type Database = {
           notify_medication_taken: boolean
           notify_medication_upcoming: boolean
           patient_id: string
+          quiet_hours_end: string
+          quiet_hours_start: string
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
           enabled?: boolean
+          escalate_after_minutes?: number
           guardian_id: string
           id?: string
           notify_appointment_cancelled?: boolean
@@ -247,11 +257,14 @@ export type Database = {
           notify_medication_taken?: boolean
           notify_medication_upcoming?: boolean
           patient_id: string
+          quiet_hours_end?: string
+          quiet_hours_start?: string
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
           enabled?: boolean
+          escalate_after_minutes?: number
           guardian_id?: string
           id?: string
           notify_appointment_cancelled?: boolean
@@ -262,6 +275,8 @@ export type Database = {
           notify_medication_taken?: boolean
           notify_medication_upcoming?: boolean
           patient_id?: string
+          quiet_hours_end?: string
+          quiet_hours_start?: string
           updated_at?: string | null
         }
         Relationships: [
@@ -347,6 +362,7 @@ export type Database = {
           last_movement_at: string | null
           latitude: number
           longitude: number
+          source: string
           speed: number | null
           updated_at: string | null
           user_id: string
@@ -359,6 +375,7 @@ export type Database = {
           last_movement_at?: string | null
           latitude: number
           longitude: number
+          source?: string
           speed?: number | null
           updated_at?: string | null
           user_id: string
@@ -371,6 +388,7 @@ export type Database = {
           last_movement_at?: string | null
           latitude?: number
           longitude?: number
+          source?: string
           speed?: number | null
           updated_at?: string | null
           user_id?: string
@@ -417,6 +435,11 @@ export type Database = {
           consent_text: string | null
           created_at: string | null
           is_sharing: boolean
+          retention_days: number
+          tracking_active: boolean
+          tracking_started_at: string | null
+          tracking_stopped_at: string | null
+          tracking_stopped_reason: string | null
           update_interval_seconds: number | null
           updated_at: string | null
           user_id: string
@@ -427,6 +450,11 @@ export type Database = {
           consent_text?: string | null
           created_at?: string | null
           is_sharing?: boolean
+          retention_days?: number
+          tracking_active?: boolean
+          tracking_started_at?: string | null
+          tracking_stopped_at?: string | null
+          tracking_stopped_reason?: string | null
           update_interval_seconds?: number | null
           updated_at?: string | null
           user_id: string
@@ -437,6 +465,11 @@ export type Database = {
           consent_text?: string | null
           created_at?: string | null
           is_sharing?: boolean
+          retention_days?: number
+          tracking_active?: boolean
+          tracking_started_at?: string | null
+          tracking_stopped_at?: string | null
+          tracking_stopped_reason?: string | null
           update_interval_seconds?: number | null
           updated_at?: string | null
           user_id?: string
@@ -494,7 +527,10 @@ export type Database = {
           id: string
           name: string
           notes: string | null
+          photo_url: string | null
           start_date: string
+          stock_alert_at: number
+          stock_quantity: number | null
           times: Json
           updated_at: string | null
           user_id: string
@@ -508,7 +544,10 @@ export type Database = {
           id?: string
           name: string
           notes?: string | null
+          photo_url?: string | null
           start_date: string
+          stock_alert_at?: number
+          stock_quantity?: number | null
           times: Json
           updated_at?: string | null
           user_id: string
@@ -522,7 +561,10 @@ export type Database = {
           id?: string
           name?: string
           notes?: string | null
+          photo_url?: string | null
           start_date?: string
+          stock_alert_at?: number
+          stock_quantity?: number | null
           times?: Json
           updated_at?: string | null
           user_id?: string
@@ -738,6 +780,59 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_live_locations: {
+        Args: never
+        Returns: {
+          full_name: string
+          latitude: number
+          longitude: number
+          updated_at: string
+          user_id: string
+        }[]
+      }
+      admin_patient_counts: {
+        Args: never
+        Returns: {
+          angels_count: number
+          appointments_count: number
+          created_at: string
+          email: string
+          full_name: string
+          is_sharing_location: boolean
+          medications_count: number
+          patient_id: string
+        }[]
+      }
+      consultas_de_amanha: {
+        Args: never
+        Returns: {
+          appointment_id: string
+          data: string
+          doctor_name: string
+          location: string
+          patient_id: string
+          preparation: string
+          specialty: string
+        }[]
+      }
+      get_adherence_by_day: {
+        Args: { _days?: number; _patient_id: string }
+        Returns: {
+          dia: string
+          previstas: number
+          tomadas: number
+        }[]
+      }
+      get_adherence_by_medication: {
+        Args: { _days?: number; _patient_id: string }
+        Returns: {
+          dosagem: string
+          medication_id: string
+          nome: string
+          previstas: number
+          tomadas: number
+        }[]
+      }
       get_admin_stats: { Args: never; Returns: Json }
       get_guardians_to_notify: {
         Args: { _notification_type: string; _patient_id: string }
@@ -771,6 +866,27 @@ export type Database = {
       }
       is_invitation_valid: { Args: { invitation_id: string }; Returns: boolean }
       is_system_empty: { Args: never; Returns: boolean }
+      limpar_historico_localizacao: { Args: never; Returns: number }
+      minhas_visualizacoes_localizacao: {
+        Args: { _dias?: number }
+        Returns: {
+          anjo_nome: string
+          visualizado_em: string
+        }[]
+      }
+      registrar_doses_perdidas: {
+        Args: never
+        Returns: {
+          horario: string
+          medication_id: string
+          medication_name: string
+          patient_id: string
+        }[]
+      }
+      registrar_visualizacao_localizacao: {
+        Args: { _patient_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "user" | "angel"

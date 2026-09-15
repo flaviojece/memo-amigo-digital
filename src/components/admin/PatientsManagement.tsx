@@ -11,52 +11,24 @@ import { Badge } from "@/components/ui/badge";
 export function PatientsManagement() {
   const [searchTerm, setSearchTerm] = useState("");
 
+  // Contagens via RPC: o admin vê quantos remédios o paciente tem,
+  // não quais. O conteúdo clínico não é exposto ao painel.
   const { data: patients, isLoading } = useQuery({
     queryKey: ["admin-patients"],
     queryFn: async () => {
-      const { data: relationships, error: relError } = await supabase
-        .from("guardian_relationships")
-        .select(`
-          patient_id,
-          profiles!guardian_relationships_patient_id_fkey (
-            id,
-            full_name,
-            email,
-            created_at
-          )
-        `)
-        .eq("status", "active");
+      const { data, error } = await supabase.rpc("admin_patient_counts");
+      if (error) throw error;
 
-      if (relError) throw relError;
-
-      const uniquePatients = relationships?.reduce((acc, rel) => {
-        const patient = rel.profiles as any;
-        if (patient && !acc.find((p: any) => p.id === patient.id)) {
-          acc.push(patient);
-        }
-        return acc;
-      }, [] as any[]);
-
-      const patientsWithStats = await Promise.all(
-        (uniquePatients || []).map(async (patient) => {
-          const [medications, appointments, angels, locationSharing] = await Promise.all([
-            supabase.from("medications").select("id", { count: "exact" }).eq("user_id", patient.id).eq("active", true),
-            supabase.from("appointments").select("id", { count: "exact" }).eq("user_id", patient.id),
-            supabase.from("guardian_relationships").select("id", { count: "exact" }).eq("patient_id", patient.id).eq("status", "active"),
-            supabase.from("location_sharing_settings").select("is_sharing").eq("user_id", patient.id).single(),
-          ]);
-
-          return {
-            ...patient,
-            medications_count: medications.count || 0,
-            appointments_count: appointments.count || 0,
-            angels_count: angels.count || 0,
-            is_sharing_location: locationSharing.data?.is_sharing || false,
-          };
-        })
-      );
-
-      return patientsWithStats;
+      return (data ?? []).map((p) => ({
+        id: p.patient_id,
+        full_name: p.full_name,
+        email: p.email,
+        created_at: p.created_at,
+        medications_count: p.medications_count,
+        appointments_count: p.appointments_count,
+        angels_count: p.angels_count,
+        is_sharing_location: p.is_sharing_location,
+      }));
     },
   });
 

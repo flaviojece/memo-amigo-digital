@@ -185,7 +185,7 @@ export default function AcceptInvitation() {
               <li>📋 Medicamentos e horários</li>
               <li>🩺 Consultas agendadas</li>
               <li>📞 Contatos de emergência</li>
-              <li>📍 Localização em tempo real (quando ativada pelo paciente)</li>
+              <li>📍 Última localização conhecida (quando o paciente ativa)</li>
               <li>🔔 Notificações importantes</li>
             </ul>
           </div>

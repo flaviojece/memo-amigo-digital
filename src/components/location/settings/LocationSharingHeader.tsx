@@ -19,8 +19,15 @@ export function LocationSharingHeader({ settings }: LocationSharingHeaderProps) 
 
   const toggleSharingMutation = useMutation({
     mutationFn: async (newState: boolean) => {
+      const nomeConsentimento = user?.user_metadata?.full_name || user?.email || 'usuário';
+      const retencaoDias = 30;
+
       if (newState && !settings?.consent_given_at) {
-        const consentText = `Eu, ${user?.email}, autorizo o compartilhamento da minha localização em tempo real com meus familiares cadastrados como guardiões. Entendo que posso desativar a qualquer momento.`;
+        const consentText = `Eu, ${nomeConsentimento}, autorizo meus Anjos cadastrados a verem minha localização. ` +
+          `Entendo que o aplicativo registra minha posição apenas enquanto está aberto no meu celular, ` +
+          `e que a última posição registrada pode não ser onde estou agora. ` +
+          `Entendo que posso desligar este compartilhamento a qualquer momento, ` +
+          `e que o histórico é apagado automaticamente após ${retencaoDias} dias.`;
         
         const { error } = await supabase
           .from("location_sharing_settings")
@@ -29,6 +36,7 @@ export function LocationSharingHeader({ settings }: LocationSharingHeaderProps) 
             is_sharing: true,
             consent_given_at: new Date().toISOString(),
             consent_text: consentText,
+            retention_days: retencaoDias,
             update_interval_seconds: 15,
             accuracy_threshold_meters: 50,
           });
@@ -55,7 +63,7 @@ export function LocationSharingHeader({ settings }: LocationSharingHeaderProps) 
       toast({
         title: newState ? "✅ Compartilhamento ativado" : "⏸️ Compartilhamento pausado",
         description: newState 
-          ? "Seus guardiões podem agora ver sua localização em tempo real."
+          ? "Seus Anjos podem ver sua última localização registrada."
           : "Seus guardiões não podem mais ver sua localização.",
       });
     },

@@ -2,3 +2,8 @@ project_id = "qxuiymmzjptpczodbvmm"
 
 [functions.create-first-admin]
 verify_jwt = false
+
+# Chamada pelo cron (sem sessão de usuário); a própria função não expõe dados,
+# só marca doses perdidas e dispara avisos — e é idempotente.
+[functions.check-missed-doses]
+verify_jwt = false
