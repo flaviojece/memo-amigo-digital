@@ -50,9 +50,9 @@ export function PatientSelectorCompact({ selectedPatientId, onSelect }: PatientS
 
   return (
     <Card className="p-4 mb-4 bg-secondary/10 border-secondary/30">
-      <div className="flex items-center gap-3">
+      <div className="flex min-w-0 items-start gap-3">
         <Users className="w-5 h-5 text-secondary" />
-        <div className="flex-1">
+        <div className="min-w-0 flex-1">
           <label className="text-sm font-semibold text-foreground block mb-1">
             Gerenciando cuidados de:
           </label>

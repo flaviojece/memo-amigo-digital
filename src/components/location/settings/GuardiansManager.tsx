@@ -87,18 +87,18 @@ export function GuardiansManager() {
           ) : (
             <div className="space-y-2">
               {guardians.map((guardian) => (
-                <div key={guardian.id} className="flex items-center justify-between p-3 hover:bg-muted/50 rounded-lg transition-colors">
-                  <div className="flex items-center gap-3">
+                <div key={guardian.id} className="flex flex-col gap-3 p-3 hover:bg-muted/50 rounded-lg transition-colors min-[430px]:flex-row min-[430px]:items-center min-[430px]:justify-between">
+                  <div className="flex min-w-0 items-center gap-3">
                     <Avatar className="w-9 h-9">
                       <AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold">
                         {guardian.guardian_name?.split(" ").map((n: string) => n[0]).join("").toUpperCase() || "?"}
                       </AvatarFallback>
                     </Avatar>
-                    <div>
+                    <div className="min-w-0">
                       <p className="font-medium text-sm">{guardian.guardian_name}</p>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <div className="flex min-w-0 flex-wrap items-center gap-2 text-xs text-muted-foreground">
                         <Mail className="w-3 h-3" />
-                        <span>{guardian.guardian_email}</span>
+                        <span className="break-all">{guardian.guardian_email}</span>
                         {guardian.relationship_type && (
                           <>
                             <span>•</span>
@@ -110,7 +110,7 @@ export function GuardiansManager() {
                       </div>
                     </div>
                   </div>
-                  <Button variant="ghost" size="sm" onClick={() => { setSelectedGuardianForRemoval(guardian); setIsRemovalDialogOpen(true); }} className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-8 p-0">
+                  <Button variant="ghost" size="icon" aria-label={`Remover ${guardian.guardian_name}`} onClick={() => { setSelectedGuardianForRemoval(guardian); setIsRemovalDialogOpen(true); }} className="w-full text-destructive hover:text-destructive hover:bg-destructive/10 min-[430px]:w-14">
                     <X className="w-4 h-4" />
                   </Button>
                 </div>
@@ -126,12 +126,12 @@ export function GuardiansManager() {
             <div className="grid gap-3">
               <div>
                 <Label htmlFor="invite-email" className="text-xs font-medium">Email do Anjo</Label>
-                <Input id="invite-email" type="email" placeholder="anjo@exemplo.com" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} className="mt-1 h-9 text-sm" />
+                <Input id="invite-email" type="email" placeholder="anjo@exemplo.com" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} className="mt-1" />
               </div>
               <div>
                 <Label htmlFor="relationship-type" className="text-xs font-medium">Tipo de Relacionamento</Label>
                 <Select value={relationshipType} onValueChange={setRelationshipType}>
-                  <SelectTrigger id="relationship-type" className="mt-1 h-9 text-sm"><SelectValue placeholder="Selecione" /></SelectTrigger>
+                  <SelectTrigger id="relationship-type" className="mt-1"><SelectValue placeholder="Selecione" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="family">Família</SelectItem>
                     <SelectItem value="friend">Amigo</SelectItem>
@@ -140,7 +140,7 @@ export function GuardiansManager() {
                   </SelectContent>
                 </Select>
               </div>
-              <Button onClick={handleSendInvite} disabled={!inviteEmail} className="w-full" size="sm"><Send className="w-3 h-3 mr-2" />Enviar Convite</Button>
+              <Button onClick={handleSendInvite} disabled={!inviteEmail} className="w-full"><Send className="w-5 h-5 mr-2" />Enviar Convite</Button>
             </div>
           </div>
         </CardContent>
@@ -189,7 +189,7 @@ export function GuardiansManager() {
                     const isRevoked = invitation.status === 'revoked';
                     
                     return (
-                      <div key={invitation.id} className="flex items-center justify-between p-3 hover:bg-muted/50 rounded-lg transition-colors">
+                      <div key={invitation.id} className="flex flex-col gap-3 p-3 hover:bg-muted/50 rounded-lg transition-colors min-[430px]:flex-row min-[430px]:items-center min-[430px]:justify-between">
                         <div className="flex-1 space-y-1">
                           <div className="flex items-center gap-2">
                             <p className="font-medium text-sm">{invitation.invited_email}</p>
@@ -208,9 +208,10 @@ export function GuardiansManager() {
                                 <TooltipTrigger asChild>
                                   <Button
                                     variant="ghost"
-                                    size="sm"
+                                    size="icon"
                                     onClick={() => resendInvitationEmail(invitation)}
-                                    className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                    className="text-secondary hover:text-secondary hover:bg-secondary/10"
+                                    aria-label="Reenviar email de convite"
                                     title="Reenviar email"
                                   >
                                     <RefreshCw className="w-4 h-4" />
@@ -230,9 +231,10 @@ export function GuardiansManager() {
                                 <TooltipTrigger asChild>
                                   <Button
                                     variant="ghost"
-                                    size="sm"
+                                    size="icon"
                                     onClick={() => deleteInvitation(invitation.id)}
-                                    className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                                    aria-label="Excluir convite"
                                     title="Excluir convite"
                                   >
                                     <Trash2 className="w-4 h-4" />
@@ -256,14 +258,14 @@ export function GuardiansManager() {
                 <h4 className="font-medium mb-2 text-xs flex items-center gap-2 text-muted-foreground"><Mail className="w-3 h-3" />Recebidos ({receivedInvitations.length})</h4>
                 <div className="space-y-2">
                   {receivedInvitations.map((invitation) => (
-                    <div key={invitation.id} className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-900">
+                    <div key={invitation.id} className="flex flex-col gap-3 p-3 bg-secondary/10 rounded-lg border border-secondary/30 min-[430px]:flex-row min-[430px]:items-center min-[430px]:justify-between">
                       <div className="flex-1">
                         <p className="font-medium text-sm">{invitation.patient?.full_name || invitation.patient?.email}</p>
                         <p className="text-xs text-muted-foreground">Quer que você seja seu anjo</p>
                       </div>
-                      <div className="flex gap-2">
-                        <Button size="sm" onClick={() => acceptInvitation(invitation.id)} className="gap-1 h-8 text-xs"><Check className="w-3 h-3" />Aceitar</Button>
-                        <Button variant="outline" size="sm" onClick={() => declineInvitation(invitation.id)} className="h-8 w-8 p-0"><X className="w-3 h-3" /></Button>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Button onClick={() => acceptInvitation(invitation.id)} className="gap-1"><Check className="w-5 h-5" />Aceitar</Button>
+                        <Button variant="outline" onClick={() => declineInvitation(invitation.id)} aria-label="Recusar convite"><X className="w-5 h-5" />Recusar</Button>
                       </div>
                     </div>
                   ))}

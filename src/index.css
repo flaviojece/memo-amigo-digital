@@ -9,6 +9,7 @@ Todos os valores em HSL para consistência
 
 @layer base {
   :root {
+    --mobile-nav-height: calc(88px + env(safe-area-inset-bottom, 0px));
     /* Cores base Dr. Memo */
     --background: 46 67% 85%; /* Creme claro #F2EDC3 */
     --foreground: 33 31% 24%; /* Marrom escuro #4D3E2A */
@@ -340,4 +341,11 @@ Todos os valores em HSL para consistência
    ============================================================ */
 html {
   font-size: calc(16px * var(--font-scale, 1));
+}
+
+html,
+body,
+#root {
+  max-width: 100%;
+  overflow-x: clip;
 }

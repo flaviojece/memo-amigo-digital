@@ -1,4 +1,5 @@
 import { AlertTriangle, Phone } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -141,18 +142,20 @@ export function EmergencyButton() {
 
   return (
     <div className="relative">
-      <button
+      <Button
+        type="button"
+        variant="destructive"
         onClick={isActivating ? cancelEmergency : handleEmergencyClick}
-        className="w-full bg-destructive text-destructive-foreground p-10 rounded-memo shadow-emergency border-4 border-destructive hover:bg-destructive/90 transition-all duration-300 relative overflow-hidden min-h-[160px]"
+        className="w-full bg-destructive text-destructive-foreground p-6 sm:p-10 rounded-memo shadow-emergency border-4 border-destructive hover:bg-destructive/90 transition-all duration-300 relative overflow-hidden min-h-[160px] whitespace-normal"
         aria-label={isActivating ? "Cancelar emergência" : "Ativar emergência - SAMU 192"}
         aria-live="polite"
         aria-atomic="true"
       >
         <div className="flex flex-col items-center gap-3">
           <div className="relative">
-            <AlertTriangle className="w-12 h-12 text-white" />
+            <AlertTriangle className="w-12 h-12 text-destructive-foreground" />
             {isActivating && (
-              <div className="absolute inset-0 bg-white/20 rounded-full animate-pulse" />
+              <div className="absolute inset-0 bg-destructive-foreground/20 rounded-full animate-pulse" />
             )}
           </div>
           
@@ -166,7 +169,7 @@ export function EmergencyButton() {
                 <p className="text-senior-base font-semibold">
                   Ativando em {countdown}s
                 </p>
-                <p className="text-senior-xs text-white/90">
+                <p className="text-senior-xs text-destructive-foreground/90">
                   Toque para cancelar
                 </p>
               </div>
@@ -176,7 +179,7 @@ export function EmergencyButton() {
                   <Phone className="w-5 h-5" />
                   <span className="text-senior-sm">192 - SAMU</span>
                 </div>
-                <p className="text-senior-xs text-white/90">
+                <p className="text-senior-xs text-destructive-foreground/90">
                   Toque para ativar
                 </p>
               </div>
@@ -186,11 +189,11 @@ export function EmergencyButton() {
 
         {isActivating && (
           <div 
-            className="absolute bottom-0 left-0 bg-white/30 h-2 transition-all duration-1000 ease-linear"
+            className="absolute bottom-0 left-0 bg-destructive-foreground/30 h-2 transition-all duration-1000 ease-linear"
             style={{ width: `${((5 - countdown) / 5) * 100}%` }}
           />
         )}
-      </button>
+      </Button>
     </div>
   );
 }

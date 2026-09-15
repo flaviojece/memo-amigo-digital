@@ -111,7 +111,7 @@ export default function Medications({ onTabChange }: MedicationsProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background pattern-bg pb-24">
+    <div className="min-h-screen bg-background pattern-bg pb-6">
       <div className="max-w-4xl mx-auto p-4 space-y-4">
         {onTabChange && (
           <BackToHomeButton onBackToHome={() => onTabChange("home")} />
@@ -122,14 +122,14 @@ export default function Medications({ onTabChange }: MedicationsProps) {
           onSelectPatient={setSelectedPatientId}
         />
         
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-senior-3xl font-bold text-foreground">
+        <div className="flex flex-col gap-3 mb-6 min-[430px]:flex-row min-[430px]:items-center min-[430px]:justify-between">
+          <h1 className="min-w-0 text-senior-2xl font-bold text-foreground sm:text-senior-3xl">
             💊 {selectedPatientId ? 'Medicamentos' : 'Meus Medicamentos'}
           </h1>
           <Button
             onClick={() => setIsFormOpen(true)}
             size="lg"
-            className="text-senior-base"
+            className="w-full text-senior-base min-[430px]:w-auto"
           >
             <Plus className="w-6 h-6 mr-2" />
             Adicionar

@@ -200,12 +200,12 @@ export function UsersManagement() {
             placeholder="Buscar por nome ou email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="max-w-sm"
+            className="min-w-0 max-w-sm"
           />
         </div>
 
-        <div className="rounded-md border">
-          <Table>
+        <div className="rounded-md border overflow-hidden">
+          <Table className="min-w-[760px]">
             <TableHeader>
               <TableRow>
                 <TableHead>Nome</TableHead>
@@ -257,34 +257,38 @@ export function UsersManagement() {
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
                         <Button 
-                          size="sm" 
+                          size="icon" 
                           variant="ghost"
                           onClick={() => setSelectedUser(user)}
                           title="Visualizar detalhes"
+                          aria-label={`Visualizar detalhes de ${user.full_name || user.email}`}
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
                         <Button 
-                          size="sm" 
+                          size="icon" 
                           variant="ghost"
                           onClick={() => handleEditUser(user)}
                           title="Editar usuário"
+                          aria-label={`Editar ${user.full_name || user.email}`}
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button
-                          size="sm"
+                          size="icon"
                           variant="ghost"
                           title="Resetar Senha"
+                          aria-label={`Resetar senha de ${user.full_name || user.email}`}
                           onClick={() => setUserToResetPassword({ id: user.id, email: user.email || '' })}
                         >
                           <KeyRound className="h-4 w-4 text-primary" />
                         </Button>
                         <Button
-                          size="sm"
+                          size="icon"
                           variant="ghost"
                           onClick={() => setUserToDelete(user.id)}
                           title="Deletar usuário"
+                          aria-label={`Deletar ${user.full_name || user.email}`}
                         >
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>

@@ -88,8 +88,8 @@ const Login = () => {
       }
     }
   };
-  return <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-retro medical-pattern">
-      <Card className="w-full max-w-md p-8 bg-radio-wood border-4 border-radio-metal shadow-floating animate-fade-in-up">
+  return <div className="min-h-dvh flex items-center justify-center px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))] bg-gradient-retro medical-pattern sm:p-4">
+      <Card className="w-full max-w-md p-5 sm:p-8 bg-radio-wood border-4 border-radio-metal shadow-floating animate-fade-in-up">
         {/* Radio Header com coração pulsante */}
         <div className="mb-8 text-center">
           <div className="flex justify-center mb-4">
@@ -140,7 +140,7 @@ const Login = () => {
             <div>
               <Label htmlFor="password" className="text-lg text-white font-semibold">Senha</Label>
               <div className="relative mt-2 input-glow rounded-lg" data-version="2">
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors z-10">
+                <button type="button" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"} className="absolute right-1 top-1/2 flex min-h-[48px] min-w-[48px] -translate-y-1/2 items-center justify-center rounded-senior text-muted-foreground hover:bg-muted transition-colors z-10">
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
                 <Input id="password" type={showPassword ? "text" : "password"} className="h-14 text-lg pr-12 bg-white" placeholder="••••••••" {...loginForm.register("password")} />
@@ -155,7 +155,7 @@ const Login = () => {
             </Button>
 
             <div className="text-center mt-4">
-              <button type="button" onClick={() => setShowForgotPassword(true)} className="text-sm text-white hover:text-primary-foreground underline transition-colors">
+              <button type="button" onClick={() => setShowForgotPassword(true)} className="min-h-[48px] px-3 text-sm text-primary-foreground hover:text-primary-foreground underline transition-colors">
                 Esqueceu sua senha?
               </button>
             </div>
@@ -213,7 +213,7 @@ const Login = () => {
             <div>
               <Label htmlFor="signup-password" className="text-lg text-white font-semibold">Senha</Label>
               <div className="relative mt-2 input-glow rounded-lg">
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors z-10">
+                <button type="button" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"} className="absolute right-1 top-1/2 flex min-h-[48px] min-w-[48px] -translate-y-1/2 items-center justify-center rounded-senior text-muted-foreground hover:bg-muted transition-colors z-10">
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
                 <Input id="signup-password" type={showPassword ? "text" : "password"} className="h-14 text-lg pr-12 bg-white" placeholder="••••••••" {...signupForm.register("password")} onChange={e => {
@@ -232,7 +232,7 @@ const Login = () => {
             <div>
               <Label htmlFor="confirm-password" className="text-lg text-white font-semibold">Confirmar Senha</Label>
               <div className="relative mt-2 input-glow rounded-lg">
-                <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors z-10">
+                <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} aria-label={showConfirmPassword ? "Ocultar confirmação de senha" : "Mostrar confirmação de senha"} className="absolute right-1 top-1/2 flex min-h-[48px] min-w-[48px] -translate-y-1/2 items-center justify-center rounded-senior text-muted-foreground hover:bg-muted transition-colors z-10">
                   {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
                 <Input id="confirm-password" type={showConfirmPassword ? "text" : "password"} className="h-14 text-lg pr-12 bg-white" placeholder="••••••••" {...signupForm.register("confirmPassword")} />

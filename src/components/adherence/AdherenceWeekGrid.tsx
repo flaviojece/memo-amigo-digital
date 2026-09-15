@@ -18,7 +18,7 @@ export function AdherenceWeekGrid({ days, limit = 7 }: AdherenceWeekGridProps) {
   const recentes = days.slice(-limit);
 
   return (
-    <div className="flex justify-between gap-2" role="list" aria-label="Adesão dos últimos dias">
+    <div className="grid grid-cols-7 gap-1 sm:gap-2" role="list" aria-label="Adesão dos últimos dias">
       {recentes.map((d) => {
         const data = new Date(`${d.dia}T12:00:00`);
         const semDoses = d.previstas === 0;

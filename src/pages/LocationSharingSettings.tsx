@@ -54,10 +54,10 @@ export default function LocationSharingSettings() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header compacto e sticky */}
-      <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b">
+      <div className="sticky top-0 z-10 bg-background/80 pt-[env(safe-area-inset-top)] backdrop-blur-md border-b">
         <div className="container max-w-3xl mx-auto px-4 py-3">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" onClick={() => navigate("/")} className="gap-2">
+            <Button variant="ghost" size="icon" onClick={() => navigate("/")} aria-label="Voltar ao início">
               <ArrowLeft className="w-4 h-4" />
             </Button>
             <div>

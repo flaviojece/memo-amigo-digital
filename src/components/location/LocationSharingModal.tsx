@@ -279,7 +279,7 @@ export function LocationSharingModal({ open, onOpenChange }: LocationSharingModa
             </div>
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex flex-col-reverse gap-3 min-[430px]:flex-row">
             <Button
               variant="outline"
               onClick={() => onOpenChange(false)}
@@ -290,7 +290,7 @@ export function LocationSharingModal({ open, onOpenChange }: LocationSharingModa
             <Button
               onClick={() => activateMutation.mutate()}
               disabled={!hasConsented || activateMutation.isPending}
-              className="flex-1 bg-gradient-to-r from-primary to-purple-600"
+            className="flex-1"
             >
               {activateMutation.isPending ? "Ativando..." : "✅ Ativar Agora"}
             </Button>
@@ -309,7 +309,7 @@ export function LocationSharingModal({ open, onOpenChange }: LocationSharingModa
         </DialogHeader>
 
         {/* BOTÃO DIVIDIDO */}
-        <div className="grid grid-cols-2 gap-0 rounded-lg overflow-hidden border-2 border-border">
+        <div className="grid grid-cols-1 gap-0 rounded-lg overflow-hidden border-2 border-border min-[430px]:grid-cols-2">
           
           {/* LADO ESQUERDO: Toggle */}
           <button
@@ -317,13 +317,13 @@ export function LocationSharingModal({ open, onOpenChange }: LocationSharingModa
             disabled={activateMutation.isPending || deactivateMutation.isPending}
             className={`p-6 flex flex-col items-center justify-center gap-3 transition-all min-h-[120px] ${
               settings?.is_sharing 
-                ? 'bg-gradient-to-br from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700' 
-                : 'bg-gradient-to-br from-gray-400 to-gray-500 text-white hover:from-gray-500 hover:to-gray-600'
+                ? 'bg-secondary text-secondary-foreground hover:bg-secondary/90' 
+                : 'bg-muted text-foreground hover:bg-muted/80'
             }`}
           >
             <div className="flex items-center gap-2">
               {settings?.is_sharing && (
-                <div className="w-3 h-3 bg-white rounded-full animate-pulse" />
+                <div className="w-3 h-3 bg-secondary-foreground rounded-full animate-pulse" />
               )}
               <span className="text-xl font-bold">
                 {settings?.is_sharing ? 'ATIVO' : 'PAUSADO'}
@@ -346,7 +346,7 @@ export function LocationSharingModal({ open, onOpenChange }: LocationSharingModa
               onOpenChange(false);
               navigate('/location-sharing-settings');
             }}
-            className="p-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white flex flex-col items-center justify-center gap-2 hover:from-blue-600 hover:to-blue-700 transition-all min-h-[120px]"
+            className="p-6 bg-primary text-primary-foreground flex flex-col items-center justify-center gap-2 hover:bg-primary/90 transition-all min-h-[120px]"
           >
             <Settings className="w-8 h-8" />
             <span className="font-semibold">Configurações</span>

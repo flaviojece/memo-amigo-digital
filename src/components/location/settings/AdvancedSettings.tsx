@@ -18,7 +18,7 @@ export function AdvancedSettings({ settings, lastLocation }: AdvancedSettingsPro
       <CollapsibleTrigger asChild>
         <Button
           variant="ghost"
-          size="sm"
+          size="default"
           className="w-full justify-between text-muted-foreground hover:text-foreground"
         >
           <div className="flex items-center gap-2">

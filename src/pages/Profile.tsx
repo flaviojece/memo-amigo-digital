@@ -58,11 +58,11 @@ export default function Profile({ onBackToMore }: ProfilePageProps) {
   };
 
   return (
-    <div className="flex flex-col min-h-[60vh] p-6 pb-32 space-y-6">
+    <div className="flex flex-col min-h-[60vh] px-4 py-5 pb-[calc(var(--mobile-nav-height)+1.5rem)] space-y-6 sm:p-6 sm:pb-[calc(var(--mobile-nav-height)+2rem)]">
       <Button
         onClick={onBackToMore}
         variant="ghost"
-        size="sm"
+        size="default"
         className="group flex items-center gap-3 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300 mb-2"
       >
         <User className="w-5 h-5 group-hover:scale-110 transition-transform" />
@@ -78,12 +78,12 @@ export default function Profile({ onBackToMore }: ProfilePageProps) {
 
       <Card>
         <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 min-[430px]:flex-row min-[430px]:items-center min-[430px]:justify-between">
             <CardTitle className="text-senior-lg">Informações Pessoais</CardTitle>
             <Button
               onClick={() => setIsEditorOpen(true)}
               size="lg"
-              className="text-senior-base"
+              className="w-full text-senior-base min-[430px]:w-auto"
             >
               <Edit className="mr-2 h-5 w-5" />
               Editar Perfil

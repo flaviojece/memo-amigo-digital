@@ -93,12 +93,12 @@ export default function AngelDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-secondary/10 to-accent/10 pb-24">
+    <div className="min-h-screen overflow-x-clip bg-gradient-to-br from-secondary/10 to-accent/10 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
       {/* Header */}
-      <header className="bg-card shadow-md p-6 border-b-4 border-secondary">
+      <header className="bg-card shadow-md px-4 pb-4 pt-[max(1rem,env(safe-area-inset-top))] border-b-4 border-secondary sm:p-6">
         <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-3">
+          <div className="flex flex-col gap-4 mb-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex min-w-0 items-center gap-3">
               <Shield className="w-8 h-8 text-secondary" />
               <div>
                 <h1 className="text-senior-2xl font-bold text-foreground">
@@ -109,21 +109,21 @@ export default function AngelDashboard() {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
               <Button
                 onClick={() => navigate('/')}
                 variant="outline"
-                size="lg"
-                className="gap-2"
+                size="default"
+                className="min-w-0 gap-2 px-3"
               >
                 <ArrowLeft className="w-5 h-5" />
-                Voltar ao Início
+                <span className="truncate">Início</span>
               </Button>
               <Button
                 onClick={signOut}
                 variant="destructive"
-                size="lg"
-                className="gap-2"
+                size="default"
+                className="min-w-0 gap-2 px-3"
               >
                 <LogOut className="w-5 h-5" />
                 Sair
@@ -133,7 +133,7 @@ export default function AngelDashboard() {
         </div>
       </header>
 
-      <div className="max-w-6xl mx-auto p-4 space-y-4">
+      <div className="max-w-6xl mx-auto p-3 space-y-4 sm:p-4">
         {patients.length === 0 ? (
           <Card className="p-8 text-center">
             <UserPlus className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
@@ -158,24 +158,24 @@ export default function AngelDashboard() {
 
             {selectedPatientId && (
           <Tabs value={activeTab} onValueChange={(v: any) => setActiveTab(v)}>
-            <TabsList className="grid w-full grid-cols-5 h-auto">
-              <TabsTrigger value="overview" className="text-senior-sm py-3 flex flex-col gap-1">
+            <TabsList className="grid w-full grid-cols-5 h-auto gap-0.5 overflow-visible p-1">
+              <TabsTrigger value="overview" className="min-w-0 px-1 py-2 flex flex-col gap-1 text-[11px] sm:text-senior-sm">
                 <Home className="w-5 h-5" />
-                <span>Visão Geral</span>
+                <span className="max-w-full truncate">Resumo</span>
               </TabsTrigger>
-              <TabsTrigger value="location" className="text-senior-sm py-3 flex flex-col gap-1">
+              <TabsTrigger value="location" className="min-w-0 px-1 py-2 flex flex-col gap-1 text-[11px] sm:text-senior-sm">
                 <MapPin className="w-5 h-5" />
-                <span>Localização</span>
+                <span className="max-w-full truncate">Local</span>
               </TabsTrigger>
-              <TabsTrigger value="medications" className="text-senior-sm py-3 flex flex-col gap-1">
+              <TabsTrigger value="medications" className="min-w-0 px-1 py-2 flex flex-col gap-1 text-[11px] sm:text-senior-sm">
                 <Pill className="w-5 h-5" />
-                <span>Medicamentos</span>
+                <span className="max-w-full truncate">Remédios</span>
               </TabsTrigger>
-              <TabsTrigger value="appointments" className="text-senior-sm py-3 flex flex-col gap-1">
+              <TabsTrigger value="appointments" className="min-w-0 px-1 py-2 flex flex-col gap-1 text-[11px] sm:text-senior-sm">
                 <Calendar className="w-5 h-5" />
                 <span>Consultas</span>
               </TabsTrigger>
-              <TabsTrigger value="suggestions" className="text-senior-sm py-3 flex flex-col gap-1 relative">
+              <TabsTrigger value="suggestions" className="min-w-0 px-1 py-2 flex flex-col gap-1 relative text-[11px] sm:text-senior-sm">
                 <Shield className="w-5 h-5" />
                 <span>Sugestões</span>
                 {pendingSuggestions.length > 0 && (
@@ -246,12 +246,12 @@ export default function AngelDashboard() {
             <TabsContent value="medications" className="space-y-4 mt-6">
               <Card>
                 <CardHeader>
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col gap-3 min-[430px]:flex-row min-[430px]:items-center min-[430px]:justify-between">
                     <div>
                       <CardTitle className="text-senior-xl">Medicamentos</CardTitle>
                       <CardDescription>Visualização e sugestões</CardDescription>
                     </div>
-                    <Button onClick={handleSuggestMedication} size="lg" className="gap-2">
+                    <Button onClick={handleSuggestMedication} size="lg" className="w-full gap-2 min-[430px]:w-auto">
                       <Pill className="w-5 h-5" />
                       Sugerir Medicamento
                     </Button>

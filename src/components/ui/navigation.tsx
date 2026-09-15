@@ -35,11 +35,11 @@ export function Navigation({ activeTab, onTabChange }: NavigationProps) {
 
   return (
     <nav 
-      className="fixed bottom-0 left-0 right-0 w-full bg-white border-t-4 border-primary shadow-lg z-[9999] min-h-[80px] pb-[env(safe-area-inset-bottom,0px)]"
+      className="fixed bottom-0 left-0 right-0 w-full bg-card border-t-4 border-primary shadow-lg z-[9999] min-h-[88px] pb-[env(safe-area-inset-bottom,0px)]"
       role="navigation"
       aria-label="Navegação principal"
     >
-      <div className="flex justify-around items-center py-2 px-2 sm:px-4 gap-2">
+      <div className="grid grid-cols-5 items-stretch gap-1 px-1 py-2 sm:px-4 sm:gap-2">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -50,8 +50,8 @@ export function Navigation({ activeTab, onTabChange }: NavigationProps) {
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
               className={cn(
-                "flex flex-col items-center p-2 sm:p-3 rounded-senior transition-all duration-300",
-                "flex-1 max-w-[80px] min-h-[68px] font-semibold touch-manipulation",
+                "flex min-w-0 flex-col items-center justify-center px-1 py-2 sm:p-3 rounded-senior transition-all duration-300",
+                "min-h-[68px] font-semibold touch-manipulation",
                 isMoreTab && !isActive && cn(
                   "bg-accent text-accent-foreground shadow-button border-2 border-accent",
                   !hasAnimated && "animate-bounce-attention"
@@ -63,8 +63,8 @@ export function Navigation({ activeTab, onTabChange }: NavigationProps) {
               aria-label={`${tab.label}${isActive ? ' (página atual)' : ''}`}
               aria-current={isActive ? 'page' : undefined}
             >
-              <Icon className="w-7 h-7 mb-3" />
-              <span className="text-xs">{tab.label}</span>
+              <Icon className="w-6 h-6 mb-1 sm:w-7 sm:h-7" />
+              <span className="w-full truncate text-center text-[11px] sm:text-xs">{tab.label}</span>
             </button>
           );
         })}

@@ -422,12 +422,11 @@ export function LiveLocationMap({ patientId, onClose, variant = 'fullscreen', is
   }
 
   return (
-    <div className={variant === 'inline' ? "relative h-[500px] w-full" : "relative h-screen w-full"}>
+    <div className={variant === 'inline' ? "relative h-[min(500px,70dvh)] min-h-[380px] w-full" : "relative h-dvh w-full"}>
       {/* Container do Mapa - Etapa 1: altura mínima garantida */}
       <div 
         ref={mapContainer} 
         className="absolute inset-0" 
-        style={{ minHeight: variant === 'inline' ? '500px' : undefined }}
       />
 
       {/* Loading State */}
@@ -468,7 +467,7 @@ export function LiveLocationMap({ patientId, onClose, variant = 'fullscreen', is
           onClick={onClose}
           variant="outline"
           size="lg"
-          className="absolute top-4 left-4 shadow-lg bg-white"
+           className="absolute left-4 top-[max(1rem,env(safe-area-inset-top))] shadow-lg bg-card"
         >
           <ArrowLeft className="w-5 h-5 mr-2" />
           Voltar
@@ -478,8 +477,8 @@ export function LiveLocationMap({ patientId, onClose, variant = 'fullscreen', is
       {/* Card de informações do paciente */}
       {!location && mapReady && (
         <Card className={variant === 'inline' 
-          ? "absolute top-4 left-4 shadow-lg max-w-xs" 
-          : "absolute top-4 left-1/2 -translate-x-1/2 shadow-2xl max-w-sm w-full mx-4"
+          ? "absolute top-4 left-4 right-20 shadow-lg" 
+          : "absolute top-[max(1rem,env(safe-area-inset-top))] left-4 right-4 shadow-2xl max-w-sm mx-auto"
         }>
           <CardContent className="p-6 text-center">
             <MapPin className="w-12 h-12 mx-auto mb-3 text-muted-foreground" />
@@ -493,8 +492,8 @@ export function LiveLocationMap({ patientId, onClose, variant = 'fullscreen', is
 
       {location && (
         <Card className={variant === 'inline' 
-          ? "absolute top-4 left-4 shadow-lg max-w-xs" 
-          : "absolute top-4 left-1/2 -translate-x-1/2 shadow-2xl max-w-sm w-full mx-4"
+          ? "absolute top-4 left-4 right-20 shadow-lg" 
+          : "absolute top-[max(1rem,env(safe-area-inset-top))] left-4 right-4 shadow-2xl max-w-sm mx-auto"
         }>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
@@ -552,7 +551,7 @@ export function LiveLocationMap({ patientId, onClose, variant = 'fullscreen', is
       {/* Controles de zoom e centralização */}
       <div className={variant === 'inline' 
         ? "absolute bottom-4 right-4 flex flex-col gap-2" 
-        : "absolute bottom-8 right-4 flex flex-col gap-2"
+        : "absolute bottom-[max(2rem,env(safe-area-inset-bottom))] right-4 flex flex-col gap-2"
       }>
         <Button
           onClick={handleZoomIn}

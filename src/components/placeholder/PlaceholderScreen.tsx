@@ -13,7 +13,7 @@ export function PlaceholderScreen({
   icon = <Construction className="w-16 h-16 text-primary" />
 }: PlaceholderScreenProps) {
   return (
-    <div className="min-h-screen bg-background pb-24 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background pb-[calc(var(--mobile-nav-height)+1rem)] flex items-center justify-center p-4">
       <div className="text-center space-y-6 max-w-md">
         <div className="flex justify-center">
           {icon}

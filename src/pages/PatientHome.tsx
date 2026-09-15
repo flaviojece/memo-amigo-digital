@@ -94,7 +94,7 @@ export default function PatientHome() {
         return <Profile onBackToMore={() => setActiveTab("more")} />;
       case "more":
         return (
-          <div className="flex flex-col min-h-[60vh] p-6 pb-36 space-y-6">
+          <div className="flex flex-col min-h-[60vh] px-4 py-5 pb-[calc(var(--mobile-nav-height)+1.5rem)] space-y-6 sm:p-6 sm:pb-[calc(var(--mobile-nav-height)+2rem)]">
             <BackToHomeButton onBackToHome={() => setActiveTab("home")} />
 
             <div className="space-y-2">
@@ -104,7 +104,7 @@ export default function PatientHome() {
               </p>
             </div>
 
-            <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setActiveTab("profile")}>
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setActiveTab("profile")} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") setActiveTab("profile"); }}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-3 text-senior-lg">
                   <UserCircle className="w-6 h-6 text-primary" />
@@ -119,7 +119,7 @@ export default function PatientHome() {
             </Card>
 
             {isAngel && hasPatients && (
-              <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setActiveTab("location")}>
+              <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setActiveTab("location")} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") setActiveTab("location"); }}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-3 text-senior-lg">
                     <MapPin className="w-6 h-6 text-primary" />
@@ -153,7 +153,7 @@ export default function PatientHome() {
         );
       case "suggestions":
         return (
-          <div className="min-h-screen bg-background pattern-bg pb-24">
+          <div className="min-h-screen bg-background pattern-bg pb-[calc(var(--mobile-nav-height)+1rem)]">
             <div className="max-w-4xl mx-auto p-4 space-y-4">
               <h1 className="text-senior-3xl font-bold text-foreground mb-6">
                 🔔 Sugestões dos seus Anjos
@@ -230,8 +230,8 @@ export default function PatientHome() {
             {pendingSuggestions.length > 0 && (
               <Card className="bg-accent/50 border-primary/20">
                 <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex min-w-0 flex-wrap items-center gap-2">
                       <Lightbulb className="w-6 h-6 text-primary" />
                       <CardTitle className="text-senior-xl">
                         Sugestões dos seus Anjos
@@ -242,7 +242,7 @@ export default function PatientHome() {
                     </div>
                     <Button 
                       variant="outline" 
-                      size="sm"
+                      size="default"
                       onClick={() => setActiveTab("suggestions")}
                     >
                       Ver todas
@@ -278,7 +278,7 @@ export default function PatientHome() {
   };
 
   return (
-    <div className="bg-background min-h-screen pb-32">
+    <div className="bg-background min-h-screen pb-[var(--mobile-nav-height)]">
       {renderContent()}
       <InstallPrompt />
       <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
