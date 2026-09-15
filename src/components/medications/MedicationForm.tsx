@@ -13,6 +13,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, X } from "lucide-react";
 import { scheduleMedicationNotifications, deleteNotifications } from "@/lib/notificationScheduler";
 import { frequencyOptions } from "@/lib/frequencyTranslations";
+import { PhotoUpload } from "@/components/ui/PhotoUpload";
+import { Switch } from "@/components/ui/switch";
 
 interface MedicationFormProps {
   medicationId?: string | null;
@@ -25,6 +27,8 @@ export function MedicationForm({ medicationId, onSuccess, onCancel }: Medication
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [times, setTimes] = useState<string[]>(["08:00"]);
+  const [photoPath, setPhotoPath] = useState<string | null>(null);
+  const [controlaEstoque, setControlaEstoque] = useState(false);
 
   const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm<MedicationFormData>({
     resolver: zodResolver(medicationSchema),
@@ -69,6 +73,11 @@ export function MedicationForm({ medicationId, onSuccess, onCancel }: Medication
       times: Array.isArray(data.times) ? data.times : JSON.parse(data.times as string)
     });
     setTimes(Array.isArray(data.times) ? data.times : JSON.parse(data.times as string));
+    setPhotoPath((data as { photo_url?: string | null }).photo_url ?? null);
+    const estoque = (data as { stock_quantity?: number | null }).stock_quantity;
+    setControlaEstoque(estoque !== null && estoque !== undefined);
+    setValue("stock_quantity", estoque ?? null);
+    setValue("stock_alert_at", (data as { stock_alert_at?: number }).stock_alert_at ?? 7);
   };
 
   const onSubmit = async (data: MedicationFormData) => {
@@ -85,6 +94,9 @@ export function MedicationForm({ medicationId, onSuccess, onCancel }: Medication
         notes: data.notes,
         active: data.active,
         times: times as any,
+        photo_url: photoPath,
+        stock_quantity: controlaEstoque ? data.stock_quantity ?? 0 : null,
+        stock_alert_at: data.stock_alert_at ?? 7,
         user_id: user.id,
       };
 
@@ -164,18 +176,27 @@ export function MedicationForm({ medicationId, onSuccess, onCancel }: Medication
   }, [times, setValue]);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-7">
       <div>
         <Label htmlFor="name" className="text-senior-base">Nome do Medicamento *</Label>
         <Input
           id="name"
           {...register("name")}
           placeholder="Ex: Losartana"
-          className="text-senior-base mt-2"
+          className="mt-3"
         />
         {errors.name && (
-          <p className="text-destructive text-senior-sm mt-1">{errors.name.message}</p>
+          <p className="text-destructive text-senior-sm mt-2">{errors.name.message}</p>
         )}
+      </div>
+
+      <div>
+        <PhotoUpload
+          value={photoPath}
+          onChange={setPhotoPath}
+          label="Foto do remédio"
+          ajuda="Fotografe a caixa ou o comprimido. A foto aparece no lembrete, e reconhecer a imagem é mais fácil do que ler o nome."
+        />
       </div>
 
       <div>
@@ -184,10 +205,10 @@ export function MedicationForm({ medicationId, onSuccess, onCancel }: Medication
           id="dosage"
           {...register("dosage")}
           placeholder="Ex: 50mg"
-          className="text-senior-base mt-2"
+          className="mt-3"
         />
         {errors.dosage && (
-          <p className="text-destructive text-senior-sm mt-1">{errors.dosage.message}</p>
+          <p className="text-destructive text-senior-sm mt-2">{errors.dosage.message}</p>
         )}
       </div>
 
@@ -197,7 +218,7 @@ export function MedicationForm({ medicationId, onSuccess, onCancel }: Medication
           onValueChange={(value) => setValue("frequency", value)}
           defaultValue={medicationId ? undefined : "daily"}
         >
-          <SelectTrigger className="text-senior-base mt-2">
+          <SelectTrigger className="mt-3">
             <SelectValue placeholder="Selecione a frequência" />
           </SelectTrigger>
           <SelectContent>
@@ -209,7 +230,7 @@ export function MedicationForm({ medicationId, onSuccess, onCancel }: Medication
           </SelectContent>
         </Select>
         {errors.frequency && (
-          <p className="text-destructive text-senior-sm mt-1">{errors.frequency.message}</p>
+          <p className="text-destructive text-senior-sm mt-2">{errors.frequency.message}</p>
         )}
       </div>
 
@@ -220,10 +241,10 @@ export function MedicationForm({ medicationId, onSuccess, onCancel }: Medication
             id="start_date"
             type="date"
             {...register("start_date")}
-            className="text-senior-base mt-2"
+            className="mt-3"
           />
           {errors.start_date && (
-            <p className="text-destructive text-senior-sm mt-1">{errors.start_date.message}</p>
+            <p className="text-destructive text-senior-sm mt-2">{errors.start_date.message}</p>
           )}
         </div>
 
@@ -233,10 +254,10 @@ export function MedicationForm({ medicationId, onSuccess, onCancel }: Medication
             id="end_date"
             type="date"
             {...register("end_date")}
-            className="text-senior-base mt-2"
+            className="mt-3"
           />
           {errors.end_date && (
-            <p className="text-destructive text-senior-sm mt-1">{errors.end_date.message}</p>
+            <p className="text-destructive text-senior-sm mt-2">{errors.end_date.message}</p>
           )}
         </div>
       </div>
@@ -272,7 +293,65 @@ export function MedicationForm({ medicationId, onSuccess, onCancel }: Medication
           ))}
         </div>
         {errors.times && (
-          <p className="text-destructive text-senior-sm mt-1">{errors.times.message}</p>
+          <p className="text-destructive text-senior-sm mt-2">{errors.times.message}</p>
+        )}
+      </div>
+
+      {/* Estoque: avisa antes de acabar a cartela, que é quando o
+          tratamento costuma ser interrompido sem ninguém perceber */}
+      <div className="rounded-senior border-2 border-border p-4 space-y-4">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <Label htmlFor="controla-estoque" className="text-senior-base">
+              Controlar quantidade
+            </Label>
+            <p className="text-senior-xs text-muted-foreground mt-1">
+              Avisamos quando estiver perto de acabar
+            </p>
+          </div>
+          <Switch
+            id="controla-estoque"
+            checked={controlaEstoque}
+            onCheckedChange={setControlaEstoque}
+          />
+        </div>
+
+        {controlaEstoque && (
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label htmlFor="stock_quantity" className="text-senior-sm">
+                Doses restantes
+              </Label>
+              <Input
+                id="stock_quantity"
+                type="number"
+                inputMode="numeric"
+                min={0}
+                {...register("stock_quantity")}
+                placeholder="Ex: 30"
+                className="mt-3"
+              />
+              {errors.stock_quantity && (
+                <p className="text-destructive text-senior-sm mt-2">
+                  {errors.stock_quantity.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <Label htmlFor="stock_alert_at" className="text-senior-sm">
+                Avisar quando restar
+              </Label>
+              <Input
+                id="stock_alert_at"
+                type="number"
+                inputMode="numeric"
+                min={1}
+                defaultValue={7}
+                {...register("stock_alert_at")}
+                className="mt-3"
+              />
+            </div>
+          </div>
         )}
       </div>
 
@@ -282,10 +361,10 @@ export function MedicationForm({ medicationId, onSuccess, onCancel }: Medication
           id="notes"
           {...register("notes")}
           placeholder="Ex: Tomar com água, após refeição..."
-          className="text-senior-base mt-2 min-h-[100px]"
+          className="mt-3"
         />
         {errors.notes && (
-          <p className="text-destructive text-senior-sm mt-1">{errors.notes.message}</p>
+          <p className="text-destructive text-senior-sm mt-2">{errors.notes.message}</p>
         )}
       </div>
 

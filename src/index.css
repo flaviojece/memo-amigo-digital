@@ -26,14 +26,22 @@ Todos os valores em HSL para consistência
     --primary-foreground: 0 0% 100%;
     --primary-light: 14 77% 57%;
     --primary-dark: 14 77% 37%;
+    /* Variante para TEXTO sobre fundo creme/branco.
+       O vermelho queimado original dá 3.47:1, abaixo do mínimo WCAG AA (4.5:1).
+       Use text-primary-text em textos; o tom original continua válido para
+       fundos de botão e ícones decorativos. */
+    --primary-text: 14 77% 42%;
 
     /* Secundário - Verde petróleo para elementos secundários */
     --secondary: 178 95% 25%; /* #047C78 */
     --secondary-foreground: 0 0% 100%;
+    --secondary-text: 178 95% 24%;
 
     /* Accent - Amarelo mostarda para destaques */
     --accent: 44 87% 53%; /* #F2A420 */
     --accent-foreground: 33 31% 24%;
+    /* Mostarda como texto dá 2.08:1 — ilegível. Esta variante passa AA. */
+    --accent-text: 44 87% 28%;
 
     /* Estados e feedback */
     --muted: 46 40% 90%;
@@ -303,4 +311,33 @@ Todos os valores em HSL para consistência
       0 0 0 1px hsl(0 0% 100% / 0.08) inset;
     transform: translateY(-12px);
   }
+}
+/* ============================================================
+   Impressão — relatório de adesão para levar na consulta
+   ============================================================ */
+@media print {
+  .no-print,
+  nav,
+  [role="navigation"] {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+  }
+
+  /* Evita quebrar um card no meio da página */
+  .print-keep,
+  [class*="rounded-senior"] {
+    break-inside: avoid;
+  }
+}
+
+/* ============================================================
+   Tamanho de fonte ajustável pelo próprio usuário.
+   O multiplicador é aplicado no <html> e os tokens senior-*
+   são definidos em rem, então tudo escala junto.
+   ============================================================ */
+html {
+  font-size: calc(16px * var(--font-scale, 1));
 }

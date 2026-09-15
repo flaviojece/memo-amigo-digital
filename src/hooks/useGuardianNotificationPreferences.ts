@@ -15,6 +15,11 @@ export interface GuardianNotificationPreferences {
   notify_appointment_upcoming: boolean;
   notify_appointment_completed: boolean;
   notify_appointment_cancelled: boolean;
+  /** Minutos sem confirmação até o anjo ser avisado. 0 desliga. */
+  escalate_after_minutes: number;
+  /** Janela em que o anjo não quer ser incomodado (pode cruzar a meia-noite) */
+  quiet_hours_start: string;
+  quiet_hours_end: string;
   created_at: string;
   updated_at: string;
 }

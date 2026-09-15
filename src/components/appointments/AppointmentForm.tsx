@@ -66,6 +66,7 @@ export function AppointmentForm({ appointmentId, onSuccess, onCancel }: Appointm
       date: data.date,
       location: data.location || "",
       phone: data.phone || "",
+      preparation: data.preparation || "",
       notes: data.notes || "",
       status: data.status as "scheduled" | "completed" | "cancelled"
     });
@@ -82,6 +83,7 @@ export function AppointmentForm({ appointmentId, onSuccess, onCancel }: Appointm
         date: data.date,
         location: data.location,
         phone: data.phone,
+        preparation: data.preparation,
         notes: data.notes,
         status: data.status,
         user_id: user.id,
@@ -161,17 +163,17 @@ export function AppointmentForm({ appointmentId, onSuccess, onCancel }: Appointm
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-7">
       <div>
         <Label htmlFor="doctor_name" className="text-senior-base">Nome do Médico *</Label>
         <Input
           id="doctor_name"
           {...register("doctor_name")}
           placeholder="Ex: Dr. João Silva"
-          className="text-senior-base mt-2"
+          className="mt-3"
         />
         {errors.doctor_name && (
-          <p className="text-destructive text-senior-sm mt-1">{errors.doctor_name.message}</p>
+          <p className="text-destructive text-senior-sm mt-2">{errors.doctor_name.message}</p>
         )}
       </div>
 
@@ -181,10 +183,10 @@ export function AppointmentForm({ appointmentId, onSuccess, onCancel }: Appointm
           id="specialty"
           {...register("specialty")}
           placeholder="Ex: Cardiologia, Ortopedia"
-          className="text-senior-base mt-2"
+          className="mt-3"
         />
         {errors.specialty && (
-          <p className="text-destructive text-senior-sm mt-1">{errors.specialty.message}</p>
+          <p className="text-destructive text-senior-sm mt-2">{errors.specialty.message}</p>
         )}
       </div>
 
@@ -194,10 +196,10 @@ export function AppointmentForm({ appointmentId, onSuccess, onCancel }: Appointm
           id="date"
           type="datetime-local"
           {...register("date")}
-          className="text-senior-base mt-2"
+          className="mt-3"
         />
         {errors.date && (
-          <p className="text-destructive text-senior-sm mt-1">{errors.date.message}</p>
+          <p className="text-destructive text-senior-sm mt-2">{errors.date.message}</p>
         )}
       </div>
 
@@ -207,10 +209,10 @@ export function AppointmentForm({ appointmentId, onSuccess, onCancel }: Appointm
           id="location"
           {...register("location")}
           placeholder="Ex: Hospital Santa Casa, Rua..."
-          className="text-senior-base mt-2"
+          className="mt-3"
         />
         {errors.location && (
-          <p className="text-destructive text-senior-sm mt-1">{errors.location.message}</p>
+          <p className="text-destructive text-senior-sm mt-2">{errors.location.message}</p>
         )}
       </div>
 
@@ -221,17 +223,17 @@ export function AppointmentForm({ appointmentId, onSuccess, onCancel }: Appointm
           type="tel"
           {...register("phone")}
           placeholder="Ex: (11) 1234-5678"
-          className="text-senior-base mt-2"
+          className="mt-3"
         />
         {errors.phone && (
-          <p className="text-destructive text-senior-sm mt-1">{errors.phone.message}</p>
+          <p className="text-destructive text-senior-sm mt-2">{errors.phone.message}</p>
         )}
       </div>
 
       <div>
         <Label htmlFor="status" className="text-senior-base">Status</Label>
         <Select onValueChange={(value) => setValue("status", value as any)} defaultValue="scheduled">
-          <SelectTrigger className="text-senior-base mt-2">
+          <SelectTrigger className="mt-3">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -242,16 +244,33 @@ export function AppointmentForm({ appointmentId, onSuccess, onCancel }: Appointm
         </Select>
       </div>
 
+      {/* O que levar: é a informação que mais falta na hora da consulta */}
+      <div>
+        <Label htmlFor="preparation" className="text-senior-base">
+          O que levar ou preparar
+        </Label>
+        <Textarea
+          id="preparation"
+          {...register("preparation")}
+          placeholder="Ex: levar exames de sangue, jejum de 12 horas, cartão do convênio"
+          className="mt-3"
+          rows={3}
+        />
+        {errors.preparation && (
+          <p className="text-destructive text-senior-sm mt-2">{errors.preparation.message}</p>
+        )}
+      </div>
+
       <div>
         <Label htmlFor="notes" className="text-senior-base">Observações</Label>
         <Textarea
           id="notes"
           {...register("notes")}
           placeholder="Ex: Levar exames anteriores, chegar com 15 min de antecedência..."
-          className="text-senior-base mt-2 min-h-[100px]"
+          className="mt-3"
         />
         {errors.notes && (
-          <p className="text-destructive text-senior-sm mt-1">{errors.notes.message}</p>
+          <p className="text-destructive text-senior-sm mt-2">{errors.notes.message}</p>
         )}
       </div>
 

@@ -50,12 +50,14 @@ export function TechnicalInfo({ lastLocation, settings }: TechnicalInfoProps) {
             {lastLocation.battery_level !== null && (
               <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                 <div className="flex items-center gap-3">
+                  {/* battery_level é gravado de 0 a 100; a comparação com 0.5
+                      deixava o ícone sempre verde, inclusive com 3% de carga */}
                   <Battery className={`w-4 h-4 ${
-                    lastLocation.battery_level > 0.5 
-                      ? "text-green-500" 
-                      : lastLocation.battery_level > 0.2 
-                        ? "text-yellow-500" 
-                        : "text-red-500"
+                    lastLocation.battery_level > 50
+                      ? "text-secondary-text"
+                      : lastLocation.battery_level > 20
+                        ? "text-accent-text"
+                        : "text-destructive"
                   }`} />
                   <div>
                     <p className="font-medium text-xs">Bateria</p>

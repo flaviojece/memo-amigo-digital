@@ -8,9 +8,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { translateFrequency } from "@/lib/frequencyTranslations";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { MedicationThumb } from "./MedicationThumb";
 
 interface Medication {
   id: string;
+  photo_url?: string | null;
   name: string;
   dosage?: string;
   frequency: string;
@@ -81,9 +83,7 @@ export function MedicationList({ medications, isLoading, onEdit, onRefetch }: Me
         <Card key={medication.id} className="card-memo">
           <CardContent className="p-6">
             <div className="flex items-start gap-4">
-              <div className="p-3 bg-primary/10 rounded-senior flex-shrink-0">
-                <Pill className="w-8 h-8 text-primary" />
-              </div>
+              <MedicationThumb path={medication.photo_url} alt={`Foto de ${medication.name}`} />
 
               <div className="flex-1 min-w-0">
                 <h3 className="text-senior-xl font-bold text-foreground mb-2">

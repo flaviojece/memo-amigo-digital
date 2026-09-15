@@ -226,7 +226,7 @@ export default function AngelDashboard() {
                 <CardHeader>
                   <CardTitle className="text-senior-xl flex items-center gap-2">
                     <MapPin className="w-6 h-6" />
-                    Localização em Tempo Real
+                    Última Localização Conhecida
                   </CardTitle>
                   <CardDescription>
                     Acompanhe onde o paciente está agora

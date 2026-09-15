@@ -2,6 +2,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { WelcomeHeader } from "./WelcomeHeader";
 import { QuickActionCard } from "./QuickActionCard";
+import { NextMedicationHero } from "./NextMedicationHero";
+import { AdherenceCard } from "@/components/adherence/AdherenceCard";
+import { LowStockAlert } from "@/components/medications/LowStockAlert";
 import { EmergencyButton } from "./EmergencyButton";
 import { FavoriteContactsModal } from "./FavoriteContactsModal";
 import { LocationSharingModal } from "@/components/location/LocationSharingModal";
@@ -28,50 +31,6 @@ export function HomePage({
   const navigate = useNavigate();
   const [showCallModal, setShowCallModal] = useState(false);
   const [showLocationModal, setShowLocationModal] = useState(false);
-
-  // Buscar próximo medicamento: entre TODOS os ativos de hoje, o horário mais próximo
-  // (antes pegava apenas o cadastrado mais recentemente, ignorando os horários)
-  const {
-    data: nextMedication
-  } = useQuery({
-    queryKey: ["next-medication", user?.id],
-    queryFn: async () => {
-      const nowIso = new Date().toISOString();
-      const { data, error } = await supabase
-        .from("medications")
-        .select("id, name, dosage, times")
-        .eq("user_id", user?.id)
-        .eq("active", true)
-        .lte("start_date", nowIso)
-        .or(`end_date.is.null,end_date.gte.${nowIso}`);
-      if (error) throw error;
-
-      const now = new Date();
-      const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-
-      let best: { med: any; time: string; isTomorrow: boolean } | null = null;
-      for (const med of data || []) {
-        const times: string[] = (Array.isArray(med.times) ? med.times : JSON.parse(String(med.times || '[]')))
-          .filter((t: unknown): t is string => typeof t === 'string')
-          .sort();
-        if (times.length === 0) continue;
-        const upcoming = times.find(t => t >= currentTime);
-        const candidate = upcoming
-          ? { med, time: upcoming, isTomorrow: false }
-          : { med, time: times[0], isTomorrow: true };
-        if (
-          !best ||
-          (best.isTomorrow && !candidate.isTomorrow) ||
-          (best.isTomorrow === candidate.isTomorrow && candidate.time < best.time)
-        ) {
-          best = candidate;
-        }
-      }
-      return best;
-    },
-    enabled: !!user,
-    refetchInterval: 60_000, // recalcula a cada minuto para o card não ficar preso no passado
-  });
 
   // Buscar próxima consulta
   const {
@@ -138,7 +97,22 @@ export function HomePage({
   return <div className="min-h-screen bg-background pb-28">
       <WelcomeHeader />
       
-      <main className="p-4 space-y-6">
+      <main className="px-5 py-6 space-y-7">
+        {/* O que fazer agora: uma única coisa dominante na tela */}
+        <section>
+          <NextMedicationHero />
+        </section>
+
+        {/* Estoque acabando: aparece só quando há algo acabando */}
+        <section>
+          <LowStockAlert onVerRemedios={() => onTabChange("meds")} />
+        </section>
+
+        {/* Adesão da semana — reforço positivo, nunca cobrança */}
+        <section>
+          <AdherenceCard onVerMais={() => onTabChange("adherence")} />
+        </section>
+
         {/* Cards de ação rápida */}
         <section className="space-y-4">
           <h2 className="text-senior-xl font-bold text-foreground mb-4">
@@ -146,8 +120,6 @@ export function HomePage({
           </h2>
           
           <div className="grid gap-4">
-            <QuickActionCard title="Próximo Remédio" subtitle={nextMedication ? `${nextMedication.med.name} - ${nextMedication.isTomorrow ? 'amanhã às ' : ''}${nextMedication.time}` : "Nenhum medicamento com horário para hoje"} icon={<Pill className="text-primary" />} onClick={() => onTabChange("meds")} />
-
             <QuickActionCard title="Próxima Consulta" subtitle={nextAppointment ? `${nextAppointment.doctor_name} - ${nextAppointment.specialty}\n${formatAppointmentDate(nextAppointment.date)}` : "Nenhuma consulta agendada"} icon={<Stethoscope className="text-secondary" />} onClick={() => onTabChange("appointments")} />
 
             <QuickActionCard title="Contatos Favoritos" subtitle={`${favoriteContacts?.length || 0} contatos favoritos`} icon={<Heart className="text-accent" />} onClick={() => setShowCallModal(true)} variant="accent" />

@@ -9,6 +9,7 @@ import { MapPin, Navigation, Clock, ArrowLeft } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useEffect, useState } from "react";
+import { LocationFreshness } from "./LocationFreshness";
 import { LiveLocationMap } from "./LiveLocationMap";
 import { logger } from "@/lib/logger";
 
@@ -121,6 +122,9 @@ export function PatientsLocationList({ onBackToMore }: PatientsLocationListProps
         isSharing: settings?.is_sharing || false,
         lastUpdate: location?.updated_at,
         batteryLevel: location?.battery_level,
+        trackingActive: settings?.tracking_active ?? false,
+        stoppedReason: settings?.tracking_stopped_reason ?? null,
+        source: location?.source ?? null,
       };
     }
 
@@ -186,7 +190,7 @@ export function PatientsLocationList({ onBackToMore }: PatientsLocationListProps
                               {profile?.full_name || profile?.email}
                             </h3>
                             <Badge variant={status.isSharing ? "default" : "secondary"}>
-                              {status.isSharing ? "🟢 Ativo" : "🔴 Pausado"}
+                              {status.isSharing ? "Compartilhando" : "Pausado"}
                             </Badge>
                           </div>
 
@@ -194,26 +198,24 @@ export function PatientsLocationList({ onBackToMore }: PatientsLocationListProps
                             {patient.relationship_type || "Paciente"}
                           </p>
 
-                          {status.isSharing && status.lastUpdate ? (
-                            <div className="flex items-center gap-4 text-sm">
-                              <div className="flex items-center gap-1 text-muted-foreground">
-                                <Clock className="w-4 h-4" />
-                                Há{" "}
-                                {formatDistanceToNow(new Date(status.lastUpdate), {
-                                  locale: ptBR,
-                                })}
-                              </div>
-                              {status.batteryLevel && (
-                                <div className="text-muted-foreground">
-                                  🔋 {status.batteryLevel}%
-                                </div>
+                          {status.isSharing ? (
+                            <div className="space-y-2">
+                              <LocationFreshness
+                                updatedAt={status.lastUpdate}
+                                trackingActive={status.trackingActive}
+                                stoppedReason={status.stoppedReason}
+                                source={status.source}
+                                compacto
+                              />
+                              {status.batteryLevel != null && (
+                                <p className="text-senior-xs text-muted-foreground">
+                                  Bateria do celular: {status.batteryLevel}%
+                                </p>
                               )}
                             </div>
                           ) : (
-                            <p className="text-sm text-muted-foreground">
-                              {status.isSharing
-                                ? "Aguardando primeira atualização..."
-                                : "Não está compartilhando no momento"}
+                            <p className="text-senior-sm text-muted-foreground">
+                              Não está compartilhando no momento
                             </p>
                           )}
                         </div>

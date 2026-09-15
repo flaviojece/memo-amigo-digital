@@ -91,7 +91,13 @@ export function LocationSharingModal({ open, onOpenChange }: LocationSharingModa
   // Mutation: Ativar compartilhamento
   const activateMutation = useMutation({
     mutationFn: async () => {
-      const consentText = `Eu, ${user?.email}, autorizo o compartilhamento da minha localização em tempo real com meus familiares cadastrados como guardiões. Entendo que posso desativar a qualquer momento.`;
+      const nomeConsentimento = user?.user_metadata?.full_name || user?.email || 'usuário';
+      const retencaoDias = 30;
+      const consentText = `Eu, ${nomeConsentimento}, autorizo meus Anjos cadastrados a verem minha localização. ` +
+          `Entendo que o aplicativo registra minha posição apenas enquanto está aberto no meu celular, ` +
+          `e que a última posição registrada pode não ser onde estou agora. ` +
+          `Entendo que posso desligar este compartilhamento a qualquer momento, ` +
+          `e que o histórico é apagado automaticamente após ${retencaoDias} dias.`;
 
       const { error } = await supabase
         .from("location_sharing_settings")
@@ -100,6 +106,7 @@ export function LocationSharingModal({ open, onOpenChange }: LocationSharingModa
           is_sharing: true,
           consent_given_at: new Date().toISOString(),
           consent_text: consentText,
+            retention_days: retencaoDias,
           update_interval_seconds: 15,
           accuracy_threshold_meters: 50,
         });
@@ -113,7 +120,7 @@ export function LocationSharingModal({ open, onOpenChange }: LocationSharingModa
       queryClient.invalidateQueries({ queryKey: ["location-settings"] });
       toast({
         title: "✅ Rastreamento ativado",
-        description: "Seus guardiões agora podem ver sua localização em tempo real.",
+        description: "Seus Anjos podem ver sua última localização registrada.",
       });
     },
     onError: (error) => {
@@ -182,7 +189,7 @@ export function LocationSharingModal({ open, onOpenChange }: LocationSharingModa
           <DialogHeader>
             <div className="flex items-center gap-3 mb-2">
               <MapPin className="w-8 h-8 text-primary" />
-              <DialogTitle className="text-2xl">Rastreamento em Tempo Real</DialogTitle>
+              <DialogTitle className="text-senior-xl">Compartilhar minha localização</DialogTitle>
             </div>
             <DialogDescription className="text-base">
               Compartilhe sua localização com seus familiares para maior segurança
@@ -196,8 +203,13 @@ export function LocationSharingModal({ open, onOpenChange }: LocationSharingModa
               <AlertDescription className="text-base ml-2">
                 <strong>O que é isso?</strong>
                 <p className="mt-1">
-                  Seus familiares poderão ver onde você está no mapa, em tempo real,
-                  como funciona no Uber.
+                  Seus Anjos poderão ver sua última posição registrada no mapa.
+                </p>
+                <p className="mt-2">
+                  <strong>Importante:</strong> o aplicativo registra sua posição apenas
+                  enquanto está aberto no seu celular. Quando você guarda o telefone ou
+                  bloqueia a tela, o registro para. A última posição pode não ser onde
+                  você está agora.
                 </p>
               </AlertDescription>
             </Alert>
@@ -260,7 +272,7 @@ export function LocationSharingModal({ open, onOpenChange }: LocationSharingModa
                   className="mt-1 w-5 h-5"
                 />
                 <span className="text-sm">
-                  Eu entendi como funciona o rastreamento em tempo real e concordo
+                  Eu entendi como funciona o compartilhamento de localização e concordo
                   em compartilhar minha localização com meus guardiões.
                 </span>
               </Label>

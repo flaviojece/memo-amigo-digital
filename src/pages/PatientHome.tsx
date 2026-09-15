@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSuggestions } from "@/hooks/useSuggestions";
@@ -18,6 +19,10 @@ import { NotificationSettings } from "@/components/notifications/NotificationSet
 import { GuardianManager } from "@/components/guardians/GuardianManager";
 import { PatientsLocationList } from "@/components/location/PatientsLocationList";
 import { BackToHomeButton } from "@/components/ui/BackToHomeButton";
+import { AdherenceView } from "@/components/adherence/AdherenceView";
+import { FontSizeSelector } from "@/components/settings/FontSizeSelector";
+import { Onboarding, jaViuOnboarding } from "@/components/onboarding/Onboarding";
+import { useLocationBreadcrumb } from "@/hooks/useLocationBreadcrumb";
 import { Bell, Shield, Lightbulb, LogOut, MapPin, UserCircle } from "lucide-react";
 
 /**
@@ -29,6 +34,7 @@ const VALID_TABS = [
   "home",
   "meds",
   "medication-schedule",
+  "adherence",
   "appointments",
   "contacts",
   "location",
@@ -43,6 +49,10 @@ export default function PatientHome() {
   const { isAngel, hasPatients, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const { tab } = useParams<{ tab?: string }>();
+  const [mostrarOnboarding, setMostrarOnboarding] = useState(() => !jaViuOnboarding());
+
+  // Deixa um rastro de posição na abertura, se o paciente compartilha localização
+  useLocationBreadcrumb("abertura_app");
 
   const activeTab: PatientTab = VALID_TABS.includes(tab as PatientTab)
     ? (tab as PatientTab)
@@ -59,6 +69,11 @@ export default function PatientHome() {
     return <LoadingSpinner fullScreen />;
   }
 
+  // Primeira abertura: explica o app antes de mostrar telas vazias
+  if (mostrarOnboarding) {
+    return <Onboarding onConcluir={() => setMostrarOnboarding(false)} />;
+  }
+
   const pendingSuggestions = suggestions.filter(s => s.status === 'pending');
 
   const renderContent = () => {
@@ -71,6 +86,8 @@ export default function PatientHome() {
         return <Appointments onTabChange={setActiveTab} />;
       case "contacts":
         return <Contacts onTabChange={setActiveTab} />;
+      case "adherence":
+        return <AdherenceView onBackToHome={() => setActiveTab("home")} />;
       case "location":
         return <PatientsLocationList onBackToMore={() => setActiveTab("more")} />;
       case "profile":
@@ -111,11 +128,13 @@ export default function PatientHome() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground text-senior-sm">
-                    Acompanhe em tempo real quem está sob seus cuidados
+                    Veja a última posição de quem está sob seus cuidados
                   </p>
                 </CardContent>
               </Card>
             )}
+
+            <FontSizeSelector />
 
             <NotificationSettings />
 

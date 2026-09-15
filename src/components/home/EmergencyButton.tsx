@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { registrarRastro } from "@/hooks/useLocationBreadcrumb";
 import { logger } from "@/lib/logger";
 
 export function EmergencyButton() {
@@ -55,8 +56,14 @@ export function EmergencyButton() {
       let location = null;
       if (navigator.geolocation) {
         try {
+          // Numa emergência vale esperar mais por uma posição precisa:
+          // 5s com baixa precisão costuma devolver a posição da antena, não da pessoa
           const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+              enableHighAccuracy: true,
+              maximumAge: 0,
+              timeout: 20000,
+            });
           });
           location = {
             latitude: position.coords.latitude,
@@ -81,6 +88,10 @@ export function EmergencyButton() {
         .single();
 
       if (error) throw error;
+
+      // A emergência também atualiza a última posição conhecida, para o anjo
+      // abrir o mapa e ver onde a pessoa estava no momento do acionamento
+      void registrarRastro(user.id, "emergencia");
 
       // Chamar edge function para enviar alertas
       try {

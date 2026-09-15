@@ -25,6 +25,11 @@ export const appointmentSchema = z.object({
     .max(20, { message: "Telefone muito longo (máximo 20 caracteres)" })
     .optional(),
   
+  preparation: z.string()
+    .trim()
+    .max(500, { message: "Texto muito longo (máximo 500 caracteres)" })
+    .optional(),
+
   notes: z.string()
     .trim()
     .max(500, { message: "Observações muito longas (máximo 500 caracteres)" })
