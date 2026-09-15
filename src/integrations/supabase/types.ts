@@ -762,6 +762,29 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_live_locations: {
+        Args: never
+        Returns: {
+          full_name: string
+          latitude: number
+          longitude: number
+          updated_at: string
+          user_id: string
+        }[]
+      }
+      admin_patient_counts: {
+        Args: never
+        Returns: {
+          angels_count: number
+          appointments_count: number
+          created_at: string
+          email: string
+          full_name: string
+          is_sharing_location: boolean
+          medications_count: number
+          patient_id: string
+        }[]
+      }
       consultas_de_amanha: {
         Args: never
         Returns: {
