@@ -23,6 +23,8 @@ export type Database = {
           location: string | null
           notes: string | null
           phone: string | null
+          preparation: string | null
+          reminder_24h_sent: boolean
           reminder_sent: boolean | null
           specialty: string
           status: string | null
@@ -37,6 +39,8 @@ export type Database = {
           location?: string | null
           notes?: string | null
           phone?: string | null
+          preparation?: string | null
+          reminder_24h_sent?: boolean
           reminder_sent?: boolean | null
           specialty: string
           status?: string | null
@@ -51,6 +55,8 @@ export type Database = {
           location?: string | null
           notes?: string | null
           phone?: string | null
+          preparation?: string | null
+          reminder_24h_sent?: boolean
           reminder_sent?: boolean | null
           specialty?: string
           status?: string | null
@@ -222,6 +228,7 @@ export type Database = {
         Row: {
           created_at: string | null
           enabled: boolean
+          escalate_after_minutes: number
           guardian_id: string
           id: string
           notify_appointment_cancelled: boolean
@@ -232,11 +239,14 @@ export type Database = {
           notify_medication_taken: boolean
           notify_medication_upcoming: boolean
           patient_id: string
+          quiet_hours_end: string
+          quiet_hours_start: string
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
           enabled?: boolean
+          escalate_after_minutes?: number
           guardian_id: string
           id?: string
           notify_appointment_cancelled?: boolean
@@ -247,11 +257,14 @@ export type Database = {
           notify_medication_taken?: boolean
           notify_medication_upcoming?: boolean
           patient_id: string
+          quiet_hours_end?: string
+          quiet_hours_start?: string
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
           enabled?: boolean
+          escalate_after_minutes?: number
           guardian_id?: string
           id?: string
           notify_appointment_cancelled?: boolean
@@ -262,6 +275,8 @@ export type Database = {
           notify_medication_taken?: boolean
           notify_medication_upcoming?: boolean
           patient_id?: string
+          quiet_hours_end?: string
+          quiet_hours_start?: string
           updated_at?: string | null
         }
         Relationships: [
@@ -496,6 +511,8 @@ export type Database = {
           notes: string | null
           photo_url: string | null
           start_date: string
+          stock_alert_at: number
+          stock_quantity: number | null
           times: Json
           updated_at: string | null
           user_id: string
@@ -511,6 +528,8 @@ export type Database = {
           notes?: string | null
           photo_url?: string | null
           start_date: string
+          stock_alert_at?: number
+          stock_quantity?: number | null
           times: Json
           updated_at?: string | null
           user_id: string
@@ -526,6 +545,8 @@ export type Database = {
           notes?: string | null
           photo_url?: string | null
           start_date?: string
+          stock_alert_at?: number
+          stock_quantity?: number | null
           times?: Json
           updated_at?: string | null
           user_id?: string
@@ -741,6 +762,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      consultas_de_amanha: {
+        Args: never
+        Returns: {
+          appointment_id: string
+          data: string
+          doctor_name: string
+          location: string
+          patient_id: string
+          preparation: string
+          specialty: string
+        }[]
+      }
       get_adherence_by_day: {
         Args: { _days?: number; _patient_id: string }
         Returns: {
@@ -792,6 +825,15 @@ export type Database = {
       }
       is_invitation_valid: { Args: { invitation_id: string }; Returns: boolean }
       is_system_empty: { Args: never; Returns: boolean }
+      registrar_doses_perdidas: {
+        Args: never
+        Returns: {
+          horario: string
+          medication_id: string
+          medication_name: string
+          patient_id: string
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "user" | "angel"
