@@ -36,14 +36,14 @@ export function MedicationScheduleView({ onBackToHome }: MedicationScheduleViewP
   });
 
   return (
-    <div className="min-h-screen bg-background pattern-bg pb-24">
+    <div className="min-h-screen bg-background pattern-bg pb-6">
       <div className="max-w-4xl mx-auto p-4 space-y-6">
         <BackToHomeButton onBackToHome={onBackToHome} />
 
-        <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-start gap-3 mb-6">
           <Clock className="w-8 h-8 text-primary" />
-          <h1 className="text-senior-3xl font-bold text-foreground">
-            ⏰ Horários das Medicações
+          <h1 className="text-senior-2xl font-bold text-foreground sm:text-senior-3xl">
+            Horários das Medicações
           </h1>
         </div>
 

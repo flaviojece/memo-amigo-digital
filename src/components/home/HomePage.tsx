@@ -94,10 +94,10 @@ export function HomePage({
       locale: ptBR
     });
   };
-  return <div className="min-h-screen bg-background pb-28">
+  return <div className="min-h-screen bg-background pb-6">
       <WelcomeHeader />
       
-      <main className="px-5 py-6 space-y-7">
+      <main className="px-4 py-5 space-y-7 sm:px-5 sm:py-6">
         {/* O que fazer agora: uma única coisa dominante na tela */}
         <section>
           <NextMedicationHero />
@@ -150,10 +150,7 @@ export function HomePage({
 
         {/* Botão de Compartilhar Localização */}
         <section>
-          <button onClick={() => setShowLocationModal(true)} className="w-full min-h-[70px] px-4 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 
-                       text-white hover:from-blue-600 hover:to-blue-700 
-                       transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]
-                       shadow-md hover:shadow-lg flex items-center justify-center gap-4">
+          <button onClick={() => setShowLocationModal(true)} className="w-full min-h-[70px] px-4 rounded-lg bg-secondary text-secondary-foreground hover:bg-secondary/90 transition-all duration-300 active:scale-[0.98] shadow-md hover:shadow-lg flex items-center justify-center gap-3">
             <Radio className="w-6 h-6" />
             <span className="font-semibold text-lg">Compartilhar Minha Localização</span>
             <MapPin className="w-6 h-6" />
