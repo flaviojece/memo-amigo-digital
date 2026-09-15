@@ -48,21 +48,21 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen overflow-x-clip bg-background pb-[max(1.5rem,env(safe-area-inset-bottom))]">
       {/* Header */}
-      <header className="border-b bg-card sticky top-0 z-50">
+      <header className="border-b bg-card sticky top-0 z-50 pt-[env(safe-area-inset-top)]">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2 text-primary">
-                <Shield className="h-8 w-8" />
-                <div>
-                  <h1 className="text-2xl font-bold">Painel Administrativo</h1>
+                <Shield className="h-7 w-7 shrink-0" />
+                <div className="min-w-0">
+                  <h1 className="text-xl font-bold leading-tight sm:text-2xl">Painel Administrativo</h1>
                   <p className="text-sm text-muted-foreground">Dr. Memo - Controle Total</p>
                 </div>
               </div>
             </div>
-            <Button onClick={handleSignOut} variant="outline" size="sm">
+            <Button onClick={handleSignOut} variant="outline" size="sm" className="shrink-0 px-3">
               <LogOut className="h-4 w-4 mr-2" />
               Sair
             </Button>
@@ -71,24 +71,24 @@ export default function AdminDashboard() {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-6 sm:py-8">
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 lg:w-auto">
-            <TabsTrigger value="overview" className="gap-2">
+          <TabsList className="grid w-full grid-cols-4 h-auto gap-0.5 lg:w-auto">
+            <TabsTrigger value="overview" className="min-w-0 flex-col gap-1 px-1 text-[11px] sm:flex-row sm:gap-2 sm:px-3 sm:text-sm">
               <LayoutDashboard className="h-4 w-4" />
-              Visão Geral
+              <span className="max-w-full truncate">Resumo</span>
             </TabsTrigger>
-            <TabsTrigger value="users" className="gap-2">
+            <TabsTrigger value="users" className="min-w-0 flex-col gap-1 px-1 text-[11px] sm:flex-row sm:gap-2 sm:px-3 sm:text-sm">
               <Users className="h-4 w-4" />
               Usuários
             </TabsTrigger>
-            <TabsTrigger value="patients" className="gap-2">
+            <TabsTrigger value="patients" className="min-w-0 flex-col gap-1 px-1 text-[11px] sm:flex-row sm:gap-2 sm:px-3 sm:text-sm">
               <Heart className="h-4 w-4" />
               Pacientes
             </TabsTrigger>
-            <TabsTrigger value="locations" className="gap-2">
+            <TabsTrigger value="locations" className="min-w-0 flex-col gap-1 px-1 text-[11px] sm:flex-row sm:gap-2 sm:px-3 sm:text-sm">
               <MapPin className="h-4 w-4" />
-              Localizações
+              <span className="max-w-full truncate">Locais</span>
             </TabsTrigger>
           </TabsList>
 
