@@ -58,16 +58,16 @@ export const GuardianManager = () => {
   return (
     <div className="space-y-6">
       <Tabs defaultValue="guardians" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="guardians">
+        <TabsList className="grid w-full grid-cols-3 h-auto gap-0.5">
+          <TabsTrigger value="guardians" className="min-w-0 flex-col gap-1 px-1 text-[11px] sm:flex-row sm:text-sm">
             <Users className="w-4 h-4 mr-2" />
-            Meus Cuidadores
+            <span className="max-w-full truncate">Cuidadores</span>
           </TabsTrigger>
-          <TabsTrigger value="patients">
+          <TabsTrigger value="patients" className="min-w-0 flex-col gap-1 px-1 text-[11px] sm:flex-row sm:text-sm">
             <Users className="w-4 h-4 mr-2" />
             Cuido de
           </TabsTrigger>
-          <TabsTrigger value="invites">
+          <TabsTrigger value="invites" className="min-w-0 flex-col gap-1 px-1 text-[11px] sm:flex-row sm:text-sm">
             <Mail className="w-4 h-4 mr-2" />
             Convites
             {receivedInvitations.length > 0 && (
@@ -137,8 +137,8 @@ export const GuardianManager = () => {
               ) : (
                 <ul className="space-y-3">
                   {guardians.map((guardian) => (
-                    <li key={guardian.id} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div>
+                    <li key={guardian.id} className="flex flex-col gap-3 p-3 border rounded-lg min-[430px]:flex-row min-[430px]:items-center min-[430px]:justify-between">
+                      <div className="min-w-0">
                         <p className="font-medium">{guardian.guardian_name}</p>
                         <p className="text-sm text-muted-foreground">{guardian.guardian_email}</p>
                         <p className="text-xs text-muted-foreground mt-1">
@@ -147,7 +147,9 @@ export const GuardianManager = () => {
                       </div>
                       <Button
                         variant="destructive"
-                        size="sm"
+                        size="icon"
+                        aria-label={`Remover ${guardian.guardian_name}`}
+                        className="w-full min-[430px]:w-14"
                         onClick={() => {
                           setSelectedRelationship(guardian.id);
                           setRevokeDialogOpen(true);
@@ -170,8 +172,8 @@ export const GuardianManager = () => {
               <CardContent>
                 <ul className="space-y-2">
                   {sentInvitations.map((inv) => (
-                    <li key={inv.id} className="flex items-center justify-between p-2 border rounded">
-                      <div>
+                    <li key={inv.id} className="flex flex-col gap-3 p-2 border rounded min-[430px]:flex-row min-[430px]:items-center min-[430px]:justify-between">
+                      <div className="min-w-0">
                         <p className="text-sm font-medium">{inv.invited_email}</p>
                         <p className="text-xs text-muted-foreground">
                           {inv.status === 'pending' && `Pendente • Expira em ${format(new Date(inv.expires_at), 'dd/MM')}`}
@@ -182,7 +184,8 @@ export const GuardianManager = () => {
                       {inv.status === 'pending' && (
                         <Button
                           variant="ghost"
-                          size="sm"
+                          size="icon"
+                          aria-label="Revogar convite"
                           onClick={() => revokeInvitation(inv.id)}
                         >
                           <X className="w-4 h-4" />
