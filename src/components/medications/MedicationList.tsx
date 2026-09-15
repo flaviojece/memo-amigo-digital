@@ -81,8 +81,8 @@ export function MedicationList({ medications, isLoading, onEdit, onRefetch }: Me
     <div className="space-y-4">
       {medications.map((medication) => (
         <Card key={medication.id} className="card-memo">
-          <CardContent className="p-6">
-            <div className="flex items-start gap-4">
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
               <MedicationThumb path={medication.photo_url} alt={`Foto de ${medication.name}`} />
 
               <div className="flex-1 min-w-0">
@@ -127,12 +127,13 @@ export function MedicationList({ medications, isLoading, onEdit, onRefetch }: Me
                 </div>
               </div>
 
-              <div className="flex flex-col gap-2">
+              <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-col">
                 <Button
                   variant="outline"
                   size="icon"
                   onClick={() => onEdit(medication.id)}
                   aria-label="Editar medicamento"
+                  className="w-full sm:w-auto"
                 >
                   <Edit className="w-5 h-5" />
                 </Button>
@@ -141,6 +142,7 @@ export function MedicationList({ medications, isLoading, onEdit, onRefetch }: Me
                   size="icon"
                   onClick={() => handleDelete(medication.id, medication.name)}
                   aria-label="Excluir medicamento"
+                  className="w-full sm:w-auto"
                 >
                   <Trash2 className="w-5 h-5 text-destructive" />
                 </Button>

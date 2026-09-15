@@ -84,14 +84,14 @@ export function AppointmentList({ appointments, isLoading, onEdit, onRefetch }: 
     <div className="space-y-4">
       {appointments.map((appointment) => (
         <Card key={appointment.id} className="card-memo">
-          <CardContent className="p-6">
-            <div className="flex items-start gap-4">
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
               <div className="p-3 bg-primary/10 rounded-senior flex-shrink-0">
                 <CalendarIcon className="w-8 h-8 text-primary" />
               </div>
 
               <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between mb-2">
+                <div className="flex flex-col gap-2 mb-2 min-[430px]:flex-row min-[430px]:items-start min-[430px]:justify-between">
                   <h3 className="text-senior-xl font-bold text-foreground">
                     Dr(a). {appointment.doctor_name}
                   </h3>
@@ -153,12 +153,13 @@ export function AppointmentList({ appointments, isLoading, onEdit, onRefetch }: 
                 </div>
               </div>
 
-              <div className="flex flex-col gap-2">
+              <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-col">
                 <Button
                   variant="outline"
                   size="icon"
                   onClick={() => onEdit(appointment.id)}
                   aria-label="Editar consulta"
+                  className="w-full sm:w-auto"
                 >
                   <Edit className="w-5 h-5" />
                 </Button>
@@ -167,6 +168,7 @@ export function AppointmentList({ appointments, isLoading, onEdit, onRefetch }: 
                   size="icon"
                   onClick={() => handleDelete(appointment.id, appointment.doctor_name)}
                   aria-label="Excluir consulta"
+                  className="w-full sm:w-auto"
                 >
                   <Trash2 className="w-5 h-5 text-destructive" />
                 </Button>

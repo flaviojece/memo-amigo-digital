@@ -104,14 +104,14 @@ export function ContactList({ contacts, isLoading, onEdit, onRefetch }: ContactL
     <div className="space-y-4">
       {contacts.map((contact) => (
         <Card key={contact.id} className="card-memo">
-          <CardContent className="p-6">
-            <div className="flex items-start gap-4">
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
               <div className="p-3 bg-primary/10 rounded-senior flex-shrink-0">
                 <User className="w-8 h-8 text-primary" />
               </div>
 
               <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between mb-2">
+                <div className="flex flex-col gap-2 mb-2 min-[430px]:flex-row min-[430px]:items-start min-[430px]:justify-between">
                   <h3 className="text-senior-xl font-bold text-foreground">
                     {contact.name}
                   </h3>
@@ -153,12 +153,12 @@ export function ContactList({ contacts, isLoading, onEdit, onRefetch }: ContactL
                 </div>
               </div>
 
-              <div className="flex flex-col gap-2">
+              <div className="grid grid-cols-3 gap-2 sm:flex sm:flex-col">
                 <Button
                   variant="outline"
                   size="lg"
                   onClick={() => toggleFavorite(contact.id, contact.is_favorite)}
-                  className="min-h-[52px] min-w-[52px] p-3"
+                  className="min-h-[52px] min-w-[52px] w-full p-3 sm:w-auto"
                   aria-label={contact.is_favorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
                 >
                   <Heart className={`w-6 h-6 ${contact.is_favorite ? 'fill-current text-primary' : ''}`} />
@@ -167,7 +167,7 @@ export function ContactList({ contacts, isLoading, onEdit, onRefetch }: ContactL
                   variant="outline"
                   size="lg"
                   onClick={() => onEdit(contact.id)}
-                  className="min-h-[52px] min-w-[52px] p-3"
+                  className="min-h-[52px] min-w-[52px] w-full p-3 sm:w-auto"
                   aria-label="Editar contato"
                 >
                   <Edit className="w-6 h-6" />
@@ -176,7 +176,7 @@ export function ContactList({ contacts, isLoading, onEdit, onRefetch }: ContactL
                   variant="outline"
                   size="lg"
                   onClick={() => handleDelete(contact.id, contact.name)}
-                  className="min-h-[52px] min-w-[52px] p-3"
+                  className="min-h-[52px] min-w-[52px] w-full p-3 sm:w-auto"
                   aria-label="Excluir contato"
                 >
                   <Trash2 className="w-6 h-6 text-destructive" />

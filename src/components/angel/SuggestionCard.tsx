@@ -54,7 +54,7 @@ export function SuggestionCard({ suggestion, isPatientView = false, onApprove, o
     if (suggestion.type.includes('medication')) {
       return (
         <div className="space-y-2 bg-muted/50 p-4 rounded-lg">
-          <div className="grid grid-cols-2 gap-2 text-sm">
+          <div className="grid grid-cols-1 gap-3 text-sm min-[430px]:grid-cols-2">
             <div>
               <span className="font-semibold">Medicamento:</span>
               <p className="text-muted-foreground">{data.name}</p>
@@ -94,7 +94,7 @@ export function SuggestionCard({ suggestion, isPatientView = false, onApprove, o
   return (
     <Card className="border-2">
       <CardHeader>
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-3 min-[430px]:flex-row min-[430px]:items-start min-[430px]:justify-between">
           <div className="flex items-start gap-2 flex-1">
             {getSuggestionIcon(suggestion.type)}
             <div className="flex-1">
@@ -128,7 +128,7 @@ export function SuggestionCard({ suggestion, isPatientView = false, onApprove, o
         )}
 
         {isPatientView && suggestion.status === 'pending' && onApprove && onReject && (
-          <div className="flex gap-3 pt-2">
+          <div className="flex flex-col gap-3 pt-2 min-[430px]:flex-row">
             <Button
               onClick={() => onApprove(suggestion.id)}
               className="flex-1 gap-2"

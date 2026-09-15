@@ -216,7 +216,7 @@ export function ContactForm({ contactId, onSuccess, onCancel }: ContactFormProps
         </label>
       </div>
 
-      <div className="flex gap-3 pt-4">
+      <div className="flex flex-col-reverse gap-3 pt-4 min-[430px]:flex-row">
         <Button
           type="button"
           variant="outline"

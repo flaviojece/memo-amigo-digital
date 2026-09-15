@@ -234,7 +234,7 @@ export function MedicationForm({ medicationId, onSuccess, onCancel }: Medication
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <Label htmlFor="start_date" className="text-senior-base">Data de Início *</Label>
           <Input
@@ -263,9 +263,9 @@ export function MedicationForm({ medicationId, onSuccess, onCancel }: Medication
       </div>
 
       <div>
-        <div className="flex justify-between items-center mb-2">
+          <div className="flex flex-col gap-2 mb-2 min-[430px]:flex-row min-[430px]:items-center min-[430px]:justify-between">
           <Label className="text-senior-base">Horários *</Label>
-          <Button type="button" onClick={addTime} variant="outline" size="sm">
+          <Button type="button" onClick={addTime} variant="outline" size="default" className="w-full min-[430px]:w-auto">
             <Plus className="w-4 h-4 mr-1" />
             Adicionar Horário
           </Button>
@@ -317,7 +317,7 @@ export function MedicationForm({ medicationId, onSuccess, onCancel }: Medication
         </div>
 
         {controlaEstoque && (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
               <Label htmlFor="stock_quantity" className="text-senior-sm">
                 Doses restantes
@@ -368,7 +368,7 @@ export function MedicationForm({ medicationId, onSuccess, onCancel }: Medication
         )}
       </div>
 
-      <div className="flex gap-3 pt-4">
+      <div className="flex flex-col-reverse gap-3 pt-4 min-[430px]:flex-row">
         <Button
           type="button"
           variant="outline"
