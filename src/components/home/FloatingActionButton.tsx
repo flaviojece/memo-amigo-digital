@@ -31,7 +31,7 @@ export function FloatingActionButton({ onTabChange }: FloatingActionButtonProps)
     <>
       <Button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-[100px] right-4 z-50 h-16 w-16 rounded-full bg-primary text-primary-foreground shadow-2xl hover:bg-primary/90 transition-all hover:scale-110"
+        className="fixed right-4 z-50 h-16 w-16 rounded-full bg-primary text-primary-foreground shadow-2xl hover:bg-primary/90 transition-all hover:scale-110 bottom-[calc(var(--mobile-nav-height)+0.75rem)]"
         size="icon"
       >
         <Plus className="w-8 h-8" />

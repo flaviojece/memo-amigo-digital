@@ -24,7 +24,7 @@ const buttonVariants = cva(
       size: {
         default: "min-h-[56px] px-6 py-3",
         // `sm` é para telas densas (painel de admin), não para o app do paciente
-        sm: "min-h-[44px] px-4 text-senior-xs [&_svg]:size-5",
+        sm: "min-h-[48px] px-4 text-senior-xs [&_svg]:size-5",
         lg: "min-h-[68px] px-8 text-senior-lg",
         icon: "min-h-[56px] min-w-[56px]",
       },
