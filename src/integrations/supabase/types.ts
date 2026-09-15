@@ -362,6 +362,7 @@ export type Database = {
           last_movement_at: string | null
           latitude: number
           longitude: number
+          source: string
           speed: number | null
           updated_at: string | null
           user_id: string
@@ -374,6 +375,7 @@ export type Database = {
           last_movement_at?: string | null
           latitude: number
           longitude: number
+          source?: string
           speed?: number | null
           updated_at?: string | null
           user_id: string
@@ -386,6 +388,7 @@ export type Database = {
           last_movement_at?: string | null
           latitude?: number
           longitude?: number
+          source?: string
           speed?: number | null
           updated_at?: string | null
           user_id?: string
@@ -432,6 +435,11 @@ export type Database = {
           consent_text: string | null
           created_at: string | null
           is_sharing: boolean
+          retention_days: number
+          tracking_active: boolean
+          tracking_started_at: string | null
+          tracking_stopped_at: string | null
+          tracking_stopped_reason: string | null
           update_interval_seconds: number | null
           updated_at: string | null
           user_id: string
@@ -442,6 +450,11 @@ export type Database = {
           consent_text?: string | null
           created_at?: string | null
           is_sharing?: boolean
+          retention_days?: number
+          tracking_active?: boolean
+          tracking_started_at?: string | null
+          tracking_stopped_at?: string | null
+          tracking_stopped_reason?: string | null
           update_interval_seconds?: number | null
           updated_at?: string | null
           user_id: string
@@ -452,6 +465,11 @@ export type Database = {
           consent_text?: string | null
           created_at?: string | null
           is_sharing?: boolean
+          retention_days?: number
+          tracking_active?: boolean
+          tracking_started_at?: string | null
+          tracking_stopped_at?: string | null
+          tracking_stopped_reason?: string | null
           update_interval_seconds?: number | null
           updated_at?: string | null
           user_id?: string
@@ -848,6 +866,14 @@ export type Database = {
       }
       is_invitation_valid: { Args: { invitation_id: string }; Returns: boolean }
       is_system_empty: { Args: never; Returns: boolean }
+      limpar_historico_localizacao: { Args: never; Returns: number }
+      minhas_visualizacoes_localizacao: {
+        Args: { _dias?: number }
+        Returns: {
+          anjo_nome: string
+          visualizado_em: string
+        }[]
+      }
       registrar_doses_perdidas: {
         Args: never
         Returns: {
@@ -856,6 +882,10 @@ export type Database = {
           medication_name: string
           patient_id: string
         }[]
+      }
+      registrar_visualizacao_localizacao: {
+        Args: { _patient_id: string }
+        Returns: undefined
       }
     }
     Enums: {
