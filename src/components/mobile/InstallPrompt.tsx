@@ -55,10 +55,10 @@ export function InstallPrompt() {
   if (!showPrompt) return null;
 
   return (
-    <Card className="fixed bottom-20 left-4 right-4 p-4 shadow-card border-2 border-primary/20 bg-card z-40 animate-in slide-in-from-bottom-5">
+    <Card className="fixed left-4 right-4 p-4 shadow-card border-2 border-primary/20 bg-card z-[10000] animate-in slide-in-from-bottom-5 bottom-[calc(var(--mobile-nav-height)+0.75rem)]">
       <button
         onClick={handleDismiss}
-        className="absolute top-2 right-2 p-2 rounded-senior hover:bg-muted transition-colors"
+        className="absolute top-1 right-1 flex min-h-[48px] min-w-[48px] items-center justify-center rounded-senior hover:bg-muted transition-colors"
         aria-label="Fechar"
       >
         <X className="w-5 h-5" />

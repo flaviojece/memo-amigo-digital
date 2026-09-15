@@ -213,7 +213,7 @@ export function NextMedicationHero() {
             {proximo.dosage && (
               <p className="text-senior-base text-muted-foreground">{proximo.dosage}</p>
             )}
-            <p className={cn("text-[40px] leading-none font-bold text-primary mt-1")}>
+            <p className={cn("text-senior-2xl leading-none font-bold text-primary mt-1")}>
               {proximo.horario}
             </p>
           </div>
